@@ -10,7 +10,7 @@ response.setStatus(response.SC_NOT_FOUND);
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>404</title>
-<link type="text/css" rel="stylesheet" href="${ctx_path}/css/bootstrap.min.css" />
+<link type="text/css" rel="stylesheet" href="${ctx_path}/css/bootstrap.css" />
 </head>
 <body>
 <div style="width: 1000px; margin: 200px auto;">

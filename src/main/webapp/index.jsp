@@ -7,7 +7,13 @@ response.setStatus(response.SC_NOT_FOUND);
 %>
 <c:set var="ctx_path" value="${pageContext.request.contextPath}"></c:set>
 <html>
+<head>
+	<title>index</title>
+	<link type="text/css" rel="stylesheet" href="${ctx_path}/css/bootstrap.css" />
+</head>
 <body>
-<h2>Hello World!</h2>
+<div style="text-align: center;">
+	<h2>Hello World!</h2>
+</div>
 </body>
 </html>
