@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+	<appender name="Console.Info" class="org.apache.log4j.ConsoleAppender">
+		<param name="target" value="System.out" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d %-5p - %m%n" />
+		</layout>
+		<!--过滤器设置输出的级别 -->
+		<filter class="org.apache.log4j.varia.LevelRangeFilter">
+			<param name="levelMin" value="debug" />
+			<param name="levelMax" value="info" />
+			<param name="AcceptOnMatch" value="false" />
+		</filter>
+	</appender>
+
+	<appender name="Console.Error" class="org.apache.log4j.ConsoleAppender">
+		<param name="target" value="System.err" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d %-5p - %m%n" />
+		</layout>
+		<!--过滤器设置输出的级别 -->
+		<filter class="org.apache.log4j.varia.LevelRangeFilter">
+			<param name="levelMin" value="warn" />
+			<param name="levelMax" value="fatal" />
+			<param name="AcceptOnMatch" value="false" />
+		</filter>
+	</appender>
+
+	<!-- 根logger的设置 -->
+	<root>
+		<priority value="Info" />
+		<appender-ref ref="Console.Info" />
+		<appender-ref ref="Console.Error" />
+	</root>
+</log4j:configuration>

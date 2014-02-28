@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlrewrite>
+	<rule>
+		<!-- 此处对静态文件进行重定向处理 -->
+		<from>^(/.*\.(?:js|css|jpg|gif|png|jpeg|ico))$</from>
+		<to>/static$1</to>
+	</rule>
+	<rule>
+		<from>^(.*).htm$</from>
+		<to>/$1.jsp</to>
+	</rule>
+</urlrewrite>
