@@ -96,26 +96,26 @@ public abstract class AbstractDaoImpl<E extends AbstractModel> implements IAbstr
 		}
 		String oriKey = key.substring(0, index);
 		String operName = key.substring(index + 2);
-		String oper = " = ", placeholder = ":" + oriKey;
-		if ("eq".equals(operName)) {
+		String oper = " = ", placeholder = ":" + key;
+		if ("eq".equalsIgnoreCase(operName)) {
 			oper = " = ";
-		} else if ("gt".equals(operName)) {
+		} else if ("gt".equalsIgnoreCase(operName)) {
 			oper = " > ";
-		} else if ("ge".equals(operName)) {
+		} else if ("ge".equalsIgnoreCase(operName)) {
 			oper = " >= ";
-		} else if ("lt".equals(operName)) {
+		} else if ("lt".equalsIgnoreCase(operName)) {
 			oper = " < ";
-		} else if ("le".equals(operName)) {
+		} else if ("le".equalsIgnoreCase(operName)) {
 			oper = " <= ";
-		} else if ("contains".equals(operName)) {
+		} else if ("contain".equalsIgnoreCase(operName)) {
 			oper = " like ";
 			placeholder = "concat('%', " + placeholder + ", '%')";
-		} else if ("startwith".equals(operName)) {
+		} else if ("startwith".equalsIgnoreCase(operName)) {
 			oper = " like ";
-			placeholder = "concat('%', " + placeholder + ")";
-		} else if ("endwith".equals(operName)) {
+			placeholder = "concat(" + placeholder + ", '%')";
+		} else if ("endwith".equalsIgnoreCase(operName)) {
 			oper = " like ";
-			placeholder = " concat(" + placeholder + ", '%')";
+			placeholder = " concat('%', " + placeholder + ")";
 		}
 		return new String[] { oriKey, oper, placeholder };
 	}

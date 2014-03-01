@@ -43,6 +43,11 @@ public class UserServiceImpl implements IUserService {
 	}
 	
 	@Override
+	public List<User> getUserListResult(int start, int limit, Map<String, Object> param) {
+		return userDao.list(start, limit, param);
+	}
+	
+	@Override
 	public Page<User> getUserPageResult(int start, int limit, Map<String, Object> param) {
 		return userDao.paginate(start, limit, param);
 	}

@@ -1,5 +1,6 @@
 package com.ablesky.asdeploy.service;
 
+import java.util.List;
 import java.util.Map;
 
 import com.ablesky.asdeploy.pojo.User;
@@ -16,5 +17,7 @@ public interface IUserService {
 	Page<User> getUserPageResult(int start, int limit, Map<String, Object> param);
 
 	User getUserByUsername(String username);
+
+	List<User> getUserListResult(int start, int limit, Map<String, Object> param);
 
 }
