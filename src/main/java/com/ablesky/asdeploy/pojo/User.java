@@ -2,16 +2,38 @@ package com.ablesky.asdeploy.pojo;
 
 import java.sql.Timestamp;
 
-public class User {
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
+@Entity
+@Table(name="user")
+public class User extends AbstractModel {
+
+	@Id
+	@GeneratedValue
+	@Column
 	private Long id;
+	@Column
 	private String username;
+	@Column
 	private String password;
+	@Column(name="create_time")
 	private Timestamp createTime;
+	@Column(name="update_time")
 	private Timestamp updateTime;
 	
 	public User() {}
 	
+	public User(String username, String password, Timestamp createTime, Timestamp updateTime) {
+		this.username = username;
+		this.password = password;
+		this.createTime = createTime;
+		this.updateTime = updateTime;
+	}
+
 	public Long getId() {
 		return id;
 	}

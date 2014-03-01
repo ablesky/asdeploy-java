@@ -6,13 +6,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ablesky.asdeploy.dao.IAbstractDao;
+import com.ablesky.asdeploy.pojo.AbstractModel;
 import com.ablesky.asdeploy.util.CommonConstant;
 import com.ablesky.asdeploy.util.Page;
 
-public abstract class AbstractDaoImpl<E> implements IAbstractDao<E> {
+public abstract class AbstractDaoImpl<E extends AbstractModel> implements IAbstractDao<E> {
 
 	@Autowired
 	private BasicHibernateDaoImpl basicHibernateDaoImpl;
@@ -52,7 +54,7 @@ public abstract class AbstractDaoImpl<E> implements IAbstractDao<E> {
 	}
 	
 	protected String generateHqlByParam(Map<String, Object> param) {
-		return "from " + this.entityClassName + generateWhereByParam(param);
+		return "from " + this.entityClassName + generateWhereByParam(param) + generateOrderByByParam(param);
 	}
 	
 	protected String generateWhereByParam(Map<String, Object> param) {
@@ -61,20 +63,61 @@ public abstract class AbstractDaoImpl<E> implements IAbstractDao<E> {
 			if(CommonConstant.ORDER_BY.equals(entry.getKey())) {
 				continue;
 			}
+			String[] parsedResult = parseOperation(entry.getKey());
+			if(parsedResult == null) {
+				continue;
+			}
 			buff.append(" and ")
-				.append(entry.getKey())
-				.append("=")
-				.append(":").append(entry.getKey());
-		}
-		String orderBy = (String) param.get(CommonConstant.ORDER_DESC);
-		if(orderBy != null) {
-			buff.append(" order by " + 
-					(CommonConstant.ORDER_DESC.equalsIgnoreCase(orderBy)
-					? CommonConstant.ORDER_DESC
-					: CommonConstant.ORDER_ASC)
-			);
+				.append(parsedResult[0])
+				.append(parsedResult[1])
+				.append(parsedResult[2]);
 		}
 		return buff.toString();
+	}
+	
+	protected String generateOrderByByParam(Map<String, Object> param) {
+		String orderBy = (String) param.get(CommonConstant.ORDER_DESC);
+		if(StringUtils.isBlank(orderBy)) {
+			return "";
+		}
+		return " order by " + 
+					(CommonConstant.ORDER_DESC.equalsIgnoreCase(orderBy)
+					? CommonConstant.ORDER_DESC
+					: CommonConstant.ORDER_ASC);
+	}
+	
+	protected String[] parseOperation(String key) {
+		if (StringUtils.isBlank(key)) {
+			return null;
+		}
+		int index = key.indexOf("__");
+		if (index == -1) {
+			return new String[] { key, " = ", ":" + key };
+		}
+		String oriKey = key.substring(0, index);
+		String operName = key.substring(index + 2);
+		String oper = " = ", placeholder = ":" + oriKey;
+		if ("eq".equals(operName)) {
+			oper = " = ";
+		} else if ("gt".equals(operName)) {
+			oper = " > ";
+		} else if ("ge".equals(operName)) {
+			oper = " >= ";
+		} else if ("lt".equals(operName)) {
+			oper = " < ";
+		} else if ("le".equals(operName)) {
+			oper = " <= ";
+		} else if ("contains".equals(operName)) {
+			oper = " like ";
+			placeholder = "concat('%', " + placeholder + ", '%')";
+		} else if ("startwith".equals(operName)) {
+			oper = " like ";
+			placeholder = "concat('%', " + placeholder + ")";
+		} else if ("endwith".equals(operName)) {
+			oper = " like ";
+			placeholder = " concat(" + placeholder + ", '%')";
+		}
+		return new String[] { oriKey, oper, placeholder };
 	}
 	
 	@SuppressWarnings("rawtypes")

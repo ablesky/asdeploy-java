@@ -3,9 +3,10 @@ package com.ablesky.asdeploy.dao;
 import java.util.List;
 import java.util.Map;
 
+import com.ablesky.asdeploy.pojo.AbstractModel;
 import com.ablesky.asdeploy.util.Page;
 
-public interface IAbstractDao<E> {
+public interface IAbstractDao<E extends AbstractModel> {
 
 	void saveOrUpdate(E entity);
 
