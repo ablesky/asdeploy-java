@@ -34,6 +34,11 @@ public abstract class AbstractDaoImpl<E extends AbstractModel> implements IAbstr
 	}
 	
 	@Override
+	public void deleteById(Long id) {
+		basicHibernateDaoImpl.deleteById(entityClass, id);;
+	}
+	
+	@Override
 	public E getById(Long id) {
 		return basicHibernateDaoImpl.getById(entityClass, id);
 	}

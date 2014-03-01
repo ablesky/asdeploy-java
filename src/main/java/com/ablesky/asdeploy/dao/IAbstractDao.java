@@ -20,4 +20,6 @@ public interface IAbstractDao<E extends AbstractModel> {
 
 	Page<E> paginate(int start, int limit, Map<String, Object> param);
 
+	void deleteById(Long id);
+
 }

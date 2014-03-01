@@ -31,6 +31,13 @@ public class BasicHibernateDaoImpl {
 		getCurrentSession().delete(entity);
 	}
 	
+	public <T> void deleteById(Class<T> clazz, Long id) {
+		String hql = "delete from " + clazz.getSimpleName() + " where id = :id ";
+		Query query = getCurrentSession().createQuery(hql);
+		query.setParameter("id", id);
+		query.executeUpdate();
+	}
+	
 	public <T> T getById(Class<T> clazz, Long id) {
 		return clazz.cast(getCurrentSession().get(clazz, id));
 	}
