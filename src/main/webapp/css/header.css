@@ -1,0 +1,13 @@
+@CHARSET "UTF-8";
+#J_topNav .brand {
+	display: block; text-align: center; width:100%; font-size: 25px;
+}
+#J_topNav .brand > strong {
+	cursor:default; font-family: 微软雅黑
+}
+#J_envLogo {
+	font-size: 20px;
+}
+#J_topNav ul.nav .nav-end {
+	padding-right: 15px;
+}
