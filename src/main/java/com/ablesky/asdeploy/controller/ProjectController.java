@@ -7,4 +7,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/project")
 public class ProjectController {
 
+	@RequestMapping("/list")
+	public String list() {
+		return "project/list";
+	}
+	
+	@RequestMapping("/edit")
+	public String edit() {
+		return "project/detail";
+	}
 }

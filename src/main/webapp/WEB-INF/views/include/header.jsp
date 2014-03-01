@@ -11,7 +11,7 @@
 				</a>
 			</div>
 			<div class="span4">
-				<ul class="nav pull-right" style="color: #fff;">
+				<ul class="nav pull-right">
 					<li><a id="J_envLogo" href="#"></a></li>
 					<li class="divider-vertical"></li>
 					<c:choose>
