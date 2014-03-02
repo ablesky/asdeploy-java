@@ -14,6 +14,7 @@ response.setStatus(response.SC_NOT_FOUND);
 <body>
 <div style="text-align: center;">
 	<h2>Hello World!</h2>
+	<input type="text" />
 </div>
 </body>
 </html>

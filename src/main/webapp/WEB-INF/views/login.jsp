@@ -1,59 +1,81 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ include file="./include/include.jsp" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>登录</title>
 <%@ include file="./include/includeCss.jsp" %>
 <style>
-/*input[type="text"], input[type="password"] {
-	font-size: 16px;
-	width: 180px;
-}*/	
+.login-wrapper {
+	width: 400px; margin: 50px auto;
+}
+.login-wrapper .alert {
+	width: 280px; margin: 0px auto 30px; text-align: center;
+}
+.login-wrapper table {
+	width: 100%;
+}
+.label-wrapper {
+	padding-bottom: 10px; width: 140px; text-align: right;
+}
+.label-wrapper label {
+	font-size: 18px;
+}
+input[type="text"], input[type="password"] {
+	font-size: 16px; width: 180px;
+}
+.btn-wrapper {
+	text-align: center; padding-top: 30px;
+}
+.btn-wrapper button {
+	width: 80px;
+}
+.btn-sep {
+	width: 10px; display: inline-block;
+}
 </style>
 </head>
 <body>
 <%@ include file="./include/header.jsp" %>
-<div class="wrap">
-	<h2 style="text-align: center;">用户登录</h2>
-	<div style="width: 400px; margin: 50px auto;">
-	<c:if test="${true}">
-		<div class="alert alert-error" style="width: 280px; margin: 0px auto 30px; text-align: center;">
-			<button type="button" class="close" data-dismiss="alert">&times;</button>
-			&nbsp;&nbsp;&nbsp;&nbsp;用户名或密码错误，请重试！
-		</div>
-	</c:if>
+<div>
+	<h2 class="title">用户登录</h2>
+	<div class="login-wrapper">
+		<c:if test="${true}">
+			<div class="alert alert-error">
+				<button type="button" class="close" data-dismiss="alert">&times;</button>
+				&nbsp;&nbsp;&nbsp;&nbsp;用户名或密码错误，请重试！
+			</div>
+		</c:if>
 		<form method="POST" action=".">
-			<table style="width: 400px;">
+			<table>
 				<tbody>
 					<tr>
-						<td
-							style="padding-bottom: 10px; width: 140px; text-align: right;">
-							<label for="id_username" style="font-size: 18px;"> <strong>用户名:&nbsp;&nbsp;</strong>
-						</label>
+						<td class="label-wrapper">
+							<label for="J_username">
+								<strong>用户名:&nbsp;&nbsp;</strong>
+							</label>
 						</td>
-						<td><input type="text" name="username" style="font-size: 16px; width: 180px;"/></td>
+						<td><input type="text" id="J_username" name="username"/></td>
 					</tr>
 					<tr>
-						<td
-							style="padding-bottom: 10px; width: 120px; text-align: right;">
-							<label for="id_password" style="font-size: 18px;"> <strong>密&nbsp;&nbsp;&nbsp;&nbsp;码:&nbsp;&nbsp;</strong>
-						</label>
+						<td class="label-wrapper">
+							<label for="J_password" style="font-size: 18px;">
+								<strong>密&nbsp;&nbsp;&nbsp;&nbsp;码:&nbsp;&nbsp;</strong>
+							</label>
 						</td>
-						<td><input type="password" name="password" style="font-size: 16px; width: 180px;"/></td>
+						<td><input type="password" id="J_password" name="password"/></td>
 					</tr>
 					<tr>
-						<td colspan="2" style="text-align: center; padding-top: 30px;">
-							<button class="btn" type="submit" style="width: 80px;">登&nbsp;&nbsp;录</button>
-							<div style="width: 10px; display: inline-block;">&nbsp;</div>
-							<button class="btn" type="button" style="width: 80px;"
-								onclick="location.href='/register/'">注&nbsp;&nbsp;册</button>
+						<td colspan="2" class="btn-wrapper">
+							<button class="btn" type="submit">登&nbsp;&nbsp;录</button>
+							<div class="btn-sep">&nbsp;</div>
+							<button class="btn" onclick="location.href='/register/'">注&nbsp;&nbsp;册</button>
 						</td>
 					</tr>
 				</tbody>
 			</table>
-			<input type="hidden" name="next" value="/" />
 		</form>
 	</div>
 </div>
