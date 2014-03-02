@@ -12,9 +12,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import com.ablesky.asdeploy.pojo.Project;
 import com.ablesky.asdeploy.service.IProjectService;
 
 @Controller
@@ -30,14 +32,42 @@ public class ProjectController {
 		return "project/list";
 	}
 	
-	@RequestMapping(value="/edit", method=RequestMethod.GET)
-	public String edit() {
+	@RequestMapping(value="/edit/{id}", method=RequestMethod.GET)
+	public String edit(@PathVariable Long id, Model model) {
+		if(id != null && id > 0){
+			model.addAttribute("project", projectService.getProjectById(id));
+		}
 		return "project/edit";
 	}
 	
+	@RequestMapping(value="/edit", method=RequestMethod.GET)
+	public String edit(Model model) {
+		return edit(0L, model);
+	}
+	
 	@RequestMapping(value="/edit", method=RequestMethod.POST)
-	public String edit(String name, String warName) {
-		return null;
+	public @ResponseBody Map<String, Object> edit(
+			@RequestParam(defaultValue="0") 
+			Long id,
+			String name,
+			String warName) {
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		Project project = null;
+		if(id != null && id > 0) {
+			project = projectService.getProjectById(id);
+			if(project == null) {
+				resultMap.put("success", false);
+				resultMap.put("message", "项目不存在!");
+				return resultMap;
+			}
+		} else {
+			project = new Project();
+		}
+		project.setName(name);
+		project.setWarName(warName);
+		projectService.saveOrUpdateProject(project);
+		resultMap.put("success", true);
+		return resultMap;
 	}
 	
 	

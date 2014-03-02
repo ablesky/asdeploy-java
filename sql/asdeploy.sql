@@ -1,6 +1,7 @@
 -- user
+DROP TABLE IF EXISTS "user";
 CREATE TABLE "user" (
-	id integer primary key not null,
+	id integer PRIMARY KEY AUTOINCREMENT,
 	username varchar(40),
 	password varchar(40),
 	create_time datetime,
@@ -8,15 +9,17 @@ CREATE TABLE "user" (
 );
 
 -- project
+DROP TABLE IF EXISTS "project";
 CREATE TABLE "project" (
-    "id" integer NOT NULL PRIMARY KEY,
+    "id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
     "name" varchar(30) NOT NULL,
     "war_name" varchar(30) NOT NULL
 );
 
 -- deploy_item
+DROP TABLE IF EXISTS "deploy_item";
 CREATE TABLE "deploy_item" (
-    "id" integer NOT NULL PRIMARY KEY,
+    "id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
     "user_id" integer NOT NULL REFERENCES "user" ("id"),
     "project_id" integer NOT NULL REFERENCES "project" ("id"),
     "version" varchar(11) NOT NULL,
@@ -30,8 +33,9 @@ CREATE INDEX "deploy_item_user_id" ON "deploy_item" ("user_id");
 CREATE INDEX "deploy_item_project_id" ON "deploy_item" ("project_id");
 
 -- deploy_record
+DROP TABLE IF EXISTS "deploy_record";
 CREATE TABLE "deploy_record" (
-    "id" integer NOT NULL PRIMARY KEY,
+    "id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
     "user_id" integer NOT NULL REFERENCES "user" ("id"),
     "project_id" integer NOT NULL REFERENCES "project" ("id"),
     "deploy_item_id" integer REFERENCES "project_item" ("id"),
@@ -44,8 +48,9 @@ CREATE INDEX "deploy_record_project_id" ON "deploy_record" ("project_id");
 CREATE INDEX "deploy_record_item_id" ON "deploy_record" ("deploy_item_id");
 
 -- deploy_lock
+DROP TABLE IF EXISTS "deploy_lock";
 CREATE TABLE "deploy_lock" (
-    "id" integer NOT NULL PRIMARY KEY,
+    "id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
     "user_id" integer NOT NULL REFERENCES "user" ("id"),
     "deploy_record_id" integer NOT NULL REFERENCES "deploy_record" ("id"),
     "is_locked" bool NOT NULL,
@@ -56,8 +61,10 @@ CREATE INDEX "deploy_lock_record_id" ON "deploy_lock" ("deploy_record_id");
 
 ----------------------------------------------
 
+-- patch_group
+DROP TABLE IF EXISTS "patch_group";
 CREATE TABLE "patch_group" (
-    "id" integer NOT NULL PRIMARY KEY,
+    "id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
     "creator_id" integer NOT NULL REFERENCES "useer" ("id"),
     "project_id" integer NOT NULL REFERENCES "project" ("id"),
     "name" varchar(20) NOT NULL,

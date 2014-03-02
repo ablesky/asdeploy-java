@@ -32,9 +32,6 @@ input[type="text"], input[type="password"] {
 .btn-wrapper button {
 	width: 80px;
 }
-.btn-sep {
-	width: 10px; display: inline-block;
-}
 </style>
 </head>
 <body>
