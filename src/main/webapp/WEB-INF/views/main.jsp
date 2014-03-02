@@ -11,9 +11,6 @@
 .wrapper {
 	text-align: center;
 }
-.welcome {
-	margin-top: 30px;
-}
 .lock-info {
 	width: 400px; height: 100px; margin: 30px auto 10px; text-align: center;
 }
@@ -31,8 +28,8 @@
 <body>
 <%@ include file="./include/header.jsp" %>
 <div class="wrapper">
-	<div class="welcome">
-		<h1>welcome <c:if test="${not empty username}">${username}</c:if></h1>
+	<div class="title">
+		<h1>welcome<shiro:authenticated> <shiro:principal/></shiro:authenticated></h1>
 	</div>
 	<div class="lock-info">
 		<c:if test="${true}">
@@ -45,10 +42,11 @@
 		</c:if>
 	</div>
 	<div class="main-btn-wrapper">
-		<a type="button" class="btn btn-large btn-block" href="/deployInitOption/">新的发布</a>
-		<a type="button" class="btn btn-large btn-block" href="/patchGroupList/1/">管理补丁组</a>
-		<a type="button" class="btn btn-large btn-block" href="/deployRecordList/1/">查看发布历史</a>
-		<a type="button" class="btn btn-large btn-block" href="/queryAblejsDependencyPage/">查看静态文件构建依赖</a>
+		<a type="button" class="btn btn-large btn-block" href="${ctx_path}/deployInitOption/">新的发布</a>
+		<a type="button" class="btn btn-large btn-block" href="${ctx_path}/patchGroupList/1/">管理补丁组</a>
+		<a type="button" class="btn btn-large btn-block" href="${ctx_path}/deployRecordList/1/">查看发布历史</a>
+		<a type="button" class="btn btn-large btn-block" href="${ctx_path}/queryAblejsDependencyPage/">查看静态文件构建依赖</a>
+		<a type="button" class="btn btn-large btn-block" href="${ctx_path}/project/list">管理项目</a>
 	</div>
 </div>
 </body>

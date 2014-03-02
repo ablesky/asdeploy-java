@@ -42,13 +42,13 @@ input[type="text"], input[type="password"] {
 <div>
 	<h2 class="title">用户登录</h2>
 	<div class="login-wrapper">
-		<c:if test="${true}">
+		<c:if test="${not empty errorMessage}">
 			<div class="alert alert-error">
 				<button type="button" class="close" data-dismiss="alert">&times;</button>
-				&nbsp;&nbsp;&nbsp;&nbsp;用户名或密码错误，请重试！
+				<span style="margin-left: 40px;">${errorMessage}</span>
 			</div>
 		</c:if>
-		<form method="POST" action=".">
+		<form method="POST" action="${ctx_path}/login">
 			<table>
 				<tbody>
 					<tr>

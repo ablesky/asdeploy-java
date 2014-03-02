@@ -5,7 +5,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>编辑工程</title>
+<title>编辑项目</title>
 <%@ include file="../include/includeCss.jsp" %>
 </head>
 <body>

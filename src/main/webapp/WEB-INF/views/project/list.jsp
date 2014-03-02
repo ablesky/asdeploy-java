@@ -5,7 +5,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>工程列表</title>
+<title>项目列表</title>
 <%@ include file="../include/includeCss.jsp" %>
 <style>
 .title {
@@ -26,7 +26,7 @@
 }
 .create-btn-wrapper {
 	text-align: center;
-	margin: 10px auto 10px;
+	margin: 10px auto 20px;
 }
 .create-btn-wrapper .btn {
 	width: 80px;
@@ -37,7 +37,7 @@
 <%@ include file="../include/header.jsp" %>
 
 <div>
-	<h2 class="title">工程列表</h2>
+	<h2 class="title">项目列表</h2>
 	<div class="list-wrapper">
 		<div class="create-btn-wrapper">
 			<button id="J_createBtn" class="btn btn-primary">新&nbsp;&nbsp;增</button>
@@ -46,7 +46,7 @@
 			<thead>
 				<tr>
 					<th style="width: 50px;">id</th>
-					<th style="width: 300px;">工程名称</th>
+					<th style="width: 300px;">项目名称</th>
 					<th style="width: 300px;">包名称</th>
 					<th style="width: 150px;">操作</th>
 				</tr>

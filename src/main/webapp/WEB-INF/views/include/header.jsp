@@ -14,20 +14,18 @@
 				<ul class="nav pull-right">
 					<li><a id="J_envLogo" href="#"></a></li>
 					<li class="divider-vertical"></li>
-					<c:choose>
-						<c:when test="${not empty username}">
-							<li><a href="/"><strong>主页</strong></a></li>
-							<li class="divider-vertical"></li>
-							<li><a href="/user/${username}"><strong>${username}</strong></a></li>
-							<li class="divider-vertical"></li>
-							<li><a href="/logout" class="nav-end"><strong>退出</strong></a></li>
-						</c:when>
-						<c:otherwise>
-							<li><a href="/login"><strong>登录</strong></a></li>
-							<li class="divider-vertical"></li>
-							<li><a href="/register" class="nav-end"><strong>注册</strong></a></li>
-						</c:otherwise>
-					</c:choose>
+					<shiro:authenticated>
+						<li><a href="${ctx_path}/main"><strong>主页</strong></a></li>
+						<li class="divider-vertical"></li>
+						<li><a href="${ctx_path}/user/${username}"><strong><shiro:principal/></strong></a></li>
+						<li class="divider-vertical"></li>
+						<li><a href="${ctx_path}/logout" class="nav-end"><strong>退出</strong></a></li>
+					</shiro:authenticated>
+					<shiro:guest>
+						<li><a href="${ctx_path}/login"><strong>登录</strong></a></li>
+						<li class="divider-vertical"></li>
+						<li><a href="${ctx_path}/register" class="nav-end"><strong>注册</strong></a></li>
+					</shiro:guest>
 				</ul>
 			</div>
 		</div>
