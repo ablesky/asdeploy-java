@@ -4,5 +4,9 @@
 	font-family: 微软雅黑;
 }
 .btn-sep {
-	width: 10px; display: inline-block;
+	width: 15px; display: inline-block;
+}
+
+.table thead {
+	background-color: #eee;
 }

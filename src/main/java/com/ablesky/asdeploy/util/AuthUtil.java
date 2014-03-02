@@ -19,6 +19,10 @@ public class AuthUtil {
 		return getCurrentSubject().isAuthenticated();
 	}
 	
+	public static String getCurrentUsername() {
+		return (String) getCurrentSubject().getPrincipal();
+	}
+	
 	public static void login(String username, String password) {
 		UsernamePasswordToken token = new UsernamePasswordToken(username, password);
 		getCurrentSubject().login(token);

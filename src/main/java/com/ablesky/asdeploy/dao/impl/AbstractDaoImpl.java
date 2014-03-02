@@ -97,7 +97,7 @@ public abstract class AbstractDaoImpl<E extends AbstractModel> implements IAbstr
 		}
 		int index = key.indexOf("__");
 		if (index == -1) {
-			return new String[] { key, " = ", ":" + key };
+			return new String[] { key.replaceAll("_", "."), " = ", ":" + key };
 		}
 		String oriKey = key.substring(0, index);
 		String operName = key.substring(index + 2);
@@ -122,7 +122,7 @@ public abstract class AbstractDaoImpl<E extends AbstractModel> implements IAbstr
 			oper = " like ";
 			placeholder = " concat('%', " + placeholder + ")";
 		}
-		return new String[] { oriKey, oper, placeholder };
+		return new String[] { oriKey.replaceAll("_", "."), oper, placeholder };
 	}
 	
 	@SuppressWarnings("rawtypes")

@@ -42,8 +42,8 @@
 		</c:if>
 	</div>
 	<div class="main-btn-wrapper">
-		<a type="button" class="btn btn-large btn-block" href="${ctx_path}/deployInitOption/">新的发布</a>
-		<a type="button" class="btn btn-large btn-block" href="${ctx_path}/patchGroupList/1/">管理补丁组</a>
+		<a type="button" class="btn btn-large btn-block" href="${ctx_path}/deploy/initOption">新的发布</a>
+		<a type="button" class="btn btn-large btn-block" href="${ctx_path}/patchGroup/list">管理补丁组</a>
 		<a type="button" class="btn btn-large btn-block" href="${ctx_path}/deployRecordList/1/">查看发布历史</a>
 		<a type="button" class="btn btn-large btn-block" href="${ctx_path}/queryAblejsDependencyPage/">查看静态文件构建依赖</a>
 		<a type="button" class="btn btn-large btn-block" href="${ctx_path}/project/list">管理项目</a>
@@ -51,7 +51,4 @@
 </div>
 </body>
 <%@ include file="./include/includeJs.jsp" %>
-<script type="text/javascript">
-seajs.use('main');
-</script>
 </html>
