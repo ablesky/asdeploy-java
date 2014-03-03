@@ -31,4 +31,4 @@
 		</div>
 	</div>
 </div>
-<div style="margin-bottom: 70px;"></div>
+<div style="margin-bottom: 100px;"></div>

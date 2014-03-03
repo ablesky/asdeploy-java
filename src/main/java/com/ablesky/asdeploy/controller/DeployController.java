@@ -118,4 +118,10 @@ public class DeployController {
 		return resultMap;
 	}
 	
+	@RequestMapping("/unlockDeployRedirect")
+	public String unlockDeployRedirect() {
+		deployService.unlockDeploy();
+		return "redirect:/main";
+	}
+	
 }

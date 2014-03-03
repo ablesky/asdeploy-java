@@ -1,5 +1,5 @@
 (function($){
-	
+	'use strict';
 	$.fn.extend({
 		bootstrapPageBar: function(options){
 			var opts = $.extend({}, $.fn.bootstrapPageBar.defaults, options);
