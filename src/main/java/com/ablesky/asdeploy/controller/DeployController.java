@@ -2,7 +2,9 @@ package com.ablesky.asdeploy.controller;
 
 import java.sql.Timestamp;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ablesky.asdeploy.pojo.DeployLock;
 import com.ablesky.asdeploy.pojo.DeployRecord;
@@ -100,6 +103,19 @@ public class DeployController {
 		lock.setLockedTime(new Timestamp(System.currentTimeMillis()));
 		lock.setIsLocked(Boolean.TRUE);
 		return lock;
+	}
+	
+	@RequestMapping("/unlockDeploy")
+	public @ResponseBody Map<String, Object> unlockDeploy() {
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		if(!AuthUtil.isSuperAdmin()) {
+			resultMap.put("success", false);
+			resultMap.put("message", "没有权限!");
+			return resultMap;
+		}
+		deployService.unlockDeploy();
+		resultMap.put("success", true);
+		return resultMap;
 	}
 	
 }

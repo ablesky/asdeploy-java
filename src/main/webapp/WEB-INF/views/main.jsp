@@ -1,3 +1,4 @@
+<%@page import="com.ablesky.asdeploy.util.AuthUtil"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ include file="./include/include.jsp" %>
@@ -36,7 +37,7 @@
 			<div class="alert alert-error">
 			  发布流程已被<strong>${deployLock.user.username}</strong>锁定
 			</div>
-			<c:if test="${true}">
+			<c:if test="<%=AuthUtil.isSuperAdmin()%>"> <!-- todo 本人或超级管理员 -->
 				<button id="J_unlockDeployBtn" class="btn btn-primary">解锁</button>
 			</c:if>
 		</c:if>
@@ -51,4 +52,21 @@
 </div>
 </body>
 <%@ include file="./include/includeJs.jsp" %>
+<script>
+$(function(){
+	initUnlockDeployBtn();
+});
+
+function initUnlockDeployBtn() {
+	$('#J_unlockDeployBtn').on('click', function(){
+		$.post(CTX_PATH + '/deploy/unlockDeploy', function(data){
+			if(data.success !== true) {
+				alert(data.message || '解锁失败!');
+			} else {
+				location.reload();
+			}
+		});
+	});
+}
+</script>
 </html>

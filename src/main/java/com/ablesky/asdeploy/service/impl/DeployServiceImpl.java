@@ -14,6 +14,7 @@ import com.ablesky.asdeploy.dao.IProjectDao;
 import com.ablesky.asdeploy.pojo.DeployLock;
 import com.ablesky.asdeploy.pojo.DeployRecord;
 import com.ablesky.asdeploy.service.IDeployService;
+import com.ablesky.asdeploy.util.AuthUtil;
 import com.ablesky.asdeploy.util.CommonConstant;
 
 @Service
@@ -50,6 +51,23 @@ public class DeployServiceImpl implements IDeployService {
 			}
 		}
 		return null;
+	}
+	
+	@Override
+	public void unlockDeploy() {
+		Map<String, Object> param = new HashMap<String, Object>();
+		param.put("isLocked", Boolean.TRUE);
+		List<DeployLock> lockList = deployLockDao.list(0, 0, param);
+		boolean isSuperAdmin = AuthUtil.isSuperAdmin();
+		for(DeployLock lock: lockList) {
+			if(lock == null || !lock.getIsLocked()) {
+				continue;
+			}
+			if(isSuperAdmin || lock.getUser().getId() == AuthUtil.getCurrentUser().getId()) {
+				lock.setIsLocked(Boolean.FALSE);
+				saveOrUpdateDeployLock(lock);
+			}
+		}
 	}
 	
 	@Override

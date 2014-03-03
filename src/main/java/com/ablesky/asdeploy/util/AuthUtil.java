@@ -37,5 +37,9 @@ public class AuthUtil {
 	public static void logout() {
 		getCurrentSubject().logout();
 	}
+	
+	public static boolean isSuperAdmin() {
+		return "zyang".equals(getCurrentUsername());
+	}
 
 }

@@ -11,4 +11,6 @@ public interface IDeployService {
 
 	void saveOrUpdateDeployRecord(DeployRecord record);
 
+	void unlockDeploy();
+
 }
