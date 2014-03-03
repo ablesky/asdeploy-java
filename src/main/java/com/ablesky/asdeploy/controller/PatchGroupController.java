@@ -38,11 +38,37 @@ public class PatchGroupController {
 	@RequestMapping("/list")
 	public String list(
 			@RequestParam(defaultValue=CommonConstant.DEFAUTL_START_STR)
-			int start,
+			Integer start,
 			@RequestParam(defaultValue=CommonConstant.DEFAULT_LIMIT_STR)
-			int limit,
+			Integer limit,
+			@RequestParam(required=false)
+			String creatorName,
+			@RequestParam(required=false)
+			String patchGroupName,
+			@RequestParam(defaultValue="0")
+			Long projectId,
+			@RequestParam(required=false)
+			String status,
 			Model model) {
+		if(start == null) {
+			start = CommonConstant.DEFAUTL_START;
+		}
+		if(limit == null) {
+			limit = CommonConstant.DEFAULT_LIMIT;
+		}
 		Map<String, Object> param = new HashMap<String, Object>();
+		if(StringUtils.isNotBlank(creatorName)) {
+			param.put("creator_username__contain", creatorName);
+		}
+		if(StringUtils.isNotBlank(patchGroupName)) {
+			param.put("name__contain", patchGroupName);
+		}
+		if(projectId != null && projectId > 0) {
+			param.put("project_id", projectId);
+		}
+		if(StringUtils.isNotBlank(status)) {
+			param.put("status", status);
+		}
 		model.addAttribute("projectList", projectService.getProjectListResult(0, 0, Collections.<String, Object>emptyMap()));
 		model.addAttribute("page", patchGroupService.getPatchGroupPaginateResult(start, limit, param));
 		return "patchGroup/list";
@@ -109,6 +135,9 @@ public class PatchGroupController {
 		patchGroup.setName(name);
 		patchGroup.setCheckCode(checkCode);
 		patchGroup.setStatus(status);
+		if(PatchGroup.STATUS_FINISHED.equals(status)) {
+			patchGroup.setFinishTime(new Timestamp(System.currentTimeMillis()));
+		}
 		patchGroupService.saveOrUpdatePatchGroup(patchGroup);
 		resultMap.put("success", true);
 		resultMap.put("message", "补丁组保存成功!");

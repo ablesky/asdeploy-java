@@ -19,9 +19,8 @@
 		<property name="filterChainDefinitions">
 			<value>
 				/login = anon
-				/js/** = anon
-				/css/** = anon
-				/img/** = anon
+				/static/** = anon
+				/** = authc
 			</value>
 		</property>
 	</bean>

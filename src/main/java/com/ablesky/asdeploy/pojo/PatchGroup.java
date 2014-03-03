@@ -13,6 +13,9 @@ import javax.persistence.Table;
 @Entity
 @Table(name="patch_group")
 public class PatchGroup extends AbstractModel {
+	
+	public static final String STATUS_TESTING = "testing";
+	public static final String STATUS_FINISHED = "finished";
 
 	@Id
 	@GeneratedValue

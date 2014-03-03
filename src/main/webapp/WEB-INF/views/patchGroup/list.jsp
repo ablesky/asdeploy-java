@@ -13,7 +13,7 @@
 	font-family: 微软雅黑;
 }
 .list-wrapper {
-	width: 1250px; margin: 0px auto 20px;
+	width: 1250px; margin: -10px auto 20px;
 }
 .list-wrapper .table {
 	width: 100%;
@@ -66,49 +66,51 @@
 	
 	<div class="query-form-wrapper">
 		<form id="J_patchGroupQueryForm" action="${ctx_path}/patchGroup/list" method="GET">
+			<input type="hidden" id="J_start" name="start" value="" />
+			<input type="hidden" id="J_limit" name="limit" value="" />
 			<table>
 				<tr>
 					<td class="label-wrapper">
-						<label>
+						<label for="J_creatorName">
 							<strong>创建者:&nbsp;</strong>
 						</label>
 					</td>
 					<td class="input-wrapper">	
-						<input id="creatorName" name="creatorName" type="text" class="input-medium" value="" />
+						<input id="J_creatorName" name="creatorName" type="text" class="input-medium" value="${param.creatorName}" />
 					</td>
 					<td class="label-wrapper">
-						<label>
+						<label for="J_patchGroupName">
 							<strong>补丁组名:&nbsp;</strong>
 						</label>
 					</td>
 					<td>
-						<input id="patchGroupName" name="patchGroupName" type="text" class="input-medium" value="" />
+						<input id="J_patchGroupName" name="patchGroupName" type="text" class="input-medium" value="${param.patchGroupName}" />
 					</td>
 				</tr>
 				<tr>
 					<td class="label-wrapper">
-						<label>
+						<label for="J_projectSel">
 							<strong>工程:&nbsp;</strong>
 						</label>
 					</td>
 					<td>
-						<select name="project" id="project" class="input-medium">
+						<select id="J_projectSel" name="projectId" class="input-medium">
 							<option value="0">全部</option>
 							<c:forEach var="project" items="${projectList}">
-								<option value="${project.id}">${project.name}</option>
+								<option value="${project.id}" <c:if test="${param.projectId == project.id}">selected="selected"</c:if>>${project.name}</option>
 							</c:forEach>
 						</select>
 					</td>
 					<td class="label-wrapper">
-						<label>
+						<label for="J_status">
 							<strong>状态:&nbsp;</strong>
 						</label>
 					</td>
 					<td>
-						<select name="status" id="status" class="input-medium">
+						<select id="J_status" name="status" class="input-medium">
 							<option value="">全部</option>
-							<option value="testing">测试中</option>
-							<option value="finished">已完成</option>
+							<option value="testing" <c:if test="${param.status == 'testing'}">selected="selected"</c:if>>测试中</option>
+							<option value="finished" <c:if test="${param.status == 'finished'}">selected="selected"</c:if>>已完成</option>
 						</select>
 					</td>
 				</tr>
@@ -179,8 +181,33 @@
 $(function(){
 	initCreatePatchGroupBtn();
 	initUpdatePatchGroupBtn();
+	initQueryBtn();
+	initClearBtn();
 	initPageBar();
 });
+
+function initQueryBtn() {
+	$('#J_queryBtn').on('click', function(){
+		$('#J_patchGroupQueryForm').submit();
+		/*var params = collectParams('#J_patchGroupQueryForm input, #J_patchGroupQueryForm select');
+		var paramArr = [];
+		for(var key in params) {
+			if(!params[key]) {
+				continue;
+			}
+			paramArr.push(key + '=' + encodeURIComponent(params[key]));
+		}
+		location.href = CTX_PATH + '/patchGroup/list' + (paramArr.length > 0? '?' + paramArr.join('&'): '');
+		*/
+	});
+}
+
+function initClearBtn() {
+	$('#J_clearBtn').on('click', function(){
+		$('#J_patchGroupQueryForm input, #J_patchGroupQueryForm select').val('');
+		$('#J_patchGroupQueryForm').submit();
+	});
+}
 
 function initCreatePatchGroupBtn() {
 	$('#J_createBtn').on('click', function(){
@@ -246,13 +273,29 @@ function buildPageBar(pageBarEl, start, limit, totalCount){
 		paginationCls: 'pagination-right',
 		click: function(i, pageNum){
 			start = (pageNum - 1) * limit;
-			location.href = CTX_PATH + '/patchGroup/list?start=' + start + '&limit=' + limit;
+			$('#J_start').val(start);
+			$('#J_limit').val(limit);
+			$('#J_patchGroupQueryForm').submit();
 		}
 	});
 }
 
 function reloadPage() {
 	location.reload();
+}
+
+function collectParams(selector) {
+	var params = {};
+	if(!selector) {
+		return params;
+	}
+	$(selector).each(function(i, input){
+		var $input = $(input);
+		var key = $input.attr('name'),
+			value = $input.val();
+		key && (params[key] = value);
+	});
+	return params;
 }
 </script>
 </html>
