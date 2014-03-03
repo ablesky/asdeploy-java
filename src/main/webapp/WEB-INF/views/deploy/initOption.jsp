@@ -5,7 +5,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>选择工程</title>
+<title>项目选择页面</title>
 <%@ include file="../include/includeCss.jsp" %>
 <style>
 .form-horizontal .control-label {
@@ -44,7 +44,7 @@
 	--%>
 	</div>
 	<div style="width: 400px; margin: 10px auto;">
-		<form class="form-horizontal" method="post" action="." id="deployInitOptionForm">
+		<form class="form-horizontal" method="POST" action="${ctx_path}/deploy/toDeployPage" id="deployInitOptionForm">
 			<input type="hidden" value="" name="projId" id="project"/>
 			<div class="control-group">
 				<label class="control-label"><strong>发布类型:</strong></label>
@@ -69,7 +69,7 @@
 						<c:forEach var="project" items="${projectList}">
 						<tr>
 							<td>
-								<input type="hidden" value="${project.id}"/>
+								<input type="hidden" name="projectId" value="${project.id}"/>
 								${project.name}
 							</td>
 						</tr>

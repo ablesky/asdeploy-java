@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -13,15 +14,17 @@ import javax.persistence.Table;
 @Entity
 @Table(name="deploy_lock")
 public class DeployLock extends AbstractModel {
+	
+	public static final long LOCK_EXPIRY_TIME = 2 * 3600 * 1000; 
 
 	@Id
 	@GeneratedValue
 	@Column
 	private Long id;
-	@ManyToOne
+	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="user_id")
 	private User user;
-	@ManyToOne
+	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="deploy_record_id")
 	private DeployRecord deployRecord;
 	@Column(name="is_locked")

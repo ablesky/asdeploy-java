@@ -32,9 +32,9 @@
 		<h1>welcome<shiro:authenticated> <shiro:principal/></shiro:authenticated></h1>
 	</div>
 	<div class="lock-info">
-		<c:if test="${true}">
+		<c:if test="${deployLock != null}">
 			<div class="alert alert-error">
-			  发布流程已被<strong>{{curLock.user.username}}</strong>锁定
+			  发布流程已被<strong>${deployLock.user.username}</strong>锁定
 			</div>
 			<c:if test="${true}">
 				<button id="J_unlockDeployBtn" class="btn btn-primary">解锁</button>

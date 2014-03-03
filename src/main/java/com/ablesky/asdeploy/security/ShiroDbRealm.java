@@ -10,6 +10,7 @@ import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
+import org.apache.shiro.subject.SimplePrincipalCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -33,7 +34,8 @@ public class ShiroDbRealm extends AuthorizingRealm {
 			return null;
 		}
 		SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(user.getUsername(), user.getPassword(), getName());
-		//SimplePrincipalCollection principals = (SimplePrincipalCollection) info.getPrincipals();
+		SimplePrincipalCollection principals = (SimplePrincipalCollection) info.getPrincipals();
+		principals.add(user, getName());
 		return info;
 	}
 

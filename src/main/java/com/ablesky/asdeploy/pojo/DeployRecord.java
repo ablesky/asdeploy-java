@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -13,6 +14,15 @@ import javax.persistence.Table;
 @Entity
 @Table(name="deploy_record")
 public class DeployRecord extends AbstractModel {
+	
+	public static final String STATUS_PREPARE = "prepare";
+	public static final String STATUS_UPLOADED = "uploaded";
+	public static final String STATUS_DEPLOYING = "deploying";
+	public static final String STATUS_DEPLOY_SUCCESS = "deploy_success";
+	public static final String STATUS_DEPLOY_FAILURE = "deploy_failure";
+	public static final String STATUS_ROLLBACKING = "rollbacking";
+	public static final String STATUS_ROLLBACK_SUCCESS = "rollback_success";
+	public static final String STATUS_ROLLBACK_FAILURE = "rollback_failure";
 
 	@Id
 	@GeneratedValue
@@ -24,8 +34,8 @@ public class DeployRecord extends AbstractModel {
 	@ManyToOne
 	@JoinColumn(name="project_id")
 	private Project project;
-	@ManyToOne
-	@JoinColumn(name="deploy_item")
+	@ManyToOne(fetch=FetchType.LAZY)
+	@JoinColumn(name="deploy_item_id")
 	private DeployItem deployItem;
 	@Column
 	private String status;
