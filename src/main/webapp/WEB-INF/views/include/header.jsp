@@ -1,6 +1,9 @@
+<%@page import="com.ablesky.asdeploy.util.DeployConfiguration"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ include file="./include.jsp" %>
+<input type="hidden" id="J_environment" value="<%=DeployConfiguration.INSTANCE.getEnvironment()%>" />
+<input type="hidden" id="J_releasedVersion" value="<%=DeployConfiguration.INSTANCE.getVersion() %>" />
 <div id="J_topNav" class="navbar navbar-fixed-top">
 	<div class="navbar-inner">
 		<div class="row-fluid">
@@ -12,7 +15,7 @@
 			</div>
 			<div class="span4">
 				<ul class="nav pull-right">
-					<li><a id="J_envLogo" href="#"></a></li>
+					<li><a id="J_envLogo" href="#"><%=DeployConfiguration.INSTANCE.getEnvironment()%></a></li>
 					<li class="divider-vertical"></li>
 					<shiro:authenticated>
 						<li><a href="${ctx_path}/main"><strong>主页</strong></a></li>

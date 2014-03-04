@@ -25,7 +25,7 @@ public class DeployItem extends AbstractModel {
 	@JoinColumn(name="project_id")
 	private Project project;
 	@ManyToOne
-	@JoinColumn(name="project_group_id")
+	@JoinColumn(name="patch_group_id")
 	private PatchGroup patchGroup;
 	@Column
 	private String version;

@@ -22,6 +22,12 @@
 </head>
 <body>
 <%@ include file="../include/header.jsp" %>
+<input type="hidden" id="J_deployType" value="${deployType}" />
+<input type="hidden" id="J_version"  value="${version}" />
+<input type="hidden" id="J_projectId" value="${project.id}" />
+<input type="hidden" id="J_projectName" value="${project.name}" />
+<input type="hidden" id="J_deployRecordId" value="${deployRecord.id}" />
+<input type="hidden" id="J_patchGroupId" value="${patchGroup.id}" />
 <div class="wrap">
 	<h2 class="title">发布工程</h2>
 	<div style="width: 490px; text-align: left; margin:30px auto 10px;">
@@ -77,9 +83,9 @@
 						<strong>上传文件:&nbsp;&nbsp;</strong>
 					</td>
 					<td>
-						<div style="display: inline-block;" id="fileuploadWidget"></div>
+						<div style="display: inline-block;" id="J_fileUploadWidget"></div>
 						<div style="display:inline-block;">
-							<button type="button" id="uploadBtn" class="btn btn-primary" style="width: 80px; margin-bottom: 10px;">上&nbsp;&nbsp;传</button>
+							<button type="button" id="J_uploadBtn" class="btn btn-primary" style="width: 80px; margin-bottom: 10px;">上&nbsp;&nbsp;传</button>
 						</div>
 					</td>
 				</tr>
@@ -87,7 +93,7 @@
 		</table>
 		
 		<!-- 显示补丁或war的上传结果 -->
-		<div id="uploadResultWrap" style="text-align: center;"></div>
+		<div id="J_uploadResultWrap" style="text-align: center;"></div>
 	
 		<div style="text-align: center;">
 			<button type="button" class="btn btn-primary" id="decompressBtn">解压补丁文件</button>
@@ -139,6 +145,7 @@
 </body>
 <%@ include file="../include/includeJs.jsp" %>
 <script type="text/javascript" src="${ctx_path}/js/bootstrap/bootstrapFileInput.js"></script>
+<script type="text/javascript" src="${ctx_path}/js/jquery/ajaxfileupload.js"></script>
 <script>
 $(function(){
 	initOnBeforeUnload();
@@ -146,11 +153,79 @@ $(function(){
 	initUnlockAndLeaveBtn();
 });
 function initFileUploadWidget(){
-	$('#fileuploadWidget').bootstrapFileInput({
+	var projectName = $('#J_projectName').val(),
+		deployType = $('#J_deployType').val(),
+		version = $('#J_version').val(),
+		projectId = $('#J_projectId').val(),
+		deployRecordId = $('#J_deployRecordId').val(),
+		patchGroupId = $('#J_patchGroupId').val() || 0;
+	
+	$('#J_fileUploadWidget').bootstrapFileInput({
 		width: '500px',
 		btnWidth: '80px',
-		fileInputId: 'deployItemField',
+		fileInputId: 'J_deployItemField',
 		fileInputName: 'deployItemField'
+	});
+	$('#J_uploadBtn').on('click', function(){
+		var $this = $(this);
+		var deployItemName = $('#J_deployItemField').val();
+		if(!deployItemName){
+			alert('请先选择要上传的文件!');
+			return false;
+		}
+		// static的情形只能发版本，上传tar.gz包
+		if( projectName != 'as-static') {
+			if(deployType == 'patch' && !(/.zip$/i).test(deployItemName)){
+				alert('请选择zip压缩格式的补丁文件!');
+				return false;
+			}
+			if(deployType == 'war' && !(/.war$/i).test(deployItemName)){
+				alert('请选择war包进行上传!');
+				return false;
+			}
+		} else {
+			if(!(/.tar.gz/i).test(deployItemName)) {
+				alert('请注意，【static】工程只能上传tar.gz包发版本!!!\请不要发补丁!!!');
+				return false;
+			}
+		}
+		$this.html('上传中').attr({disabled: true});
+		var $uploadResultWrap = $('#J_uploadResultWrap');
+		$.ajaxFileUpload({
+			url: '/deploy/uploadItem',
+			secureuri: false, 
+			fileElementId:'J_deployItemField',
+			dataType: 'json',
+			data: {
+				projectId: projectId,
+				version: version,
+				deployType: deployType,
+				deployRecordId: deployRecordId,
+				patchGroupId: patchGroupId
+			},
+			success: function (data, status){
+				if(data.success === true){
+					var sizeUnits = ['byte', 'kb', 'MB', 'GB']
+					var size = data.size;
+					for(i=0; i <=sizeUnits.length && size > 1024; size = (size/1024).toFixed(2), i++);
+					var sizeStr = size + sizeUnits[i];
+					showAlert($uploadResultWrap, [
+						'文件上传成功!',
+						'文  件  名: <strong>' + data.filename + '</strong>',
+						'文件大小: <strong>' + sizeStr + '</strong>'
+					].join('<br/>'), 'success');
+				}else{
+					this.error(data, status);
+					return;
+				}
+				$this.html('上&nbsp;&nbsp;传').attr({disabled: false});
+			},
+			error: function(data, status, e){
+				showAlert($uploadResultWrap, data.message || '文件上传失败!', 'error');
+				$this.html('上&nbsp;&nbsp;传').attr({disabled: false});
+			}
+		});
+		return false;
 	});
 }
 function initUnlockAndLeaveBtn() {
@@ -172,6 +247,22 @@ function initOnBeforeUnload() {
 		window.event.returnValue = alarmStr;
 		return alarmStr;
 	};
+}
+function showAlert(wrap, msg, status, closable){
+	var $wrap = $.type(wrap) == 'string'? $('#' + wrap): wrap;
+	if($wrap.size() == 0) {
+		return;
+	}
+	$wrap.empty();
+	var $alert = $('<div class="alert">');
+	$alert.html(msg);
+	if(closable !== false) {
+		$alert.prepend('<button type="button" class="close" data-dismiss="alert">&times;</button>');
+	}
+	if(status) {
+		$alert.addClass('alert-' + status);
+	}
+	$wrap.append($alert);
 }
 </script>
 </html>
