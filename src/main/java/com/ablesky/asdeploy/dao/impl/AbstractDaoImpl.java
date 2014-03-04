@@ -81,14 +81,11 @@ public abstract class AbstractDaoImpl<E extends AbstractModel> implements IAbstr
 	}
 	
 	protected String generateOrderByByParam(Map<String, Object> param) {
-		String orderBy = (String) param.get(CommonConstant.ORDER_DESC);
+		String orderBy = (String) param.get(CommonConstant.ORDER_BY);
 		if(StringUtils.isBlank(orderBy)) {
 			return "";
 		}
-		return " order by " + 
-					(CommonConstant.ORDER_DESC.equalsIgnoreCase(orderBy)
-					? CommonConstant.ORDER_DESC
-					: CommonConstant.ORDER_ASC);
+		return " order by " + orderBy;
 	}
 	
 	protected String[] parseOperation(String key) {

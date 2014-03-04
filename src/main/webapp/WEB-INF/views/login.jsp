@@ -5,7 +5,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>登录</title>
+<title>AbleSky代码发布系统</title></title>
 <%@ include file="./include/includeCss.jsp" %>
 <style>
 .login-wrapper {

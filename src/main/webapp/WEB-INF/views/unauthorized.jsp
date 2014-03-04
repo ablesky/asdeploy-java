@@ -9,7 +9,7 @@ response.setStatus(response.SC_NOT_FOUND);
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>404</title>
+<title>AbleSky代码发布系统</title>
 <link type="text/css" rel="stylesheet" href="${ctx_path}/css/bootstrap.css" />
 </head>
 <body>

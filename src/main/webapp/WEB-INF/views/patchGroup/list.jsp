@@ -5,9 +5,12 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>补丁组列表</title>
+<title>AbleSky代码发布系统</title>
 <%@ include file="../include/includeCss.jsp" %>
 <style>
+.wrapper {
+	margin-bottom: 100px;
+}
 .title {
 	text-align: center;
 	font-family: 微软雅黑;
@@ -61,7 +64,7 @@
 <body>
 <%@ include file="../include/header.jsp" %>
 
-<div>
+<div id="wrapper">
 	<h2 class="title">补丁组列表</h2>
 	
 	<div class="query-form-wrapper">

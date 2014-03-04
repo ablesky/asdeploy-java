@@ -69,6 +69,7 @@ public class PatchGroupController {
 		if(StringUtils.isNotBlank(status)) {
 			param.put("status", status);
 		}
+		param.put(CommonConstant.ORDER_BY, "id desc");
 		model.addAttribute("projectList", projectService.getProjectListResult(0, 0, Collections.<String, Object>emptyMap()));
 		model.addAttribute("page", patchGroupService.getPatchGroupPaginateResult(start, limit, param));
 		return "patchGroup/list";

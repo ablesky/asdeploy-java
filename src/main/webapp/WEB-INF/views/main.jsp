@@ -6,7 +6,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>首页</title>
+<title>AbleSky代码发布系统</title>
 <%@ include file="./include/includeCss.jsp" %>
 <style>
 .wrapper {
@@ -45,7 +45,7 @@
 	<div class="main-btn-wrapper">
 		<a type="button" class="btn btn-large btn-block" href="${ctx_path}/deploy/initOption">新的发布</a>
 		<a type="button" class="btn btn-large btn-block" href="${ctx_path}/patchGroup/list">管理补丁组</a>
-		<a type="button" class="btn btn-large btn-block" href="${ctx_path}/deployRecordList/1/">查看发布历史</a>
+		<a type="button" class="btn btn-large btn-block" href="${ctx_path}/deployRecord/list">查看发布历史</a>
 		<a type="button" class="btn btn-large btn-block" href="${ctx_path}/queryAblejsDependencyPage/">查看静态文件构建依赖</a>
 		<a type="button" class="btn btn-large btn-block" href="${ctx_path}/project/list">管理项目</a>
 	</div>

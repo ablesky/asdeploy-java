@@ -25,6 +25,7 @@ import com.ablesky.asdeploy.service.IDeployService;
 import com.ablesky.asdeploy.util.AuthUtil;
 import com.ablesky.asdeploy.util.CommonConstant;
 import com.ablesky.asdeploy.util.DeployUtil;
+import com.ablesky.asdeploy.util.Page;
 
 @Service
 public class DeployServiceImpl implements IDeployService {
@@ -47,7 +48,7 @@ public class DeployServiceImpl implements IDeployService {
 	public DeployLock checkCurrentLock() {
 		Map<String, Object> param = new HashMap<String, Object>();
 		param.put("isLocked", Boolean.TRUE);
-		param.put(CommonConstant.ORDER_BY, CommonConstant.ORDER_DESC);
+		param.put(CommonConstant.ORDER_BY, "id desc");
 		List<DeployLock> lockList = deployLockDao.list(0, 0, param);
 		long ts = System.currentTimeMillis();
 		for(DeployLock lock: lockList) {
@@ -148,6 +149,11 @@ public class DeployServiceImpl implements IDeployService {
 	@Override
 	public DeployRecord getDeployRecordById(Long id) {
 		return deployRecordDao.getById(id);
+	}
+	
+	@Override
+	public Page<DeployRecord> getDeployRecordPaginateResult(int start, int limit, Map<String, Object> param) {
+		return deployRecordDao.paginate(start, limit, param);
 	}
 	
 	
