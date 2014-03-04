@@ -89,4 +89,40 @@ public class PatchGroup extends AbstractModel {
 		this.finishTime = finishTime;
 	}
 	
+	public static class ConflictFileInfo {
+		
+		private String filePath;
+		private Long conflictPatchGroupId;
+		private String conflictPatchGroupName;
+		
+		public ConflictFileInfo() {}
+		
+		public ConflictFileInfo(String filePath, Long conflictPatchGroupId, String conflictPatchGroupName) {
+			this.filePath = filePath;
+			this.conflictPatchGroupId = conflictPatchGroupId;
+			this.conflictPatchGroupName = conflictPatchGroupName;
+		}
+		
+		public String getFilePath() {
+			return filePath;
+		}
+		public void setFilePath(String filePath) {
+			this.filePath = filePath;
+		}
+		public Long getConflictPatchGroupId() {
+			return conflictPatchGroupId;
+		}
+		public void setConflictPatchGroupId(Long conflictPatchGroupId) {
+			this.conflictPatchGroupId = conflictPatchGroupId;
+		}
+		public String getConflictPatchGroupName() {
+			return conflictPatchGroupName;
+		}
+		public void setConflictPatchGroupName(String conflictPatchGroupName) {
+			this.conflictPatchGroupName = conflictPatchGroupName;
+		}
+		
+		
+	}
+	
 }

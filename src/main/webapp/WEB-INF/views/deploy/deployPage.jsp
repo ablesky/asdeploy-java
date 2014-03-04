@@ -95,37 +95,44 @@
 		<!-- 显示补丁或war的上传结果 -->
 		<div id="J_uploadResultWrap" style="text-align: center;"></div>
 	
-		<div style="text-align: center;">
-			<button type="button" class="btn btn-primary" id="decompressBtn">解压补丁文件</button>
-		</div>
-		
-		<!-- 文件列表 -->
-		<div id="fileListWrap">
-			<h3>文件列表</h3>
-			<table id="fileListTbl" class="table table-bordered table-condensed table-hover table-striped" style="width: 800px;;">
-				<thead>
-					<tr><th>文件路径</th></tr>
-				</thead>
-				<tbody>
-				</tbody>
-			</table>
-		</div>
-		
-		
-		<!-- 文件冲突列表 -->
-		<div id="conflictFileInfoWrap">
-			<h3>冲突详情</h3>
-			<table id="conflictFileInfoTbl" class="table table-bordered table-condensed table-hover table-striped" style="width: 800px;">
-				<thead>
-					<tr>
-						<th width="600">文件路径</th>
-						<th width="200">冲突补丁组</th>
-					</tr>
-				</thead>
-				<tbody>
-				</tbody>
-			</table>
-		</div>
+		<c:if test="${deployType == 'patch'}"> <!-- 只有发补丁的时候，需要以下这些栏目 -->
+			<div style="text-align: center;">
+				<button type="button" class="btn btn-primary" id="J_decompressBtn">解压补丁文件</button>
+			</div>
+			
+			<!-- 文件列表 -->
+			<div id="fileListWrap">
+				<h3>文件列表</h3>
+				<table class="table table-bordered table-condensed table-hover table-striped" style="width: 800px;;">
+					<thead>
+						<tr><th>文件路径</th></tr>
+					</thead>
+					<tbody id="J_filePathListTbody">
+					</tbody>
+					<script type="text/x-jquery-tmpl" id="J_filePathListTmpl">
+						<tr>
+		 					<td>${'${'}filePath}</td>
+		 				</tr>
+					</script>
+				</table>
+			</div>
+			
+			
+			<!-- 文件冲突列表 -->
+			<div id="conflictFileInfoWrap">
+				<h3>冲突详情</h3>
+				<table id="conflictFileInfoTbl" class="table table-bordered table-condensed table-hover table-striped" style="width: 800px;">
+					<thead>
+						<tr>
+							<th width="600">文件路径</th>
+							<th width="200">冲突补丁组</th>
+						</tr>
+					</thead>
+					<tbody>
+					</tbody>
+				</table>
+			</div>
+		</c:if>
 		
 		<!-- 发布按钮 -->
 		<div id="deployBtnWrap" style="text-align: center;">
@@ -146,11 +153,13 @@
 <%@ include file="../include/includeJs.jsp" %>
 <script type="text/javascript" src="${ctx_path}/js/bootstrap/bootstrapFileInput.js"></script>
 <script type="text/javascript" src="${ctx_path}/js/jquery/ajaxfileupload.js"></script>
+<script type="text/javascript" src="${ctx_path}/js/jquery/jquery.tmpl.js"></script>
 <script>
 $(function(){
 	initOnBeforeUnload();
 	initFileUploadWidget();
 	initUnlockAndLeaveBtn();
+	initDecompressBtn();
 });
 function initFileUploadWidget(){
 	var projectName = $('#J_projectName').val(),
@@ -248,6 +257,43 @@ function initOnBeforeUnload() {
 		return alarmStr;
 	};
 }
+
+function initDecompressBtn() {
+	$('#J_decompressBtn').on('click', function(){
+		var $this = $(this);
+		$this.html('解&nbsp;压&nbsp;中').attr({disabled:true});
+		$.post(CTX_PATH + '/deploy/decompressItem', {
+			deployRecordId: $('#J_deployRecordId').val(),
+			patchGroupId: $('#J_patchGroupId').val() || 0
+		}, function(data){
+			if(data.success !== true) {
+				alert('解压缩失败!');
+				return;
+			}
+			$this.html('解压补丁文件').attr({disabled:false});
+			renderFilePathList(data.filePathList);
+			renderConflictFileInfoList(data.conflictFileInfoList);
+			alert('解压缩成功!');
+			return;
+		});
+	});
+}
+
+function renderFilePathList(fileList) {
+	if(!$.isArray(fileList)) {
+		return;
+	}
+	fileList = $.map(fileList, function(filePath){return {filePath: filePath}});
+	var $filePathTmpl = $('#J_filePathListTmpl');
+	$('#J_filePathListTbody').empty().append($filePathTmpl.tmpl(fileList));
+}
+
+function renderConflictFileInfoList(conflictFileInfoList) {
+	if(!$.isArray(conflictFileInfoList)) {
+		return;
+	}
+}
+
 function showAlert(wrap, msg, status, closable){
 	var $wrap = $.type(wrap) == 'string'? $('#' + wrap): wrap;
 	if($wrap.size() == 0) {
@@ -264,5 +310,6 @@ function showAlert(wrap, msg, status, closable){
 	}
 	$wrap.append($alert);
 }
+
 </script>
 </html>

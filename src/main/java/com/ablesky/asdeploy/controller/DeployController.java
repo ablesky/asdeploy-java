@@ -3,11 +3,15 @@ package com.ablesky.asdeploy.controller;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.ablesky.asdeploy.dao.impl.DeployItemDaoImpl;
 import com.ablesky.asdeploy.pojo.DeployItem;
 import com.ablesky.asdeploy.pojo.DeployLock;
 import com.ablesky.asdeploy.pojo.DeployRecord;
@@ -29,7 +32,7 @@ import com.ablesky.asdeploy.service.IDeployService;
 import com.ablesky.asdeploy.service.IPatchGroupService;
 import com.ablesky.asdeploy.service.IProjectService;
 import com.ablesky.asdeploy.util.AuthUtil;
-import com.ablesky.asdeploy.util.DeployUtil;
+import com.ablesky.asdeploy.util.ZipUtil;
 
 @Controller
 @RequestMapping("/deploy")
@@ -160,11 +163,72 @@ public class DeployController {
 				return resultMap;
 			}
 		}
-		DeployItem deployItem = deployService.persistDeployItem(deployItemFile, project, patchGroup, deployRecord, deployType, version);
+		deployService.persistDeployItem(deployItemFile, project, patchGroup, deployRecord, deployType, version);
 		resultMap.put("filename", filename);
 		resultMap.put("size", deployItemFile.getSize());
 		resultMap.put("success", true);
 		return resultMap;
 	}
 	
+	@RequestMapping(value="/decompressItem", method=RequestMethod.POST)
+	public @ResponseBody Map<String, Object> decompressItem(
+			Long deployRecordId,
+			@RequestParam(defaultValue="0")
+			Long patchGroupId
+			) throws IOException {
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		DeployRecord deployRecord = deployService.getDeployRecordById(deployRecordId);
+		DeployItem deployItem = deployRecord.getDeployItem();
+		if(deployItem == null) {
+			resultMap.put("success", false);
+			resultMap.put("message", "压缩文件不存在!");
+			return resultMap;
+		}
+		unzipDeployItem(deployItem);
+		String targetFolderPath = FilenameUtils.concat(deployItem.getFolderPath(), FilenameUtils.getBaseName(deployItem.getFileName()));
+		List<String> filePathList = getDeployItemFilePathList(targetFolderPath);
+		resultMap.put("filePathList", filePathList);
+		resultMap.put("conflictFileInfoList", Collections.emptyList());
+		PatchGroup patchGroup = null;
+		if(patchGroupId != null && patchGroupId > 0 && (patchGroup = patchGroupService.getPatchGroupById(patchGroupId)) != null) {
+			// TODO
+		}
+		resultMap.put("success", true);
+		return resultMap;
+	}
+	
+	/**
+	 * 解压缩文件
+	 */
+	private void unzipDeployItem(DeployItem deployItem) throws IOException {
+		String sourceFilePath = FilenameUtils.concat(deployItem.getFolderPath(), deployItem.getFileName());
+		String targetFolderPath = FilenameUtils.concat(deployItem.getFolderPath(), FilenameUtils.getBaseName(deployItem.getFileName()));
+		String parentFolderPath = deployItem.getFolderPath();
+		File targetFolder = new File(targetFolderPath);
+		if(targetFolder.exists()) {
+			FileUtils.deleteDirectory(targetFolder);
+		}
+		ZipUtil.unzip(sourceFilePath, parentFolderPath);
+	}
+	
+	/**
+	 * 获取解压后的文件列表(按发布格式)
+	 */
+	private List<String> getDeployItemFilePathList(String targetFolderPath) {
+		targetFolderPath = FilenameUtils.normalize(targetFolderPath);
+		File parentFolder = null;
+		if(StringUtils.isBlank(targetFolderPath) || !(parentFolder = new File(targetFolderPath)).exists()) {
+			return Collections.emptyList();
+		}
+		Collection<File> fileList = FileUtils.listFiles(parentFolder, null, true);
+		List<String> filePathList = new ArrayList<String>(fileList.size());
+		targetFolderPath = targetFolderPath.substring(FilenameUtils.getPrefixLength(targetFolderPath));
+		for(File file: fileList) {
+			String filePath = FilenameUtils.normalize(file.getAbsolutePath());
+			filePath = filePath.substring(FilenameUtils.getPrefixLength(filePath));
+			filePath = filePath.replace(targetFolderPath + File.separator, "");
+			filePathList.add(filePath.replaceAll("\\" + File.separator, "."));
+		}
+		return filePathList;
+	}
 }
