@@ -2,18 +2,24 @@ package com.ablesky.asdeploy.controller;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.ablesky.asdeploy.pojo.DeployItem;
+import com.ablesky.asdeploy.pojo.DeployRecord;
 import com.ablesky.asdeploy.service.IDeployService;
 import com.ablesky.asdeploy.service.IProjectService;
 import com.ablesky.asdeploy.util.CommonConstant;
+import com.ablesky.asdeploy.util.DeployUtil;
 
 @Controller
 @RequestMapping("/deployRecord")
@@ -63,5 +69,23 @@ public class DeployRecordController {
 		model.addAttribute("page", deployService.getDeployRecordPaginateResult(start, limit, param));
 		return "deployRecord/list";
 	}
+	
+	@RequestMapping("/detail/{id}")
+	public String detail(@PathVariable("id") Long id, Model model) {
+		DeployRecord deployRecord = deployService.getDeployRecordById(id);
+		DeployItem deployItem = deployRecord.getDeployItem();
+		List<String> filePathList = Collections.emptyList();
+		String readme = "";
+		if(deployItem != null) {
+			String targetFolderPath = FilenameUtils.concat(deployItem.getFolderPath(), FilenameUtils.getBaseName(deployItem.getFileName()));
+			filePathList = DeployUtil.getDeployItemFilePathList(targetFolderPath);
+			readme = DeployUtil.loadReadmeContent(targetFolderPath);
+		}
+		model.addAttribute("deployRecord", deployRecord)
+			.addAttribute("filePathList", filePathList)
+			.addAttribute("readme", readme);
+		return "deployRecord/detail";
+	}
+	
 
 }

@@ -3,9 +3,7 @@ package com.ablesky.asdeploy.controller;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -33,7 +31,7 @@ import com.ablesky.asdeploy.service.IDeployService;
 import com.ablesky.asdeploy.service.IPatchGroupService;
 import com.ablesky.asdeploy.service.IProjectService;
 import com.ablesky.asdeploy.util.AuthUtil;
-import com.ablesky.asdeploy.util.Deployer;
+import com.ablesky.asdeploy.util.DeployUtil;
 import com.ablesky.asdeploy.util.ZipUtil;
 
 @Controller
@@ -188,7 +186,7 @@ public class DeployController {
 		}
 		unzipDeployItem(deployItem);
 		String targetFolderPath = FilenameUtils.concat(deployItem.getFolderPath(), FilenameUtils.getBaseName(deployItem.getFileName()));
-		List<String> filePathList = getDeployItemFilePathList(targetFolderPath);
+		List<String> filePathList = DeployUtil.getDeployItemFilePathList(targetFolderPath);
 		resultMap.put("filePathList", filePathList);
 		resultMap.put("conflictFileInfoList", Collections.emptyList());
 		PatchGroup patchGroup = null;
@@ -211,27 +209,6 @@ public class DeployController {
 			FileUtils.deleteDirectory(targetFolder);
 		}
 		ZipUtil.unzip(sourceFilePath, parentFolderPath);
-	}
-	
-	/**
-	 * 获取解压后的文件列表(按发布格式)
-	 */
-	private List<String> getDeployItemFilePathList(String targetFolderPath) {
-		targetFolderPath = FilenameUtils.normalize(targetFolderPath);
-		File parentFolder = null;
-		if(StringUtils.isBlank(targetFolderPath) || !(parentFolder = new File(targetFolderPath)).exists()) {
-			return Collections.emptyList();
-		}
-		Collection<File> fileList = FileUtils.listFiles(parentFolder, null, true);
-		List<String> filePathList = new ArrayList<String>(fileList.size());
-		targetFolderPath = targetFolderPath.substring(FilenameUtils.getPrefixLength(targetFolderPath));
-		for(File file: fileList) {
-			String filePath = FilenameUtils.normalize(file.getAbsolutePath());
-			filePath = filePath.substring(FilenameUtils.getPrefixLength(filePath));
-			filePath = filePath.replace(targetFolderPath + File.separator, "");
-			filePathList.add(filePath.replaceAll("\\" + File.separator, "."));
-		}
-		return filePathList;
 	}
 	
 	/**

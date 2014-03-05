@@ -326,9 +326,7 @@ function readDeployLogOnRealtime() {
 		}
 		var $logContent = $('#J_logContent');
 		if(data.logInfoList && data.logInfoList.length > 0) {
-			$logContent.append($.map(data.logInfoList, function(logInfo){
-				return '<p>' + logInfo + '</p>';
-			}));
+			$logContent.append(data.logInfoList.join('\n'));
 			$logContent.scrollTop($logContent[0].scrollHeight - $logContent.height());
 		}
 		if(data.isFinished == true) {

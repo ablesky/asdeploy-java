@@ -207,6 +207,13 @@
 			<artifactId>ant</artifactId>
 			<version>1.9.0</version>
 		</dependency>
+		
+		<!-- 文件内容编码检测 -->
+		<dependency>
+			<groupId>com.googlecode.juniversalchardet</groupId>
+			<artifactId>juniversalchardet</artifactId>
+			<version>1.0.3</version>
+		</dependency>
 
 	</dependencies>
 	<build>

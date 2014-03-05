@@ -155,7 +155,7 @@
 						<td>${deployRecord.deployItem.fileName}</td>
 						<td>${deployRecord.status}</td>
 						<td>
-							<a class="detail-btn" href="javascript:void(0);" data-id="${deployRecord.id}">详情</a>
+							<a class="detail-btn" href="${ctx_path}/deployRecord/detail/${deployRecord.id}">详情</a>
 						</td>
 					</tr>
 				</c:forEach>
