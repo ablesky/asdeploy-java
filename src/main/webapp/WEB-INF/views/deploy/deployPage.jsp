@@ -135,15 +135,15 @@
 		</c:if>
 		
 		<!-- 发布按钮 -->
-		<div id="deployBtnWrap" style="text-align: center;">
-			<button type="button" class="btn btn-primary" style="width:100px; margin: 0px 10px;" id="startDeployBtn">发&nbsp;&nbsp;布</button>
-			<button type="button" class="btn btn-primary" style="width:100px; margin: 0px 10px;" id="startRollbackBtn">回&nbsp;&nbsp;滚</button>
-			<div style="margin-top: 20px;" id="deployStatus"></div>
+		<div id="J_deployBtnWrapper" style="text-align: center;">
+			<button type="button" class="btn btn-primary" style="width:100px; margin: 0px 10px;" id="J_startDeployBtn">发&nbsp;&nbsp;布</button>
+			<button type="button" class="btn btn-primary" style="width:100px; margin: 0px 10px;" id="J_startRollbackBtn">回&nbsp;&nbsp;滚</button>
+			<div style="margin-top: 20px;" id="J_deployStatus"></div>
 		</div>
 		
 		<!-- 文件冲突列表 -->
 		<h3>日志</h3>
-		<pre id="logContent" style="width: 781px; height: 400px; overflow: auto; font-size: 15px;"></pre>
+		<pre id="J_logContent" style="width: 781px; height: 400px; overflow: auto; font-size: 15px;"></pre>
 		<div style="text-align: center; margin: 30px auto;">
 			<button type="button" class="btn btn-primary" id="J_unlockAndLeave">解锁并返回首页</button>
 		</div>
@@ -160,6 +160,7 @@ $(function(){
 	initFileUploadWidget();
 	initUnlockAndLeaveBtn();
 	initDecompressBtn();
+	initStartDeployBtn();
 });
 function initFileUploadWidget(){
 	var projectName = $('#J_projectName').val(),
@@ -294,12 +295,78 @@ function renderConflictFileInfoList(conflictFileInfoList) {
 	}
 }
 
-function showAlert(wrap, msg, status, closable){
-	var $wrap = $.type(wrap) == 'string'? $('#' + wrap): wrap;
-	if($wrap.size() == 0) {
+function initStartDeployBtn() {
+	$('#J_startDeployBtn').on('click', function(){
+		var $this = $(this),
+			$deployBtnWrapper = $('#J_deployBtnWrapper');
+		$deployBtnWrapper.children('button').attr({disabled: true});
+		$this.html('发布中');
+		$.post(CTX_PATH + '/deploy/startDeploy', {
+			deployRecordId: $('#J_deployRecordId').val(),
+			patchGroupId: $('#J_patchGroupId').val(),
+			deployManner: 'deploy'
+		}, function(data){
+			if(!data || data.success !== true) {
+				showDeployResultFailed('发布启动失败!');
+				return;
+			}
+			setTimeout(readDeployLogOnRealtime, 1500);
+		});
+	});
+}
+
+function readDeployLogOnRealtime() {
+	$.getJSON(CTX_PATH + '/deploy/readDeployLogOnRealtime', {
+		deployRecordId: $('#J_deployRecordId').val()
+	}, function(data){
+		if(!data) {
+			alert('日志实时读取出错了!');
+			showDeployResultFailed();
+			return;
+		}
+		var $logContent = $('#J_logContent');
+		if(data.logInfoList && data.logInfoList.length > 0) {
+			$logContent.append($.map(data.logInfoList, function(logInfo){
+				return '<p>' + logInfo + '</p>';
+			}));
+			$logContent.scrollTop($logContent[0].scrollHeight - $logContent.height());
+		}
+		if(data.isFinished == true) {
+			alert('发布已完成!');
+			data.deployResult === true? showDeployResultSuccess(): showDeployResultFailed();
+			return;
+		}
+		setTimeout(readLogOnRealtime, 1500);
+	});
+}
+
+function showDeployResultSuccess(message) {
+	message || (message = '发布成功!');
+	showDeployResult(message, 'success');
+}
+
+function showDeployResultFailed(message) {
+	message || (message = '发布失败，请重新发布!');
+	showDeployResult(message, 'error');
+}
+
+function showDeployResult(message, status) {
+	$('#J_startDeployBtn').html('发布').attr({disabled: false});
+	$('#J_startRollbackbtn').html('回滚').attr({disabled: false});
+	showDeployInfo(message, status);
+}
+
+function showDeployInfo(message, status) {
+	status || (status = 'info');
+	showAlert('#J_deployStatus', message, status);
+}
+
+function showAlert(wrapper, msg, status, closable){
+	var $wrapper = $.type(wrapper) == 'string'? $(wrapper): wrapper;
+	if($wrapper.size() == 0) {
 		return;
 	}
-	$wrap.empty();
+	$wrapper.empty();
 	var $alert = $('<div class="alert">');
 	$alert.html(msg);
 	if(closable !== false) {
@@ -308,7 +375,7 @@ function showAlert(wrap, msg, status, closable){
 	if(status) {
 		$alert.addClass('alert-' + status);
 	}
-	$wrap.append($alert);
+	$wrapper.append($alert);
 }
 
 </script>

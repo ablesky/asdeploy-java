@@ -41,7 +41,7 @@
 				<prop key="hibernate.dialect">
 					com.ablesky.asdeploy.util.SQLiteDialect
 				</prop>
-				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.show_sql">false</prop>
 				<prop key="hibernate.hbm2ddl.auto">none</prop>
 				<prop key="hibernate.cache.provider_class">
 					org.hibernate.cache.OSCacheProvider
@@ -78,6 +78,7 @@
 			<tx:method name="unlock*" propagation="REQUIRED" />
 			<tx:method name="check*" propagation="REQUIRED" />
 			<tx:method name="persist*" propagation="REQUIRED" />
+			<tx:method name="generate*" propagation="REQUIRED" />
 			<tx:method name="*" read-only="true"/>
 		</tx:attributes>
 	</tx:advice>

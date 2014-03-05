@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -32,6 +33,7 @@ import com.ablesky.asdeploy.service.IDeployService;
 import com.ablesky.asdeploy.service.IPatchGroupService;
 import com.ablesky.asdeploy.service.IProjectService;
 import com.ablesky.asdeploy.util.AuthUtil;
+import com.ablesky.asdeploy.util.Deployer;
 import com.ablesky.asdeploy.util.ZipUtil;
 
 @Controller
@@ -230,5 +232,74 @@ public class DeployController {
 			filePathList.add(filePath.replaceAll("\\" + File.separator, "."));
 		}
 		return filePathList;
+	}
+	
+	/**
+	 * @param deployRecordId
+	 * @param deployManner	"发布(deploy)"或"回滚(rollback)"
+	 * @return
+	 */
+	@RequestMapping(value="/startDeploy", method=RequestMethod.POST)
+	public @ResponseBody Map<String, Object> startDeploy(
+			Long deployRecordId, 
+			@RequestParam(defaultValue = "0")
+			Long patchGroupId,
+			String deployManner) {
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		DeployRecord deployRecord = null;
+		PatchGroup patchGroup = null;
+		if(deployRecordId == null || deployRecordId <= 0 || (deployRecord = deployService.getDeployRecordById(deployRecordId)) == null) {
+			resultMap.put("success", false);
+			resultMap.put("message", "参数有误!");
+			return resultMap;
+		}
+		DeployLock lock = deployService.checkCurrentLock();
+		if(lock == null || lock.getDeployRecord().getId() != deployRecordId) {
+			resultMap.put("success", false);
+			resultMap.put("message", "本次发布已被解锁!");
+			return resultMap;
+		}
+		if(DeployRecord.STATUS_PREPARE.equals(deployRecord.getStatus())) {
+			resultMap.put("success", false);
+			resultMap.put("message", "尚未上传文件");
+			return resultMap;
+		}
+		if(Boolean.TRUE == null) { // TODO 发布仍在继续
+			resultMap.put("success", false);
+			resultMap.put("message", "发布仍在继续中...");
+			return resultMap;
+		}
+		if(patchGroupId != null && patchGroupId > 0) {
+			patchGroup = patchGroupService.getPatchGroupById(patchGroupId);
+		}
+		// 开始发布
+		doDeploy(deployRecord, patchGroup, deployManner);
+		resultMap.put("success", true);
+		resultMap.put("message", "发布启动成功!");
+		return resultMap;
+	}
+	
+	private void doDeploy(DeployRecord deployRecord, PatchGroup patchGroup, String deployManner) {
+		// 1. 记录补丁组及冲突信息
+		if(patchGroup != null && DeployItem.DEPLOY_TYPE_PATCH.equals(deployRecord.getDeployItem().getDeployType())) {
+			DeployItem item = deployRecord.getDeployItem();
+			item.setPatchGroup(patchGroup);
+			deployService.saveOrUpdateDeployItem(item);
+			deployService.generateConflictDetailForDeployRecord(deployRecord, patchGroup);
+		}
+		// 2. 按类型和方式开始发布
+		deployService.deploy(deployRecord, deployManner);
+		// 3. deployRecord设置成发布中状态
+		deployRecord.setStatus(DeployRecord.STATUS_DEPLOYING);
+		deployService.saveOrUpdateDeployRecord(deployRecord);
+	}
+	
+	@RequestMapping("/readDeployLogOnRealtime")
+	public @ResponseBody Map<String, Object> readDeployLogOnRealtime(Long deployRecordId) {
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap.put("logInfoList", Arrays.asList(new String[]{"发布完成了，呵呵"}));
+		resultMap.put("isFinished", true);
+		resultMap.put("deployResult", true);
+		return resultMap;
 	}
 }

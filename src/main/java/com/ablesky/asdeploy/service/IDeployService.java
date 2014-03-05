@@ -30,4 +30,10 @@ public interface IDeployService {
 
 	Page<DeployRecord> getDeployRecordPaginateResult(int start, int limit, Map<String, Object> param);
 
+	void saveOrUpdateDeployItem(DeployItem item);
+
+	void generateConflictDetailForDeployRecord(DeployRecord deployRecord, PatchGroup patchGroup);
+
+	void deploy(DeployRecord deployRecord, String deployManner);
+
 }

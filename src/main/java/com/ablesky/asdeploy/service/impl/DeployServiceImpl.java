@@ -92,6 +92,11 @@ public class DeployServiceImpl implements IDeployService {
 		deployRecordDao.saveOrUpdate(record);
 	}
 	
+	@Override
+	public void saveOrUpdateDeployItem(DeployItem item) {
+		deployItemDao.saveOrUpdate(item);
+	}
+	
 	/**
 	 * 存储上传文件，并更新deployItem和deployRecord
 	 */
@@ -154,6 +159,16 @@ public class DeployServiceImpl implements IDeployService {
 	@Override
 	public Page<DeployRecord> getDeployRecordPaginateResult(int start, int limit, Map<String, Object> param) {
 		return deployRecordDao.paginate(start, limit, param);
+	}
+	
+	@Override
+	public void generateConflictDetailForDeployRecord(DeployRecord deployRecord, PatchGroup patchGroup) {
+		// TODO
+	}
+	
+	@Override
+	public void deploy(DeployRecord deployRecord, String deployManner) {
+		// TODO
 	}
 	
 	
