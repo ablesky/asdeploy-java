@@ -3,12 +3,15 @@ package com.ablesky.asdeploy.controller;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.Transformer;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -22,9 +25,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.ablesky.asdeploy.dto.ConflictInfoDto;
 import com.ablesky.asdeploy.pojo.DeployItem;
 import com.ablesky.asdeploy.pojo.DeployLock;
 import com.ablesky.asdeploy.pojo.DeployRecord;
+import com.ablesky.asdeploy.pojo.PatchFileRelGroup;
 import com.ablesky.asdeploy.pojo.PatchGroup;
 import com.ablesky.asdeploy.pojo.Project;
 import com.ablesky.asdeploy.service.IDeployService;
@@ -187,12 +192,19 @@ public class DeployController {
 		unzipDeployItem(deployItem);
 		String targetFolderPath = FilenameUtils.concat(deployItem.getFolderPath(), FilenameUtils.getBaseName(deployItem.getFileName()));
 		List<String> filePathList = DeployUtil.getDeployItemFilePathList(targetFolderPath);
-		resultMap.put("filePathList", filePathList);
-		resultMap.put("conflictFileInfoList", Collections.emptyList());
+		List<ConflictInfoDto> conflictInfoList = Collections.emptyList();
 		PatchGroup patchGroup = null;
 		if(patchGroupId != null && patchGroupId > 0 && (patchGroup = patchGroupService.getPatchGroupById(patchGroupId)) != null) {
-			// TODO
+			List<PatchFileRelGroup> conflictRelList = patchGroupService.getPatchFileRelGroupListByFilePathListAndStatus(filePathList, PatchGroup.STATUS_TESTING, patchGroupId);
+			conflictInfoList = new ArrayList<ConflictInfoDto>(CollectionUtils.collect(conflictRelList, new Transformer<PatchFileRelGroup, ConflictInfoDto>() {
+				@Override
+				public ConflictInfoDto transform(PatchFileRelGroup conflictRel) {
+					return new ConflictInfoDto().fillDto(conflictRel);
+				}
+			}));
 		}
+		resultMap.put("filePathList", filePathList);
+		resultMap.put("conflictInfoList", conflictInfoList);
 		resultMap.put("success", true);
 		return resultMap;
 	}

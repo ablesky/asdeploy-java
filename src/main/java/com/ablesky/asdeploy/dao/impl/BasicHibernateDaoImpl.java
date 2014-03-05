@@ -1,10 +1,12 @@
 package com.ablesky.asdeploy.dao.impl;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -34,7 +36,7 @@ public class BasicHibernateDaoImpl {
 	public <T> void deleteById(Class<T> clazz, Long id) {
 		String hql = "delete from " + clazz.getSimpleName() + " where id = :id ";
 		Query query = getCurrentSession().createQuery(hql);
-		query.setParameter("id", id);
+		fillParameter(query, "id", id);
 		query.executeUpdate();
 	}
 	
@@ -47,7 +49,7 @@ public class BasicHibernateDaoImpl {
 		Session session = getCurrentSession();
 		Query query = session.createQuery(hql);
 		for(String key: getPlaceHolderList(hql)) {
-			query.setParameter(key, param.get(key));
+			fillParameter(query, key, param);
 		}
 		if(limit != 0) {
 			query.setFirstResult(start);
@@ -81,7 +83,7 @@ public class BasicHibernateDaoImpl {
 		}
 		Query query = session.createQuery(hql);
 		for (String key : getPlaceHolderList(hql)) {
-			query.setParameter(key, param.get(key));
+			fillParameter(query, key, param);
 		}
 		List<?> list = query.list();
 		if(list.isEmpty()) {
@@ -98,11 +100,31 @@ public class BasicHibernateDaoImpl {
 		return new Page<T>(start, limit, count(hql, param), this.<T>list(start, limit, hql, param));
 	}
 	
+	private void fillParameter(Query query, String key, Object value) {
+		if(query == null || StringUtils.isBlank(key)) {
+			return;
+		}
+		if (value instanceof Collection) {
+			query.setParameterList(key, (Collection<?>)value);
+		} else if (value instanceof Object[]) {
+			query.setParameterList(key, (Object[]) value);
+		} else {
+			query.setParameter(key, value);
+		}
+	}
+	
+	private void fillParameter(Query query, String key, Map<String, Object> param) {
+		if(query == null || param == null || StringUtils.isBlank(key)) {
+			return;
+		}
+		fillParameter(query, key, param.get(key));
+	}
+	
 	/**
 	 * 获取sql/hql中的所有占位符(形如":XXX")
 	 * @author zyang
 	 */
-	public List<String> getPlaceHolderList(String sql){
+	private List<String> getPlaceHolderList(String sql){
 		if(sql.indexOf(":") == -1){
 			return Collections.<String>emptyList();
 		}

@@ -28,7 +28,7 @@ public class TestController {
 //		System.out.println(userService.getUserById(1L));
 //		System.out.println(userService.getUserByUsername("zyang"));
 		Map<String, Object> param = new HashMap<String, Object>();
-		param.put("username__endWith", "yan");
+		param.put("username__end_with", "yan");
 		System.out.println(userService.getUserListResult(0, 0, param));
 		return "success";
 	}

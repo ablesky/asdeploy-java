@@ -112,12 +112,18 @@ public abstract class AbstractDaoImpl<E extends AbstractModel> implements IAbstr
 		} else if ("contain".equalsIgnoreCase(operName)) {
 			oper = " like ";
 			placeholder = "concat('%', " + placeholder + ", '%')";
-		} else if ("startwith".equalsIgnoreCase(operName)) {
+		} else if ("start_with".equalsIgnoreCase(operName)) {
 			oper = " like ";
 			placeholder = "concat(" + placeholder + ", '%')";
-		} else if ("endwith".equalsIgnoreCase(operName)) {
+		} else if ("end_with".equalsIgnoreCase(operName)) {
 			oper = " like ";
 			placeholder = " concat('%', " + placeholder + ")";
+		} else if("in".equalsIgnoreCase(operName)) {
+			oper = " in ";
+			placeholder = " ( " + placeholder + " ) ";
+		} else if("not_in".equalsIgnoreCase(operName)) {
+			oper = " not in ";
+			placeholder = " ( " + placeholder + " ) ";
 		}
 		return new String[] { oriKey.replaceAll("_", "."), oper, placeholder };
 	}

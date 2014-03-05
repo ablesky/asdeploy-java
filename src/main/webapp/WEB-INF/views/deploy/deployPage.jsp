@@ -273,7 +273,7 @@ function initDecompressBtn() {
 			}
 			$this.html('解压补丁文件').attr({disabled:false});
 			renderFilePathList(data.filePathList);
-			renderConflictFileInfoList(data.conflictFileInfoList);
+			renderConflictInfoList(data.conflictInfoList);
 			alert('解压缩成功!');
 			return;
 		});
@@ -289,10 +289,11 @@ function renderFilePathList(fileList) {
 	$('#J_filePathListTbody').empty().append($filePathTmpl.tmpl(fileList));
 }
 
-function renderConflictFileInfoList(conflictFileInfoList) {
-	if(!$.isArray(conflictFileInfoList)) {
+function renderConflictInfoList(conflictInfoList) {
+	if(!$.isArray(conflictInfoList)) {
 		return;
 	}
+	console.dir(conflictInfoList);
 }
 
 function initStartDeployBtn() {

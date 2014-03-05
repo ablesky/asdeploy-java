@@ -76,5 +76,31 @@ CREATE TABLE "patch_group" (
 CREATE INDEX "patch_group_creator_id" ON "patch_group" ("creator_id");
 CREATE INDEX "patch_group_project_id" ON "patch_group" ("project_id");
 
+-- patch_file
+CREATE TABLE "patch_file" (
+    "id" integer NOT NULL PRIMARY KEY,
+    "file_path" varchar(196) NOT NULL UNIQUE,
+    "file_type" varchar(10) NOT NULL
+);
 
+-- patch_file_rel_group
+CREATE TABLE "patch_file_rel_group" (
+    "id" integer NOT NULL PRIMARY KEY,
+    "patch_group_id" integer NOT NULL REFERENCES "patch_group" ("id"),
+    "patch_file_id" integer NOT NULL REFERENCES "patch_file" ("id"),
+    "create_time" datetime NOT NULL,
+    "is_conflict_excluded" bool NOT NULL
+);
+CREATE INDEX "patch_file_rel_group_patch_group_id" ON "patch_file_rel_group" ("patch_group_id");
+CREATE INDEX "patch_file_rel_group_patch_file_id" ON "patch_file_rel_group" ("patch_file_id");
+
+-- conflict_info
+CREATE TABLE "conflict_info" (
+    "id" integer NOT NULL PRIMARY KEY,
+    "conflict_patch_group_id" integer NOT NULL REFERENCES "patch_group" ("id"),
+    "conflict_patch_file_id" integer NOT NULL REFERENCES "patch_file" ("id"),
+    "is_excluded_conflict" bool NOT NULL
+, related_patch_group_id integer);
+CREATE INDEX "conflict_info_conflict_patch_file_id" ON "conflict_info" ("conflict_patch_file_id");
+CREATE INDEX "conflict_info_conflict_patch_group_id" ON "conflict_info" ("conflict_patch_group_id");
 
