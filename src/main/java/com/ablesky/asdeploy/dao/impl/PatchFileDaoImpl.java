@@ -17,7 +17,7 @@ public class PatchFileDaoImpl extends AbstractDaoImpl<PatchFile> implements IPat
 		if(CollectionUtils.isEmpty(list)) {
 			return;
 		}
-		StringBuilder sqlBuff = new StringBuilder("insert into patch_file (project_id, patch_file, file_type) values ");
+		StringBuilder sqlBuff = new StringBuilder("insert into patch_file (project_id, file_path, file_type) values ");
 		for(PatchFile patchFile: list) {
 			if(patchFile.getId() != null) {
 				throw new IllegalStateException("ConflictDetail should not have id before save operation!");

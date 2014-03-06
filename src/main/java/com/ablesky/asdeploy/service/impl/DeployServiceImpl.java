@@ -250,6 +250,7 @@ public class DeployServiceImpl implements IDeployService {
 		List<ConflictInfo> existedConflictInfoList = conflictInfoDao.list(new ModelMap()
 				.addAttribute("patchGroupId", patchGroup.getId())
 		);
+		// 此处需要处理下
 		for(ConflictInfo existedConflictInfo: existedConflictInfoList) {
 			String keyToRemove = existedConflictInfo.getRelatedPatchGroupId() + "_" + existedConflictInfo.getPatchFile().getFilePath();
 			conflictRelMap.remove(keyToRemove);
@@ -260,9 +261,10 @@ public class DeployServiceImpl implements IDeployService {
 				return new ConflictInfo(conflictRel.getPatchFile(), patchGroup.getId(), conflictRel.getPatchGroupId());
 			}
 		}));
-//		batchSaveOrUpdateConflictInfo(unexistedConflictInfoList);
-		conflictInfoDao.batchSave(unexistedConflictInfoList);
+		batchSaveOrUpdateConflictInfo(unexistedConflictInfoList);
+//		conflictInfoDao.batchSave(unexistedConflictInfoList);
 		// 此处调用下面这个方法，已经有些ugly了
+		// TODO 此处有混乱
 		batchSaveConflictDetail(deployRecord, new ArrayList<ConflictInfo>(CollectionUtils.union(existedConflictInfoList, unexistedConflictInfoList)));
 	}
 	
