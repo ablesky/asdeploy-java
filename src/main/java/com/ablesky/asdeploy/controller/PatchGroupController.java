@@ -177,6 +177,7 @@ public class PatchGroupController {
 		if(StringUtils.isNotBlank(status)) {
 			param.put("status", status);
 		}
+		param.put(CommonConstant.ORDER_BY, " id desc ");
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		resultMap.put("list", patchGroupService.getPatchGroupListResult(start, limit, param));
 		resultMap.put("success", true);

@@ -197,8 +197,11 @@ public class DeployServiceImpl implements IDeployService {
 		batchSaveUnexistedPatchFileRelGroup(patchGroup, filePathList);
 		// 根据文件列表检测并持久化冲突信息
 		List<PatchFileRelGroup> conflictRelList = patchGroupService.getPatchFileRelGroupListWhichConflictWith(patchGroup, filePathList);
-		batchSaveUnexistedConflictInfo(patchGroup, deployRecord, conflictRelList);
+		batchSaveUnexistedConflictInfo(patchGroup, deployRecord, conflictRelList, filePathList);
 		// 将deployRecord的状态置为"发布中"
+		if(CollectionUtils.isNotEmpty(conflictRelList)) {
+			deployRecord.setIsConflictWithOthers(true);
+		}
 		deployRecord.setStatus(DeployRecord.STATUS_DEPLOYING);
 		saveOrUpdateDeployRecord(deployRecord);
 	}
@@ -209,7 +212,7 @@ public class DeployServiceImpl implements IDeployService {
 		}
 		final Project project = patchGroup.getProject();
 		List<PatchFile> patchFileList = patchFileDao.list(new ModelMap()
-				.addAttribute("project_id", project.getId())
+				.addAttribute("projectId", project.getId())
 				.addAttribute("filePath__in", filePathList)
 		);
 		Map<String, PatchFile> patchFileMap = new HashMap<String, PatchFile>();
@@ -239,21 +242,35 @@ public class DeployServiceImpl implements IDeployService {
 		}
 	}
 	
-	public void batchSaveUnexistedConflictInfo(final PatchGroup patchGroup, DeployRecord deployRecord, List<PatchFileRelGroup> conflictRelList) {
+	public void batchSaveUnexistedConflictInfo(final PatchGroup patchGroup, DeployRecord deployRecord, List<PatchFileRelGroup> conflictRelList, List<String> filePathList) {
 		if(CollectionUtils.isEmpty(conflictRelList)) {
 			return;
 		}
 		Map<String, PatchFileRelGroup> conflictRelMap = new HashMap<String, PatchFileRelGroup>();
-		for(PatchFileRelGroup conflictRel: conflictRelList) {
+		for(PatchFileRelGroup conflictRel: conflictRelList) {	// 相当于relatedPathGroupId_filePath
 			conflictRelMap.put(conflictRel.getPatchGroupId() + "_" + conflictRel.getPatchFile().getFilePath(), conflictRel);
 		}
+		List<PatchGroup> underTestingPatchGroupList = patchGroupDao.list(new ModelMap()
+				.addAttribute("project_id", patchGroup.getProject().getId())
+				.addAttribute("status", PatchGroup.STATUS_TESTING)
+				.addAttribute("id__ne", patchGroup.getId())
+		);
+		List<Long> underTestingPatchGroupIdList = new ArrayList<Long>(CollectionUtils.collect(underTestingPatchGroupList, new Transformer<PatchGroup, Long>() {
+			@Override
+			public Long transform(PatchGroup patchGroup) {
+				return patchGroup.getId();
+			}
+		}));
 		List<ConflictInfo> existedConflictInfoList = conflictInfoDao.list(new ModelMap()
 				.addAttribute("patchGroupId", patchGroup.getId())
+				.addAttribute("relatedPatchGroupId__in", underTestingPatchGroupIdList)
 		);
-		// 此处需要处理下
+		List<ConflictInfo> currentExistedConflictInfoList = new ArrayList<ConflictInfo>();
 		for(ConflictInfo existedConflictInfo: existedConflictInfoList) {
 			String keyToRemove = existedConflictInfo.getRelatedPatchGroupId() + "_" + existedConflictInfo.getPatchFile().getFilePath();
-			conflictRelMap.remove(keyToRemove);
+			if(conflictRelMap.remove(keyToRemove) != null) {
+				currentExistedConflictInfoList.add(existedConflictInfo);
+			}
 		}
 		List<ConflictInfo> unexistedConflictInfoList = new ArrayList<ConflictInfo>(CollectionUtils.collect(conflictRelMap.values(), new Transformer<PatchFileRelGroup, ConflictInfo>() {
 			@Override
@@ -264,21 +281,32 @@ public class DeployServiceImpl implements IDeployService {
 		batchSaveOrUpdateConflictInfo(unexistedConflictInfoList);
 //		conflictInfoDao.batchSave(unexistedConflictInfoList);
 		// 此处调用下面这个方法，已经有些ugly了
-		// TODO 此处有混乱
-		batchSaveConflictDetail(deployRecord, new ArrayList<ConflictInfo>(CollectionUtils.union(existedConflictInfoList, unexistedConflictInfoList)));
+		batchSaveConflictDetail(deployRecord, new ArrayList<ConflictInfo>(CollectionUtils.union(currentExistedConflictInfoList, unexistedConflictInfoList)));
 	}
 	
 	public void batchSaveConflictDetail(DeployRecord deployRecord, List<ConflictInfo> conflictInfoList) {
 		if(CollectionUtils.isEmpty(conflictInfoList)) {
 			return;
 		}
-		List<ConflictDetail> conflictDetailList = new ArrayList<ConflictDetail>();
+		Map<Long, ConflictInfo> conflictInfoMap = new HashMap<Long, ConflictInfo>();
+		List<Long> conflictInfoIdList = new ArrayList<Long>();
 		for(ConflictInfo conflictInfo: conflictInfoList) {
-			conflictDetailList.add(new ConflictDetail(deployRecord.getId(), conflictInfo.getId()));
+			conflictInfoMap.put(conflictInfo.getId(), conflictInfo);
+			conflictInfoIdList.add(conflictInfo.getId());
 		}
-		// TODO 要删除已经存在的conflictDetail
+		List<ConflictDetail> existedConflictDetailList = conflictDetailDao.list(new ModelMap()
+				.addAttribute("deployRecordId", deployRecord.getId())
+				.addAttribute("conflictInfoId__in", conflictInfoIdList)
+		);
+		for(ConflictDetail existedConflictDetail: existedConflictDetailList) {
+			conflictInfoMap.remove(existedConflictDetail.getConflictInfoId());
+		}
+		List<ConflictDetail> unexistedConflictDetailList = new ArrayList<ConflictDetail>();
+		for(ConflictInfo conflictInfo: conflictInfoMap.values()) {
+			unexistedConflictDetailList.add(new ConflictDetail(deployRecord.getId(), conflictInfo.getId()));
+		}
 		// batchSaveOrUpdateConflictDetail(conflictDetailList);
-		conflictDetailDao.batchSave(conflictDetailList);
+		conflictDetailDao.batchSave(unexistedConflictDetailList);
 	}
 	
 	@Deprecated
@@ -308,7 +336,7 @@ public class DeployServiceImpl implements IDeployService {
 		List<String> unexistedFilePathList = new ArrayList<String>(CollectionUtils.subtract(filePathList, existedFilePathList));
 		List<PatchFile> unexistedPatchFileList = new ArrayList<PatchFile>();
 		for(String unexistedFilePath: unexistedFilePathList) {
-			unexistedPatchFileList.add(new PatchFile(project, unexistedFilePath));
+			unexistedPatchFileList.add(new PatchFile(project.getId(), unexistedFilePath));
 		}
 		//batchSaveOrUpdatePatchFile(unexistedPatchFileList);
 		patchFileDao.batchSave(unexistedPatchFileList);

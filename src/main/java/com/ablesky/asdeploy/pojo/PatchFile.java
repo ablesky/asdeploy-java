@@ -23,17 +23,13 @@ public class PatchFile extends AbstractModel {
 	private Long id;
 	@Column(name="file_path")
 	private String filePath;
-	@Column(name="file_type")
-	private String fileType;
-	@ManyToOne
-	@JoinColumn(name="project_id")
-	private Project project;
+	@Column(name="project_id")
+	private Long projectId;
 	
 	public PatchFile() {}
 	
-	public PatchFile(Project project, String filePath) {
-		this.fileType = FILE_TYPE_DYNAMIC;
-		this.project = project;
+	public PatchFile(Long projectId, String filePath) {
+		this.projectId = projectId;
 		this.filePath = filePath;
 	}
 	
@@ -49,17 +45,11 @@ public class PatchFile extends AbstractModel {
 	public void setFilePath(String filePath) {
 		this.filePath = filePath;
 	}
-	public String getFileType() {
-		return fileType;
+	public Long getProjectId() {
+		return projectId;
 	}
-	public void setFileType(String fileType) {
-		this.fileType = fileType;
-	}
-	public Project getProject() {
-		return project;
-	}
-	public void setProject(Project project) {
-		this.project = project;
+	public void setProjectId(Long projectId) {
+		this.projectId = projectId;
 	}
 	
 }

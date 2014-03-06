@@ -81,8 +81,7 @@ DROP TABLE IF EXISTS "patch_file";
 CREATE TABLE "patch_file" (
     "id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
     "project_id" integer NOT NULL REFERENCES "project" ("id"),
-    "file_path" varchar(196) NOT NULL UNIQUE,
-    "file_type" varchar(10) NOT NULL
+    "file_path" varchar(196) NOT NULL UNIQUE
 );
 CREATE INDEX "patch_file_project_id" ON "patch_file" ("project_id");
 
