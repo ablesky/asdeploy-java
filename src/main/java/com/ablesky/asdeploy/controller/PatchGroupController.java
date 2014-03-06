@@ -115,7 +115,7 @@ public class PatchGroupController {
 			resultMap.put("message", "用户未登录或不存在!");
 			return resultMap;
 		}
-		if(projectId == null && projectId == 0 || (project = projectService.getProjectById(projectId)) == null) {
+		if(projectId == null || projectId == 0 || (project = projectService.getProjectById(projectId)) == null) {
 			resultMap.put("success", false);
 			resultMap.put("message", "项目不存在!");
 			return resultMap;

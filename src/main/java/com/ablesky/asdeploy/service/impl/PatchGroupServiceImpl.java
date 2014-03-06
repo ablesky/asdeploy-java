@@ -16,6 +16,7 @@ import com.ablesky.asdeploy.dao.IPatchFileRelGroupDao;
 import com.ablesky.asdeploy.dao.IPatchGroupDao;
 import com.ablesky.asdeploy.pojo.PatchFileRelGroup;
 import com.ablesky.asdeploy.pojo.PatchGroup;
+import com.ablesky.asdeploy.pojo.Project;
 import com.ablesky.asdeploy.service.IPatchGroupService;
 import com.ablesky.asdeploy.util.Page;
 
@@ -51,35 +52,37 @@ public class PatchGroupServiceImpl implements IPatchGroupService {
 	 * 根据补丁组状态(testing)和文件路径列表，来获取潜在的冲突文件信息
 	 */
 	@Override
-	public List<PatchFileRelGroup> getPatchFileRelGroupListByFilePathListAndStatus(List<String> filePathList, String status, Long... excludedPatchGroupIds) {
-		if(StringUtils.isBlank(status) || CollectionUtils.isEmpty(filePathList)) {
+	public List<PatchFileRelGroup> getPatchFileRelGroupListWhichConflictWith(PatchGroup patchGroup, List<String> filePathList) {
+		if(patchGroup == null || CollectionUtils.isEmpty(filePathList)) {
 			return Collections.emptyList();
 		}
+		Project project = patchGroup.getProject();
 		Map<String, Object> patchGroupParam = new HashMap<String, Object>();
-		patchGroupParam.put("status", status);
-		patchGroupParam.put("id__not_in", excludedPatchGroupIds);
-		List<PatchGroup> patchGroupList = getPatchGroupListResult(0, 0, patchGroupParam);
-		if(CollectionUtils.isEmpty(patchGroupList)) {
+		patchGroupParam.put("status", PatchGroup.STATUS_TESTING);
+		patchGroupParam.put("id__ne", patchGroup.getId());
+		patchGroupParam.put("project_id", project.getId());
+		List<PatchGroup> otherPatchGroupList = getPatchGroupListResult(0, 0, patchGroupParam);
+		if(CollectionUtils.isEmpty(otherPatchGroupList)) {
 			return Collections.emptyList();
 		}
-		Collection<Long> patchGroupIdList = CollectionUtils.collect(patchGroupList, new Transformer<PatchGroup, Long>() {
+		Collection<Long> otherPatchGroupIdList = CollectionUtils.collect(otherPatchGroupList, new Transformer<PatchGroup, Long>() {
 			@Override
 			public Long transform(PatchGroup patchGroup) {
 				return patchGroup.getId();
 			}
 		});
 		Map<String, Object> param = new HashMap<String, Object>();
-		param.put("patchGroupId__in", patchGroupIdList);
+		param.put("patchGroupId__in", otherPatchGroupIdList);
 		param.put("patchFile_filePath__in", filePathList);
-		List<PatchFileRelGroup> relList = patchFileRelGroupDao.list(0, 0, param);
-		Map<Long, PatchGroup> patchGroupMap = new HashMap<Long, PatchGroup>();
-		for(PatchGroup patchGroup: patchGroupList) {
-			patchGroupMap.put(patchGroup.getId(), patchGroup);
+		List<PatchFileRelGroup> conflictRelList = patchFileRelGroupDao.list(param);
+		Map<Long, PatchGroup> otherPatchGroupMap = new HashMap<Long, PatchGroup>();
+		for(PatchGroup otherPatchGroup: otherPatchGroupList) {
+			otherPatchGroupMap.put(otherPatchGroup.getId(), otherPatchGroup);
 		}
-		for(PatchFileRelGroup rel: relList) {
-			rel.setPatchGroup(patchGroupMap.get(rel.getPatchGroupId()));
+		for(PatchFileRelGroup conflictRel: conflictRelList) {
+			conflictRel.setPatchGroup(otherPatchGroupMap.get(conflictRel.getPatchGroupId()));
 		}
-		return relList;
+		return conflictRelList;
 	}
 
 }

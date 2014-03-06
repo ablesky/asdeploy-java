@@ -195,7 +195,7 @@ public class DeployController {
 		List<ConflictInfoDto> conflictInfoList = Collections.emptyList();
 		PatchGroup patchGroup = null;
 		if(patchGroupId != null && patchGroupId > 0 && (patchGroup = patchGroupService.getPatchGroupById(patchGroupId)) != null) {
-			List<PatchFileRelGroup> conflictRelList = patchGroupService.getPatchFileRelGroupListByFilePathListAndStatus(filePathList, PatchGroup.STATUS_TESTING, patchGroupId);
+			List<PatchFileRelGroup> conflictRelList = patchGroupService.getPatchFileRelGroupListWhichConflictWith(patchGroup, filePathList);
 			conflictInfoList = new ArrayList<ConflictInfoDto>(CollectionUtils.collect(conflictRelList, new Transformer<PatchFileRelGroup, ConflictInfoDto>() {
 				@Override
 				public ConflictInfoDto transform(PatchFileRelGroup conflictRel) {

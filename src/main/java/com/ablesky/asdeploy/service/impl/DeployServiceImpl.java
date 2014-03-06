@@ -49,7 +49,7 @@ public class DeployServiceImpl implements IDeployService {
 		Map<String, Object> param = new HashMap<String, Object>();
 		param.put("isLocked", Boolean.TRUE);
 		param.put(CommonConstant.ORDER_BY, "id desc");
-		List<DeployLock> lockList = deployLockDao.list(0, 0, param);
+		List<DeployLock> lockList = deployLockDao.list(param);
 		long ts = System.currentTimeMillis();
 		for(DeployLock lock: lockList) {
 			if(lock == null || !lock.getIsLocked()) {
@@ -69,7 +69,7 @@ public class DeployServiceImpl implements IDeployService {
 	public void unlockDeploy() {
 		Map<String, Object> param = new HashMap<String, Object>();
 		param.put("isLocked", Boolean.TRUE);
-		List<DeployLock> lockList = deployLockDao.list(0, 0, param);
+		List<DeployLock> lockList = deployLockDao.list(param);
 		boolean isSuperAdmin = AuthUtil.isSuperAdmin();
 		for(DeployLock lock: lockList) {
 			if(lock == null || !lock.getIsLocked()) {
@@ -147,8 +147,7 @@ public class DeployServiceImpl implements IDeployService {
 		Map<String, Object> param = new HashMap<String, Object>();
 		param.put("fileName__eq", fileName);
 		param.put("version__eq", version);
-		List<DeployItem> list = deployItemDao.list(0, 1, param);
-		return list.size() > 0? list.get(0): null;
+		return deployItemDao.first(param);
 	}
 	
 	@Override

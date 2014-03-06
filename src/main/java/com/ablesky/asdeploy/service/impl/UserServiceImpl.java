@@ -38,8 +38,7 @@ public class UserServiceImpl implements IUserService {
 	public User getUserByUsername(String username) {
 		Map<String, Object> param = new HashMap<String, Object>();
 		param.put("username", username);
-		List<User> list = userDao.list(0, 1, param);
-		return CollectionUtils.isEmpty(list)? null: list.get(0);
+		return userDao.unique(param);
 	}
 	
 	@Override

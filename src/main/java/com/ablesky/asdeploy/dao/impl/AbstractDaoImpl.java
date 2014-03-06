@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -44,8 +45,29 @@ public abstract class AbstractDaoImpl<E extends AbstractModel> implements IAbstr
 	}
 	
 	@Override
+	public E first(Map<String, Object> param) {
+		List<E> list = list(0, 1, param);
+		return CollectionUtils.isNotEmpty(list)? list.get(0): null;
+	}
+	
+	@Override
+	public E unique(Map<String, Object> param) {
+		List<E> list = list(0, 2, param);
+		int len = list.size();
+		if(len > 1) {
+			throw new IllegalStateException("The query result should be unique!");
+		}
+		return len > 0? list.get(0): null;
+	}
+	
+	@Override
 	public List<E> list(int start, int limit, Map<String, Object> param) {
 		return basicHibernateDaoImpl.list(start, limit, generateHqlByParam(param), param);
+	}
+	
+	@Override
+	public List<E> list(Map<String, Object> param) {
+		return list(0, 0, param);
 	}
 	
 	@Override
@@ -99,8 +121,10 @@ public abstract class AbstractDaoImpl<E extends AbstractModel> implements IAbstr
 		String oriKey = key.substring(0, index);
 		String operName = key.substring(index + 2);
 		String oper = " = ", placeholder = ":" + key;
-		if ("eq".equalsIgnoreCase(operName)) {
+		if (StringUtils.isBlank(operName) || "eq".equalsIgnoreCase(operName)) {
 			oper = " = ";
+		} else if ("ne".equalsIgnoreCase(operName)) {
+			oper = " != ";
 		} else if ("gt".equalsIgnoreCase(operName)) {
 			oper = " > ";
 		} else if ("ge".equalsIgnoreCase(operName)) {

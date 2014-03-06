@@ -4,6 +4,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 
@@ -23,6 +25,9 @@ public class PatchFile extends AbstractModel {
 	private String filePath;
 	@Column(name="file_type")
 	private String fileType;
+	@ManyToOne
+	@JoinColumn(name="project_id")
+	private Project project;
 	
 	public PatchFile() {}
 	
@@ -43,6 +48,12 @@ public class PatchFile extends AbstractModel {
 	}
 	public void setFileType(String fileType) {
 		this.fileType = fileType;
+	}
+	public Project getProject() {
+		return project;
+	}
+	public void setProject(Project project) {
+		this.project = project;
 	}
 	
 }

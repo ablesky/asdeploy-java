@@ -77,13 +77,17 @@ CREATE INDEX "patch_group_creator_id" ON "patch_group" ("creator_id");
 CREATE INDEX "patch_group_project_id" ON "patch_group" ("project_id");
 
 -- patch_file
+DROP TABLE IF EXISTS "patch_file";
 CREATE TABLE "patch_file" (
     "id" integer NOT NULL PRIMARY KEY,
+    "project_id" integer NOT NULL REFERENCES "project" ("id"),
     "file_path" varchar(196) NOT NULL UNIQUE,
     "file_type" varchar(10) NOT NULL
 );
+CREATE INDEX "patch_file_project_id" ON "patch_file" ("project_id");
 
 -- patch_file_rel_group
+DROP TABLE IF EXISTS "patch_file_rel_group";
 CREATE TABLE "patch_file_rel_group" (
     "id" integer NOT NULL PRIMARY KEY,
     "patch_group_id" integer NOT NULL REFERENCES "patch_group" ("id"),
@@ -95,6 +99,7 @@ CREATE INDEX "patch_file_rel_group_patch_group_id" ON "patch_file_rel_group" ("p
 CREATE INDEX "patch_file_rel_group_patch_file_id" ON "patch_file_rel_group" ("patch_file_id");
 
 -- conflict_info
+DROP TABLE IF EXISTS "conflict_info";
 CREATE TABLE "conflict_info" (
     "id" integer NOT NULL PRIMARY KEY,
     "conflict_patch_group_id" integer NOT NULL REFERENCES "patch_group" ("id"),

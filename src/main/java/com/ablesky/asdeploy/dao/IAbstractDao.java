@@ -16,10 +16,16 @@ public interface IAbstractDao<E extends AbstractModel> {
 
 	List<E> list(int start, int limit, Map<String, Object> param);
 
+	List<E> list(Map<String, Object> param);
+	
 	int count(String hql, Map<String, Object> param);
 
 	Page<E> paginate(int start, int limit, Map<String, Object> param);
 
 	void deleteById(Long id);
+
+	E first(Map<String, Object> param);
+
+	E unique(Map<String, Object> param);
 
 }

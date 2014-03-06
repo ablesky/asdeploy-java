@@ -17,6 +17,6 @@ public interface IPatchGroupService {
 
 	Page<PatchGroup> getPatchGroupPaginateResult(int start, int limit, Map<String, Object> param);
 
-	List<PatchFileRelGroup> getPatchFileRelGroupListByFilePathListAndStatus(List<String> filePathList, String status, Long... excludedPatchGroupIds);
+	List<PatchFileRelGroup> getPatchFileRelGroupListWhichConflictWith(PatchGroup patchGroup, List<String> filePathList);
 
 }
