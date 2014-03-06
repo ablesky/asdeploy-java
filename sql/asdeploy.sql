@@ -92,8 +92,7 @@ CREATE TABLE "patch_file_rel_group" (
     "id" integer NOT NULL PRIMARY KEY,
     "patch_group_id" integer NOT NULL REFERENCES "patch_group" ("id"),
     "patch_file_id" integer NOT NULL REFERENCES "patch_file" ("id"),
-    "create_time" datetime NOT NULL,
-    "is_conflict_excluded" bool NOT NULL
+    "create_time" datetime NOT NULL
 );
 CREATE INDEX "patch_file_rel_group_patch_group_id" ON "patch_file_rel_group" ("patch_group_id");
 CREATE INDEX "patch_file_rel_group_patch_file_id" ON "patch_file_rel_group" ("patch_file_id");

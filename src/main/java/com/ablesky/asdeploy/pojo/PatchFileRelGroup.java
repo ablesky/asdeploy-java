@@ -31,6 +31,12 @@ public class PatchFileRelGroup extends AbstractModel {
 	
 	public PatchFileRelGroup() {}
 	
+	public PatchFileRelGroup(Long patchGroupId, PatchFile patchFile, Timestamp createTime) {
+		this.patchGroupId = patchGroupId;
+		this.patchFile = patchFile;
+		this.createTime = createTime;
+	}
+	
 	public Long getId() {
 		return id;
 	}

@@ -33,6 +33,12 @@ public class ConflictInfo extends AbstractModel {
 	private PatchGroup relatedPatchGroup;
 	
 	public ConflictInfo() {}
+	
+	public ConflictInfo(PatchFile patchFile, Long patchGroupId, Long relatedPatchGroupId) {
+		this.patchFile = patchFile;
+		this.patchGroupId = patchGroupId;
+		this.relatedPatchGroupId = relatedPatchGroupId;
+	}
 
 	public Long getId() {
 		return id;

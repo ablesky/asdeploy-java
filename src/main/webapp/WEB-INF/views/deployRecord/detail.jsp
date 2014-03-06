@@ -11,13 +11,16 @@
 h3.title {
 	text-align: left;
 }
+.wrapper {
+	margin-bottom: 100px;
+}
 </style>
 </head>
 <body>
 <%@ include file="../include/header.jsp" %>
 </body>
 
-<div class="wrap">
+<div class="wrapper">
 	<h2 class="title">发布详情</h2>
 	<div style="width: 500px; text-align: center; margin: 30px auto 10px;">
 		<table class="table table-bordered">

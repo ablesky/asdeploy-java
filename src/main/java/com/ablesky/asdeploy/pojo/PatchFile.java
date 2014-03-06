@@ -32,6 +32,7 @@ public class PatchFile extends AbstractModel {
 	public PatchFile() {}
 	
 	public PatchFile(Project project, String filePath) {
+		this.fileType = FILE_TYPE_DYNAMIC;
 		this.project = project;
 		this.filePath = filePath;
 	}

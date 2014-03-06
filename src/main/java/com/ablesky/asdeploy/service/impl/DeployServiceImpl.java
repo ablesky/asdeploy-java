@@ -22,6 +22,7 @@ import com.ablesky.asdeploy.dao.IDeployItemDao;
 import com.ablesky.asdeploy.dao.IDeployLockDao;
 import com.ablesky.asdeploy.dao.IDeployRecordDao;
 import com.ablesky.asdeploy.dao.IPatchFileDao;
+import com.ablesky.asdeploy.dao.IPatchFileRelGroupDao;
 import com.ablesky.asdeploy.dao.IPatchGroupDao;
 import com.ablesky.asdeploy.dao.IProjectDao;
 import com.ablesky.asdeploy.pojo.ConflictInfo;
@@ -56,6 +57,8 @@ public class DeployServiceImpl implements IDeployService {
 	private IPatchFileDao patchFileDao;
 	@Autowired
 	private IConflictInfoDao conflictInfoDao;
+	@Autowired
+	private IPatchFileRelGroupDao patchFileRelGroupDao;
 	
 	@Autowired
 	private IPatchGroupService patchGroupService;
@@ -189,7 +192,7 @@ public class DeployServiceImpl implements IDeployService {
 		// 持久化文件列表
 		batchSaveUnexistedPatchFile(deployRecord.getProject(), filePathList);
 		// 持久化patchFile与patchGroup的关联
-		
+		batchSaveUnexistedPatchFileRelGroup(patchGroup, filePathList);
 		// 根据文件列表检测并持久化冲突信息
 		List<PatchFileRelGroup> conflictRelList = patchGroupService.getPatchFileRelGroupListWhichConflictWith(patchGroup, filePathList);
 		batchSaveUnexistedConflictInfo(patchGroup, conflictRelList);
@@ -198,7 +201,39 @@ public class DeployServiceImpl implements IDeployService {
 		saveOrUpdateDeployRecord(deployRecord);
 	}
 	
+	public void batchSaveUnexistedPatchFileRelGroup(final PatchGroup patchGroup, List<String> filePathList) {
+		if(CollectionUtils.isEmpty(filePathList)) {
+			return;
+		}
+		final Project project = patchGroup.getProject();
+		List<PatchFile> patchFileList = patchFileDao.list(new ModelMap()
+				.addAttribute("project_id", project.getId())
+				.addAttribute("filePath__in", filePathList)
+		);
+		Map<String, PatchFile> patchFileMap = new HashMap<String, PatchFile>();
+		for(PatchFile patchFile: patchFileList) {
+			patchFileMap.put(patchFile.getFilePath(), patchFile);
+		}
+		
+		List<PatchFileRelGroup> existedRelList = patchFileRelGroupDao.list(new ModelMap()
+				.addAttribute("patchGroupId", patchGroup.getId())
+		);
+		for(PatchFileRelGroup existedRel: existedRelList) {
+			patchFileMap.remove(existedRel.getPatchFile().getFilePath());
+		}
+		List<PatchFileRelGroup> unexistedRelList = new ArrayList<PatchFileRelGroup>();
+		Timestamp createTime = new Timestamp(System.currentTimeMillis());
+		for(PatchFile patchFile: patchFileMap.values()) {
+			unexistedRelList.add(new PatchFileRelGroup(patchGroup.getId(), patchFile, createTime));
+		}
+		batchSaveOrUpdatePatchFileRelGroup(unexistedRelList);
+	}
 	
+	public void batchSaveOrUpdatePatchFileRelGroup(List<PatchFileRelGroup> relList) {
+		for(PatchFileRelGroup rel: relList) {
+			patchFileRelGroupDao.saveOrUpdate(rel);
+		}
+	}
 	
 	public void batchSaveUnexistedConflictInfo(final PatchGroup patchGroup, List<PatchFileRelGroup> conflictRelList) {
 		if(CollectionUtils.isEmpty(conflictRelList)) {
@@ -218,11 +253,7 @@ public class DeployServiceImpl implements IDeployService {
 		List<ConflictInfo> unexistedConflictInfoList = new ArrayList<ConflictInfo>(CollectionUtils.collect(conflictRelMap.values(), new Transformer<PatchFileRelGroup, ConflictInfo>() {
 			@Override
 			public ConflictInfo transform(PatchFileRelGroup conflictRel) {
-				ConflictInfo conflictInfo = new ConflictInfo();
-				conflictInfo.setPatchFile(conflictRel.getPatchFile());
-				conflictInfo.setPatchGroupId(patchGroup.getId());
-				conflictInfo.setRelatedPatchGroupId(conflictRel.getPatchGroupId());
-				return conflictInfo;
+				return new ConflictInfo(conflictRel.getPatchFile(), patchGroup.getId(), conflictRel.getPatchGroupId());
 			}
 		}));
 		batchSaveOrUpdateConflictInfo(unexistedConflictInfoList);

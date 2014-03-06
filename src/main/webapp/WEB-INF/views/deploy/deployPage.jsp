@@ -351,7 +351,7 @@ function showDeployResultFailed(message) {
 
 function showDeployResult(message, status) {
 	$('#J_startDeployBtn').html('发布').attr({disabled: false});
-	$('#J_startRollbackbtn').html('回滚').attr({disabled: false});
+	$('#J_startRollbackBtn').html('回滚').attr({disabled: false});
 	showDeployInfo(message, status);
 }
 
