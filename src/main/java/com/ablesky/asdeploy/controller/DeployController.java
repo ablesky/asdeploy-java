@@ -18,6 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -122,15 +123,14 @@ public class DeployController {
 	
 	@RequestMapping("/unlockDeploy")
 	public @ResponseBody Map<String, Object> unlockDeploy() {
-		Map<String, Object> resultMap = new HashMap<String, Object>();
+		ModelMap resultMap = new ModelMap();
 		if(!AuthUtil.isSuperAdmin()) {
-			resultMap.put("success", false);
-			resultMap.put("message", "没有权限!");
-			return resultMap;
+			return resultMap
+					.addAttribute("success", false)
+					.addAttribute("message", "没有权限!");
 		}
 		deployService.unlockDeploy();
-		resultMap.put("success", true);
-		return resultMap;
+		return resultMap.addAttribute("success", true);
 	}
 	
 	@RequestMapping("/unlockDeployRedirect")
@@ -150,7 +150,7 @@ public class DeployController {
 			@RequestParam("deployItemField")
 			MultipartFile deployItemFile
 			) throws IllegalStateException, IOException {
-		Map<String, Object> resultMap = new HashMap<String, Object>();
+		ModelMap resultMap = new ModelMap();
 		String filename = deployItemFile.getOriginalFilename();
 		Project project = projectService.getProjectById(projectId);
 		DeployRecord deployRecord = deployService.getDeployRecordById(deployRecordId);
@@ -158,21 +158,21 @@ public class DeployController {
 		if(patchGroupId != null && patchGroupId > 0) {
 			patchGroup = patchGroupService.getPatchGroupById(patchGroupId);
 			if(patchGroup == null) {
-				resultMap.put("success", false);
-				resultMap.put("message", "补丁组不存在!");
-				return resultMap;
+				return resultMap
+						.addAttribute("success", false)
+						.addAttribute("message", "补丁组不存在!");
 			}
 			if(!filename.contains(patchGroup.getCheckCode())) {
-				resultMap.put("success", false);
-				resultMap.put("message", "补丁名称与补丁组的标识号不匹配!");
-				return resultMap;
+				return resultMap
+						.addAttribute("success", false)
+						.addAttribute("message", "补丁名称与补丁组的标识号不匹配!");
 			}
 		}
 		deployService.persistDeployItem(deployItemFile, project, patchGroup, deployRecord, deployType, version);
-		resultMap.put("filename", filename);
-		resultMap.put("size", deployItemFile.getSize());
-		resultMap.put("success", true);
-		return resultMap;
+		return resultMap
+				.addAttribute("filename", filename)
+				.addAttribute("size", deployItemFile.getSize())
+				.addAttribute("success", true);
 	}
 	
 	@RequestMapping(value="/decompressItem", method=RequestMethod.POST)
@@ -181,13 +181,13 @@ public class DeployController {
 			@RequestParam(defaultValue="0")
 			Long patchGroupId
 			) throws IOException {
-		Map<String, Object> resultMap = new HashMap<String, Object>();
+		ModelMap resultMap = new ModelMap();
 		DeployRecord deployRecord = deployService.getDeployRecordById(deployRecordId);
 		DeployItem deployItem = deployRecord.getDeployItem();
 		if(deployItem == null) {
-			resultMap.put("success", false);
-			resultMap.put("message", "压缩文件不存在!");
-			return resultMap;
+			return resultMap
+					.addAttribute("success", false)
+					.addAttribute("message", "压缩文件不存在!");
 		}
 		unzipDeployItem(deployItem);
 		String targetFolderPath = FilenameUtils.concat(deployItem.getFolderPath(), FilenameUtils.getBaseName(deployItem.getFileName()));
@@ -203,10 +203,10 @@ public class DeployController {
 				}
 			}));
 		}
-		resultMap.put("filePathList", filePathList);
-		resultMap.put("conflictInfoList", conflictInfoList);
-		resultMap.put("success", true);
-		return resultMap;
+		return resultMap
+				.addAttribute("filePathList", filePathList)
+				.addAttribute("conflictInfoList", conflictInfoList)
+				.addAttribute("success", true);
 	}
 	
 	/**
@@ -234,38 +234,38 @@ public class DeployController {
 			@RequestParam(defaultValue = "0")
 			Long patchGroupId,
 			String deployManner) {
-		Map<String, Object> resultMap = new HashMap<String, Object>();
+		ModelMap resultMap = new ModelMap();
 		DeployRecord deployRecord = null;
 		PatchGroup patchGroup = null;
 		if(deployRecordId == null || deployRecordId <= 0 || (deployRecord = deployService.getDeployRecordById(deployRecordId)) == null) {
-			resultMap.put("success", false);
-			resultMap.put("message", "参数有误!");
-			return resultMap;
+			return resultMap
+					.addAttribute("success", false)
+					.addAttribute("message", "参数有误!");
 		}
 		DeployLock lock = deployService.checkCurrentLock();
 		if(lock == null || lock.getDeployRecord().getId() != deployRecordId) {
-			resultMap.put("success", false);
-			resultMap.put("message", "本次发布已被解锁!");
-			return resultMap;
+			return resultMap
+					.addAttribute("success", false)
+					.addAttribute("message", "本次发布已被解锁!");
 		}
 		if(DeployRecord.STATUS_PREPARE.equals(deployRecord.getStatus())) {
-			resultMap.put("success", false);
-			resultMap.put("message", "尚未上传文件");
-			return resultMap;
+			return resultMap
+					.addAttribute("success", false)
+					.addAttribute("message", "尚未上传文件");
 		}
 		if(Boolean.TRUE == null) { // TODO 发布仍在继续
-			resultMap.put("success", false);
-			resultMap.put("message", "发布仍在继续中...");
-			return resultMap;
+			return resultMap
+					.addAttribute("success", false)
+					.addAttribute("message", "发布仍在继续中...");
 		}
 		if(patchGroupId != null && patchGroupId > 0) {
 			patchGroup = patchGroupService.getPatchGroupById(patchGroupId);
 		}
 		// 开始发布
 		doDeploy(deployRecord, patchGroup, deployManner);
-		resultMap.put("success", true);
-		resultMap.put("message", "发布启动成功!");
-		return resultMap;
+		return resultMap
+				.addAttribute("success", true)
+				.addAttribute("message", "发布启动成功!");
 	}
 	
 	private void doDeploy(DeployRecord deployRecord, PatchGroup patchGroup, String deployManner) {
@@ -276,16 +276,16 @@ public class DeployController {
 			deployService.saveOrUpdateDeployItem(item);
 			deployService.generateConflictDetailForDeployRecord(deployRecord, patchGroup);
 		}
+		deployRecord.setStatus(DeployRecord.STATUS_DEPLOYING);
+		deployService.saveOrUpdateDeployRecord(deployRecord);
 		// 2. 按类型和方式开始发布
 		deployService.deploy(deployRecord, deployManner);
 		// 3. deployRecord设置成发布中状态
-		deployRecord.setStatus(DeployRecord.STATUS_DEPLOYING);
-		deployService.saveOrUpdateDeployRecord(deployRecord);
 	}
 	
 	@RequestMapping("/readDeployLogOnRealtime")
 	public @ResponseBody Map<String, Object> readDeployLogOnRealtime(Long deployRecordId) {
-		Map<String, Object> resultMap = new HashMap<String, Object>();
+		ModelMap resultMap = new ModelMap();
 		resultMap.put("logInfoList", Arrays.asList(new String[]{"发布完成了，呵呵"}));
 		resultMap.put("isFinished", true);
 		resultMap.put("deployResult", true);

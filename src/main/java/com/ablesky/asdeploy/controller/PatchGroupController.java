@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -105,27 +106,27 @@ public class PatchGroupController {
 			String checkCode,
 			String status
 			) {
-		Map<String, Object> resultMap = new HashMap<String, Object>();
+		ModelMap resultMap = new ModelMap();
 		PatchGroup patchGroup = null;
 		Project project = null;
 		User user = null;
 		String username = AuthUtil.getCurrentUsername();
 		if(StringUtils.isBlank(username) || (user = userService.getUserByUsername(username)) == null) {
-			resultMap.put("success", false);
-			resultMap.put("message", "用户未登录或不存在!");
-			return resultMap;
+			return resultMap
+					.addAttribute("success", false)
+					.addAttribute("message", "用户未登录或不存在!");
 		}
 		if(projectId == null || projectId == 0 || (project = projectService.getProjectById(projectId)) == null) {
-			resultMap.put("success", false);
-			resultMap.put("message", "项目不存在!");
-			return resultMap;
+			return resultMap
+					.addAttribute("success", false)
+					.addAttribute("message", "项目不存在!");
 		}
 		if(id != null && id > 0) {
 			patchGroup = patchGroupService.getPatchGroupById(id);
 			if(patchGroup == null) {
-				resultMap.put("success", false);
-				resultMap.put("message", "补丁组不存在!");
-				return resultMap;
+				return resultMap
+						.addAttribute("success", false)
+						.addAttribute("message", "补丁组不存在!");
 			}
 		} else {
 			patchGroup = new PatchGroup();
@@ -140,9 +141,9 @@ public class PatchGroupController {
 			patchGroup.setFinishTime(new Timestamp(System.currentTimeMillis()));
 		}
 		patchGroupService.saveOrUpdatePatchGroup(patchGroup);
-		resultMap.put("success", true);
-		resultMap.put("message", "补丁组保存成功!");
-		return resultMap;
+		return resultMap
+				.addAttribute("success", true)
+				.addAttribute("message", "补丁组保存成功!");
 	}
 	
 	@RequestMapping(value="/listData")
@@ -151,7 +152,7 @@ public class PatchGroupController {
 			@RequestParam(defaultValue="") String status,
 			@RequestParam(defaultValue=CommonConstant.DEFAUTL_START_STR) int start,
 			@RequestParam(defaultValue=CommonConstant.DEFAULT_LIMIT_STR) int limit) {
-		Map<String, Object> param = new HashMap<String, Object>();
+		ModelMap param = new ModelMap();
 		if(projectId > 0){
 			param.put("project_id", projectId);
 		}

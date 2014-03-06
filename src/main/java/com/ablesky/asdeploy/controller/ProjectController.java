@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -51,7 +52,7 @@ public class ProjectController {
 			Long id,
 			String name,
 			String warName) {
-		Map<String, Object> resultMap = new HashMap<String, Object>();
+		ModelMap resultMap = new ModelMap();
 		Project project = null;
 		if(id != null && id > 0) {
 			project = projectService.getProjectById(id);
@@ -66,27 +67,25 @@ public class ProjectController {
 		project.setName(name);
 		project.setWarName(warName);
 		projectService.saveOrUpdateProject(project);
-		resultMap.put("success", true);
-		return resultMap;
+		return resultMap.addAttribute("success", true);
 	}
 	
 	
 	@RequestMapping(value="/delete/{id}", method=RequestMethod.POST)
 	public @ResponseBody Map<String, Object> delete(@PathVariable("id") Long id) {
 		projectService.deleteProjectById(id);
-		Map<String, Object> resultMap = new HashMap<String, Object>();
-		resultMap.put("success", true);
-		resultMap.put("message", "删除成功!");
-		return resultMap;
+		ModelMap resultMap = new ModelMap();
+		return resultMap
+				.addAttribute("success", true)
+				.addAttribute("message", "删除成功!");
 	}
 	
 	@ExceptionHandler
 	@ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
 	public @ResponseBody Map<String, Object> runtimeExceptionHandler(RuntimeException runtimeException) {
 		runtimeException.printStackTrace();
-		Map<String, Object> exceptionMap = new HashMap<String, Object>();
-		exceptionMap.put("success", false);
-		exceptionMap.put("message", "操作失败!");
-		return exceptionMap;
+		return new ModelMap()
+				.addAttribute("success", false)
+				.addAttribute("message", "操作失败!");
 	}
 }

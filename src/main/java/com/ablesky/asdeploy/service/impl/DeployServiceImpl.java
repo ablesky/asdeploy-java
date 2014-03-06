@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,11 +15,14 @@ import org.springframework.web.multipart.MultipartFile;
 import com.ablesky.asdeploy.dao.IDeployItemDao;
 import com.ablesky.asdeploy.dao.IDeployLockDao;
 import com.ablesky.asdeploy.dao.IDeployRecordDao;
+import com.ablesky.asdeploy.dao.IPatchFileDao;
 import com.ablesky.asdeploy.dao.IPatchGroupDao;
 import com.ablesky.asdeploy.dao.IProjectDao;
+import com.ablesky.asdeploy.dao.impl.PatchFileDaoImpl;
 import com.ablesky.asdeploy.pojo.DeployItem;
 import com.ablesky.asdeploy.pojo.DeployLock;
 import com.ablesky.asdeploy.pojo.DeployRecord;
+import com.ablesky.asdeploy.pojo.PatchFile;
 import com.ablesky.asdeploy.pojo.PatchGroup;
 import com.ablesky.asdeploy.pojo.Project;
 import com.ablesky.asdeploy.service.IDeployService;
@@ -40,6 +44,8 @@ public class DeployServiceImpl implements IDeployService {
 	private IDeployRecordDao deployRecordDao;
 	@Autowired
 	private IDeployItemDao deployItemDao;
+	@Autowired
+	private IPatchFileDao patchFileDao;
 	
 	/**
 	 * 检查发布流程是否被锁定
@@ -163,6 +169,23 @@ public class DeployServiceImpl implements IDeployService {
 	@Override
 	public void generateConflictDetailForDeployRecord(DeployRecord deployRecord, PatchGroup patchGroup) {
 		// TODO
+	}
+	
+	public void persistInfoBeforeDeployStart(DeployRecord deployRecord, PatchGroup patchGroup) {
+		DeployItem item = deployRecord.getDeployItem();
+		if(patchGroup != null && DeployItem.DEPLOY_TYPE_PATCH.equals(deployRecord.getDeployItem().getDeployType())) {
+			item.setPatchGroup(patchGroup);
+			saveOrUpdateDeployItem(item);
+		}
+		// 持久化文件列表
+		String targetFolderPath = FilenameUtils.concat(item.getFolderPath(), FilenameUtils.getBaseName(item.getFileName()));
+		List<String> filePathList = DeployUtil.getDeployItemFilePathList(targetFolderPath);
+//		List<PatchFile> existedPatchFileList = patchFileDao
+		// 根据文件列表检测并持久化冲突信息
+		
+		// 将deployRecord的状态置为"发布中"
+		deployRecord.setStatus(DeployRecord.STATUS_DEPLOYING);
+		saveOrUpdateDeployRecord(deployRecord);
 	}
 	
 	@Override
