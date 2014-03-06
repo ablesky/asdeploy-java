@@ -79,7 +79,7 @@ CREATE INDEX "patch_group_project_id" ON "patch_group" ("project_id");
 -- patch_file
 DROP TABLE IF EXISTS "patch_file";
 CREATE TABLE "patch_file" (
-    "id" integer NOT NULL PRIMARY KEY,
+    "id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
     "project_id" integer NOT NULL REFERENCES "project" ("id"),
     "file_path" varchar(196) NOT NULL UNIQUE,
     "file_type" varchar(10) NOT NULL
@@ -89,7 +89,7 @@ CREATE INDEX "patch_file_project_id" ON "patch_file" ("project_id");
 -- patch_file_rel_group
 DROP TABLE IF EXISTS "patch_file_rel_group";
 CREATE TABLE "patch_file_rel_group" (
-    "id" integer NOT NULL PRIMARY KEY,
+    "id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
     "patch_group_id" integer NOT NULL REFERENCES "patch_group" ("id"),
     "patch_file_id" integer NOT NULL REFERENCES "patch_file" ("id"),
     "create_time" datetime NOT NULL
@@ -100,11 +100,21 @@ CREATE INDEX "patch_file_rel_group_patch_file_id" ON "patch_file_rel_group" ("pa
 -- conflict_info
 DROP TABLE IF EXISTS "conflict_info";
 CREATE TABLE "conflict_info" (
-    "id" integer NOT NULL PRIMARY KEY,
+    "id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
     "conflict_patch_group_id" integer NOT NULL REFERENCES "patch_group" ("id"),
     "conflict_patch_file_id" integer NOT NULL REFERENCES "patch_file" ("id"),
 	"related_patch_group_id" integer NOT NULL REFERENCES "patch_group" ("id")
 );
 CREATE INDEX "conflict_info_conflict_patch_file_id" ON "conflict_info" ("conflict_patch_file_id");
 CREATE INDEX "conflict_info_conflict_patch_group_id" ON "conflict_info" ("conflict_patch_group_id");
+
+-- conflict_detail
+DROP TABLE IF EXISTS "conflict_detail";
+CREATE TABLE "conflict_detail" (
+	"id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+	"deploy_record_id" integer NOT NULL REFERENCES "deploy_record" ("id"),
+	"conflict_info_id" integer NOT NULL REFERENCES "conflict_info" ("id")
+);
+CREATE INDEX "conflict_detail_deploy_record_id" ON "conflict_detail" ("deploy_record_id");
+CREATE INDEX "conflict_detail_conflict_info_id" ON "conflict_detail" ("conflict_info_id");
 

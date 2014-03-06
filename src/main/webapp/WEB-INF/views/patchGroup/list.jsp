@@ -163,7 +163,7 @@
 						<td><fmt:formatDate value="${patchGroup.finishTime}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
 						<td>${patchGroup.status == 'testing'? '测试中': '已完成'}</td>
 						<td>
-							<a class="detail-btn" href="javascript:void(0);" data-id="${patchGroup.id}">详情</a>
+							<a class="detail-btn" href="${ctx_path}/patchGroup/detail/${patchGroup.id}">详情</a>
 							&nbsp;&nbsp;
 							<a class="edit-btn" href="javascript:void(0);" data-id="${patchGroup.id}">修改</a>
 							<!-- 

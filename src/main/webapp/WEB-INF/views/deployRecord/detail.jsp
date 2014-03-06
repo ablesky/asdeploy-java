@@ -39,7 +39,7 @@ h3.title {
 				</tr>
 				<tr>
 					<td>上传文件名:</td>
-					<td>${deployRecord.deployItem.fileName}}</td>
+					<td>${deployRecord.deployItem.fileName}</td>
 				</tr>
 				<c:if test="${deployRecord.deployItem.patchGroup != null}">
 				<tr>

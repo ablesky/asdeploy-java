@@ -9,6 +9,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+/**
+ * ConflictInfo用于记录补丁组之间基于单个文件的冲突
+ * @author zyang
+ */
 @Entity
 @Table(name="conflict_info")
 public class ConflictInfo extends AbstractModel {
@@ -24,7 +28,7 @@ public class ConflictInfo extends AbstractModel {
 	private PatchGroup patchGroup;
 	// 冲突文件信息
 	@ManyToOne
-	@JoinColumn(name="patch_file_id")
+	@JoinColumn(name="conflict_patch_file_id")
 	private PatchFile patchFile;
 	// 与其他的哪些补丁组冲突
 	@Column(name="related_patch_group_id")

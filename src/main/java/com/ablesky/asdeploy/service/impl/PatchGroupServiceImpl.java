@@ -11,8 +11,10 @@ import org.apache.commons.collections4.Transformer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.ablesky.asdeploy.dao.IPatchFileDao;
 import com.ablesky.asdeploy.dao.IPatchFileRelGroupDao;
 import com.ablesky.asdeploy.dao.IPatchGroupDao;
+import com.ablesky.asdeploy.pojo.PatchFile;
 import com.ablesky.asdeploy.pojo.PatchFileRelGroup;
 import com.ablesky.asdeploy.pojo.PatchGroup;
 import com.ablesky.asdeploy.pojo.Project;
@@ -26,6 +28,8 @@ public class PatchGroupServiceImpl implements IPatchGroupService {
 	private IPatchGroupDao patchGroupDao;
 	@Autowired
 	private IPatchFileRelGroupDao patchFileRelGroupDao;
+	@Autowired
+	private IPatchFileDao patchFileDao;
 	
 	@Override
 	public void saveOrUpdatePatchGroup(PatchGroup patchGroup) {
@@ -45,6 +49,16 @@ public class PatchGroupServiceImpl implements IPatchGroupService {
 	@Override
 	public Page<PatchGroup> getPatchGroupPaginateResult(int start, int limit, Map<String, Object> param) {
 		return patchGroupDao.paginate(start, limit, param);
+	}
+	
+	@Override
+	public List<PatchFile> getPatchFileListResult(int start, int limit, Map<String, Object> param) {
+		return patchFileDao.list(start, limit, param);
+	}
+	
+	@Override
+	public List<PatchFileRelGroup> getPatchFileRelGroupListResult(int start, int limit, Map<String, Object> param) {
+		return patchFileRelGroupDao.list(start, limit, param);
 	}
 	
 	/**

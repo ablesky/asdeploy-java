@@ -4,19 +4,18 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Transformer;
-import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.ablesky.asdeploy.dao.IConflictDetailDao;
 import com.ablesky.asdeploy.dao.IConflictInfoDao;
 import com.ablesky.asdeploy.dao.IDeployItemDao;
 import com.ablesky.asdeploy.dao.IDeployLockDao;
@@ -25,6 +24,7 @@ import com.ablesky.asdeploy.dao.IPatchFileDao;
 import com.ablesky.asdeploy.dao.IPatchFileRelGroupDao;
 import com.ablesky.asdeploy.dao.IPatchGroupDao;
 import com.ablesky.asdeploy.dao.IProjectDao;
+import com.ablesky.asdeploy.pojo.ConflictDetail;
 import com.ablesky.asdeploy.pojo.ConflictInfo;
 import com.ablesky.asdeploy.pojo.DeployItem;
 import com.ablesky.asdeploy.pojo.DeployLock;
@@ -59,6 +59,8 @@ public class DeployServiceImpl implements IDeployService {
 	private IConflictInfoDao conflictInfoDao;
 	@Autowired
 	private IPatchFileRelGroupDao patchFileRelGroupDao;
+	@Autowired
+	private IConflictDetailDao conflictDetailDao;
 	
 	@Autowired
 	private IPatchGroupService patchGroupService;
@@ -195,7 +197,7 @@ public class DeployServiceImpl implements IDeployService {
 		batchSaveUnexistedPatchFileRelGroup(patchGroup, filePathList);
 		// 根据文件列表检测并持久化冲突信息
 		List<PatchFileRelGroup> conflictRelList = patchGroupService.getPatchFileRelGroupListWhichConflictWith(patchGroup, filePathList);
-		batchSaveUnexistedConflictInfo(patchGroup, conflictRelList);
+		batchSaveUnexistedConflictInfo(patchGroup, deployRecord, conflictRelList);
 		// 将deployRecord的状态置为"发布中"
 		deployRecord.setStatus(DeployRecord.STATUS_DEPLOYING);
 		saveOrUpdateDeployRecord(deployRecord);
@@ -235,7 +237,7 @@ public class DeployServiceImpl implements IDeployService {
 		}
 	}
 	
-	public void batchSaveUnexistedConflictInfo(final PatchGroup patchGroup, List<PatchFileRelGroup> conflictRelList) {
+	public void batchSaveUnexistedConflictInfo(final PatchGroup patchGroup, DeployRecord deployRecord, List<PatchFileRelGroup> conflictRelList) {
 		if(CollectionUtils.isEmpty(conflictRelList)) {
 			return;
 		}
@@ -257,6 +259,25 @@ public class DeployServiceImpl implements IDeployService {
 			}
 		}));
 		batchSaveOrUpdateConflictInfo(unexistedConflictInfoList);
+		// 此处调用下面这个方法，已经有些ugly了
+		batchSaveConflictDetail(deployRecord, new ArrayList<ConflictInfo>(CollectionUtils.union(existedConflictInfoList, unexistedConflictInfoList)));
+	}
+	
+	public void batchSaveConflictDetail(DeployRecord deployRecord, List<ConflictInfo> conflictInfoList) {
+		if(CollectionUtils.isEmpty(conflictInfoList)) {
+			return;
+		}
+		List<ConflictDetail> conflictDetailList = new ArrayList<ConflictDetail>();
+		for(ConflictInfo conflictInfo: conflictInfoList) {
+			conflictDetailList.add(new ConflictDetail(deployRecord.getId(), conflictInfo.getId()));
+		}
+		batchSaveOrUpdateConflictDetail(conflictDetailList);
+	}
+	
+	public void batchSaveOrUpdateConflictDetail(List<ConflictDetail> conflictDetailList) {
+		for(ConflictDetail conflictDetail: conflictDetailList) {
+			conflictDetailDao.saveOrUpdate(conflictDetail);
+		}
 	}
 	
 	public void batchSaveOrUpdateConflictInfo(List<ConflictInfo> conflictInfoList) {

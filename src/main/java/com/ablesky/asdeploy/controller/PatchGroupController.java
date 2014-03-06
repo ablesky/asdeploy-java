@@ -1,10 +1,14 @@
 package com.ablesky.asdeploy.controller;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.Transformer;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ablesky.asdeploy.pojo.PatchFile;
+import com.ablesky.asdeploy.pojo.PatchFileRelGroup;
 import com.ablesky.asdeploy.pojo.PatchGroup;
 import com.ablesky.asdeploy.pojo.Project;
 import com.ablesky.asdeploy.pojo.User;
@@ -76,8 +82,20 @@ public class PatchGroupController {
 		return "patchGroup/list";
 	}
 	
-	@RequestMapping("/detail")
-	public String toDetail() {
+	@RequestMapping("/detail/{id}")
+	public String toDetail(@PathVariable("id") Long id, Model model) {
+		PatchGroup patchGroup = patchGroupService.getPatchGroupById(id);
+		List<PatchFileRelGroup> relList = patchGroupService.getPatchFileRelGroupListResult(0, 0, new ModelMap()
+				.addAttribute("patchGroupId", id)
+		);
+		List<PatchFile> patchFileList = new ArrayList<PatchFile>(CollectionUtils.collect(relList, new Transformer<PatchFileRelGroup, PatchFile>() {
+			@Override
+			public PatchFile transform(PatchFileRelGroup rel) {
+				return rel.getPatchFile();
+			}
+		}));
+		model.addAttribute("patchGroup", patchGroup)
+			.addAttribute("patchFileList", patchFileList);
 		return "patchGroup/detail";
 	}
 	
