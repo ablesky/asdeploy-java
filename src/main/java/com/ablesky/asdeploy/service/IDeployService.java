@@ -1,6 +1,7 @@
 package com.ablesky.asdeploy.service;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -32,8 +33,8 @@ public interface IDeployService {
 
 	void saveOrUpdateDeployItem(DeployItem item);
 
-	void generateConflictDetailForDeployRecord(DeployRecord deployRecord, PatchGroup patchGroup);
-
 	void deploy(DeployRecord deployRecord, String deployManner);
+
+	void persistInfoBeforeDeployStart(DeployRecord deployRecord, PatchGroup patchGroup, List<String> filePathList);
 
 }

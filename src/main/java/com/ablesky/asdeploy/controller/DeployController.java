@@ -193,15 +193,17 @@ public class DeployController {
 		String targetFolderPath = FilenameUtils.concat(deployItem.getFolderPath(), FilenameUtils.getBaseName(deployItem.getFileName()));
 		List<String> filePathList = DeployUtil.getDeployItemFilePathList(targetFolderPath);
 		List<ConflictInfoDto> conflictInfoList = Collections.emptyList();
-		PatchGroup patchGroup = null;
-		if(patchGroupId != null && patchGroupId > 0 && (patchGroup = patchGroupService.getPatchGroupById(patchGroupId)) != null) {
-			List<PatchFileRelGroup> conflictRelList = patchGroupService.getPatchFileRelGroupListWhichConflictWith(patchGroup, filePathList);
-			conflictInfoList = new ArrayList<ConflictInfoDto>(CollectionUtils.collect(conflictRelList, new Transformer<PatchFileRelGroup, ConflictInfoDto>() {
-				@Override
-				public ConflictInfoDto transform(PatchFileRelGroup conflictRel) {
-					return new ConflictInfoDto().fillDto(conflictRel);
-				}
-			}));
+		if(patchGroupId != null && patchGroupId > 0) {
+			final PatchGroup patchGroup = patchGroupService.getPatchGroupById(patchGroupId);
+			if(patchGroup != null) {
+				List<PatchFileRelGroup> conflictRelList = patchGroupService.getPatchFileRelGroupListWhichConflictWith(patchGroup, filePathList);
+				conflictInfoList = new ArrayList<ConflictInfoDto>(CollectionUtils.collect(conflictRelList, new Transformer<PatchFileRelGroup, ConflictInfoDto>() {
+					@Override
+					public ConflictInfoDto transform(PatchFileRelGroup conflictRel) {
+						return new ConflictInfoDto().fillDto(patchGroup, conflictRel);
+					}
+				}));
+			}
 		}
 		return resultMap
 				.addAttribute("filePathList", filePathList)
@@ -270,17 +272,11 @@ public class DeployController {
 	
 	private void doDeploy(DeployRecord deployRecord, PatchGroup patchGroup, String deployManner) {
 		// 1. 记录补丁组及冲突信息
-		if(patchGroup != null && DeployItem.DEPLOY_TYPE_PATCH.equals(deployRecord.getDeployItem().getDeployType())) {
-			DeployItem item = deployRecord.getDeployItem();
-			item.setPatchGroup(patchGroup);
-			deployService.saveOrUpdateDeployItem(item);
-			deployService.generateConflictDetailForDeployRecord(deployRecord, patchGroup);
-		}
-		deployRecord.setStatus(DeployRecord.STATUS_DEPLOYING);
-		deployService.saveOrUpdateDeployRecord(deployRecord);
-		// 2. 按类型和方式开始发布
+		DeployItem item = deployRecord.getDeployItem();
+		String targetFolderPath = FilenameUtils.concat(item.getFolderPath(), FilenameUtils.getBaseName(item.getFileName()));
+		List<String> filePathList = DeployUtil.getDeployItemFilePathList(targetFolderPath);
+		deployService.persistInfoBeforeDeployStart(deployRecord, patchGroup, filePathList);
 		deployService.deploy(deployRecord, deployManner);
-		// 3. deployRecord设置成发布中状态
 	}
 	
 	@RequestMapping("/readDeployLogOnRealtime")

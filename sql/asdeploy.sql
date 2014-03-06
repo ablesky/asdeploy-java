@@ -104,8 +104,8 @@ CREATE TABLE "conflict_info" (
     "id" integer NOT NULL PRIMARY KEY,
     "conflict_patch_group_id" integer NOT NULL REFERENCES "patch_group" ("id"),
     "conflict_patch_file_id" integer NOT NULL REFERENCES "patch_file" ("id"),
-    "is_excluded_conflict" bool NOT NULL
-, related_patch_group_id integer);
+	"related_patch_group_id" integer NOT NULL REFERENCES "patch_group" ("id")
+);
 CREATE INDEX "conflict_info_conflict_patch_file_id" ON "conflict_info" ("conflict_patch_file_id");
 CREATE INDEX "conflict_info_conflict_patch_group_id" ON "conflict_info" ("conflict_patch_group_id");
 

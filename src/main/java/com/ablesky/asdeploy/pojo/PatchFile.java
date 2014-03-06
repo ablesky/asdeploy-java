@@ -31,6 +31,11 @@ public class PatchFile extends AbstractModel {
 	
 	public PatchFile() {}
 	
+	public PatchFile(Project project, String filePath) {
+		this.project = project;
+		this.filePath = filePath;
+	}
+	
 	public Long getId() {
 		return id;
 	}
