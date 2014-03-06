@@ -100,6 +100,19 @@ public class BasicHibernateDaoImpl {
 		return new Page<T>(start, limit, count(hql, param), this.<T>list(start, limit, hql, param));
 	}
 	
+	public void executeSql(String sql) {
+		executeSql(sql, Collections.<String, Object>emptyMap());
+	}
+	
+	public void executeSql(String sql, Map<String, Object> param) {
+		Session session = getCurrentSession();
+		Query query = session.createSQLQuery(sql);
+		for (String key : getPlaceHolderList(sql)) {
+			fillParameter(query, key, param);
+		}
+		query.executeUpdate();
+	}
+	
 	private void fillParameter(Query query, String key, Object value) {
 		if(query == null || StringUtils.isBlank(key)) {
 			return;

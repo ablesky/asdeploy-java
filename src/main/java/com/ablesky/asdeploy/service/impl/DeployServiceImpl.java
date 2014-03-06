@@ -228,9 +228,11 @@ public class DeployServiceImpl implements IDeployService {
 		for(PatchFile patchFile: patchFileMap.values()) {
 			unexistedRelList.add(new PatchFileRelGroup(patchGroup.getId(), patchFile, createTime));
 		}
-		batchSaveOrUpdatePatchFileRelGroup(unexistedRelList);
+//		batchSaveOrUpdatePatchFileRelGroup(unexistedRelList);
+		patchFileRelGroupDao.batchSave(unexistedRelList);
 	}
 	
+	@Deprecated
 	public void batchSaveOrUpdatePatchFileRelGroup(List<PatchFileRelGroup> relList) {
 		for(PatchFileRelGroup rel: relList) {
 			patchFileRelGroupDao.saveOrUpdate(rel);
@@ -258,7 +260,8 @@ public class DeployServiceImpl implements IDeployService {
 				return new ConflictInfo(conflictRel.getPatchFile(), patchGroup.getId(), conflictRel.getPatchGroupId());
 			}
 		}));
-		batchSaveOrUpdateConflictInfo(unexistedConflictInfoList);
+//		batchSaveOrUpdateConflictInfo(unexistedConflictInfoList);
+		conflictInfoDao.batchSave(unexistedConflictInfoList);
 		// 此处调用下面这个方法，已经有些ugly了
 		batchSaveConflictDetail(deployRecord, new ArrayList<ConflictInfo>(CollectionUtils.union(existedConflictInfoList, unexistedConflictInfoList)));
 	}
@@ -271,15 +274,19 @@ public class DeployServiceImpl implements IDeployService {
 		for(ConflictInfo conflictInfo: conflictInfoList) {
 			conflictDetailList.add(new ConflictDetail(deployRecord.getId(), conflictInfo.getId()));
 		}
-		batchSaveOrUpdateConflictDetail(conflictDetailList);
+		// TODO 要删除已经存在的conflictDetail
+		// batchSaveOrUpdateConflictDetail(conflictDetailList);
+		conflictDetailDao.batchSave(conflictDetailList);
 	}
 	
+	@Deprecated
 	public void batchSaveOrUpdateConflictDetail(List<ConflictDetail> conflictDetailList) {
 		for(ConflictDetail conflictDetail: conflictDetailList) {
 			conflictDetailDao.saveOrUpdate(conflictDetail);
 		}
 	}
 	
+	@Deprecated
 	public void batchSaveOrUpdateConflictInfo(List<ConflictInfo> conflictInfoList) {
 		for(ConflictInfo conflictInfo: conflictInfoList) {
 			conflictInfoDao.saveOrUpdate(conflictInfo);
@@ -301,9 +308,11 @@ public class DeployServiceImpl implements IDeployService {
 		for(String unexistedFilePath: unexistedFilePathList) {
 			unexistedPatchFileList.add(new PatchFile(project, unexistedFilePath));
 		}
-		batchSaveOrUpdatePatchFile(unexistedPatchFileList);
+		//batchSaveOrUpdatePatchFile(unexistedPatchFileList);
+		patchFileDao.batchSave(unexistedPatchFileList);
 	}
 	
+	@Deprecated
 	public void batchSaveOrUpdatePatchFile(List<PatchFile> patchFileList) {
 		// 暂时先简单的实现下，以后再考虑性能优化
 		for(PatchFile patchFile: patchFileList) {

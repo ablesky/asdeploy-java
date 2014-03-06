@@ -311,6 +311,7 @@ function initStartDeployBtn() {
 				showDeployResultFailed('发布启动失败!');
 				return;
 			}
+			showDeployInfo('发布启动成功!');
 			setTimeout(readDeployLogOnRealtime, 1500);
 		});
 	});

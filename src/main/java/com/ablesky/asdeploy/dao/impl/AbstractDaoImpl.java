@@ -169,4 +169,12 @@ public abstract class AbstractDaoImpl<E extends AbstractModel> implements IAbstr
 		}
 		return (Class)params[index];
 	}
+	
+	public void executeSql(String sql) {
+		basicHibernateDaoImpl.executeSql(sql);
+	}
+	
+	public void executeSql(String sql, Map<String, Object> param) {
+		basicHibernateDaoImpl.executeSql(sql, param);
+	}
 }
