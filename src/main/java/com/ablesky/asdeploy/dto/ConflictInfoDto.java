@@ -65,23 +65,23 @@ public class ConflictInfoDto {
 		filePath = conflictRel.getPatchFile().getFilePath();
 		return this;
 	}
-	
-	/**
-	 * conflictInfo是发布开始时进行记录的，用于后续patchGroup详情页面
-	 */
-	public ConflictInfoDto fillDto(ConflictInfo conflictInfo) {
-		id = conflictInfo.getId();
-		patchGroupId = conflictInfo.getPatchGroupId();
-		if(conflictInfo.getPatchGroup() != null) {
-			patchGroupName = conflictInfo.getPatchGroup().getName();
-		}
-		relatedPatchGroupId = conflictInfo.getRelatedPatchGroupId();
-		if(conflictInfo.getRelatedPatchGroup() != null) {
-			relatedPatchGroupName = conflictInfo.getRelatedPatchGroup().getName();
-		}
-		filePath = conflictInfo.getPatchFile().getFilePath();
-		return this;
-	}
+//	
+//	/**
+//	 * conflictInfo是发布开始时进行记录的，用于后续patchGroup详情页面
+//	 */
+//	public ConflictInfoDto fillDto(ConflictInfo conflictInfo) {
+//		id = conflictInfo.getId();
+//		patchGroupId = conflictInfo.getPatchGroupId();
+//		if(conflictInfo.getPatchGroup() != null) {
+//			patchGroupName = conflictInfo.getPatchGroup().getName();
+//		}
+//		relatedPatchGroupId = conflictInfo.getRelatedPatchGroupId();
+//		if(conflictInfo.getRelatedPatchGroup() != null) {
+//			relatedPatchGroupName = conflictInfo.getRelatedPatchGroup().getName();
+//		}
+//		filePath = conflictInfo.getPatchFile().getFilePath();
+//		return this;
+//	}
 	
 	
 	

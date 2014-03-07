@@ -1,7 +1,5 @@
 package com.ablesky.asdeploy.dao.impl;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -12,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ablesky.asdeploy.dao.IAbstractDao;
 import com.ablesky.asdeploy.pojo.AbstractModel;
+import com.ablesky.asdeploy.util.ClassUtil;
 import com.ablesky.asdeploy.util.CommonConstant;
 import com.ablesky.asdeploy.util.Page;
 
@@ -21,7 +20,7 @@ public abstract class AbstractDaoImpl<E extends AbstractModel> implements IAbstr
 	private BasicHibernateDaoImpl basicHibernateDaoImpl;
 	
 	@SuppressWarnings("unchecked")
-	private Class<E> entityClass = getSuperClassGenericType(this.getClass());
+	private Class<E> entityClass = ClassUtil.getSuperClassGenericType(this.getClass(), 0);
 	private String entityClassName = entityClass.getSimpleName();
 	
 	@Override
@@ -150,24 +149,6 @@ public abstract class AbstractDaoImpl<E extends AbstractModel> implements IAbstr
 			placeholder = " ( " + placeholder + " ) ";
 		}
 		return new String[] { oriKey.replaceAll("_", "."), oper, placeholder };
-	}
-	
-	@SuppressWarnings("rawtypes")
-	private static Class getSuperClassGenericType(Class<?> clazz){
-		return getSuperClassGenericType(clazz, 0);
-	}
-	
-	@SuppressWarnings("rawtypes")
-	private static Class getSuperClassGenericType(Class clazz, int index){
-		Type genType = clazz.getGenericSuperclass();
-		if(!(genType instanceof ParameterizedType)){
-			return Object.class;
-		}
-		Type[] params = ((ParameterizedType)genType).getActualTypeArguments();
-		if(index < 0 || index >= params.length){
-			return Object.class;
-		}
-		return (Class)params[index];
 	}
 	
 	public void executeSql(String sql) {

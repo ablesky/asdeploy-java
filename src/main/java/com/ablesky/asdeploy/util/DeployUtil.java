@@ -18,14 +18,58 @@ import org.apache.commons.io.filefilter.NameFileFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.mozilla.universalchardet.UniversalDetector;
 
+import com.ablesky.asdeploy.pojo.DeployItem;
+
 public class DeployUtil {
 	
 	private static final DeployConfiguration CONFIG = DeployConfiguration.getInstance();
 
 	private DeployUtil() {}
 	
+	/**
+	 * 获取上传补丁的目录(补丁目录的父目录)
+	 */
 	public static String getDeployItemUploadFolder(String projectName, String version) {
 		return CONFIG.getItemRootPath() + projectName + "-" + version + "/";
+	}
+	
+	/**
+	 * 获取补丁目录
+	 */
+	public static String getDeployItemPatchFolder(DeployItem deployItem, String deployManner) {
+		String deployItemName = FilenameUtils.getBaseName(deployItem.getFileName());
+		if("rollback".equalsIgnoreCase(deployManner)) {
+			deployItemName = deployItemName.replace("-todo", "-bakup");
+		}
+		return FilenameUtils.concat(getDeployItemUploadFolder(deployItem.getProject().getName(), deployItem.getVersion()), deployItemName);
+	}
+	
+	/**
+	 * 获取发布补丁的脚本目录
+	 */
+	public static String getDeployPatchScriptPath() {
+		return FilenameUtils.concat(CONFIG.getScriptRootPath(), "patch-shell/start_patch_main.sh");
+	}
+	
+	/**
+	 * 获取发布版本的脚本目录
+	 */
+	public static String getDeployWarScriptPath(String projectName) {
+		return FilenameUtils.concat(CONFIG.getScriptRootPath(), projectName + "-deploy/" + projectName + ".sh");
+	}
+	
+	/**
+	 * 解压缩文件
+	 */
+	public static void unzipDeployItem(DeployItem deployItem) throws IOException {
+		String sourceFilePath = FilenameUtils.concat(deployItem.getFolderPath(), deployItem.getFileName());
+		String targetFolderPath = FilenameUtils.concat(deployItem.getFolderPath(), FilenameUtils.getBaseName(deployItem.getFileName()));
+		String parentFolderPath = deployItem.getFolderPath();
+		File targetFolder = new File(targetFolderPath);
+		if(targetFolder.exists()) {
+			FileUtils.deleteDirectory(targetFolder);
+		}
+		ZipUtil.unzip(sourceFilePath, parentFolderPath);
 	}
 	
 	/**

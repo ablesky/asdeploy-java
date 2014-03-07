@@ -1,6 +1,5 @@
 package com.ablesky.asdeploy.controller;
 
-import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -11,7 +10,6 @@ import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Transformer;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +35,6 @@ import com.ablesky.asdeploy.service.IPatchGroupService;
 import com.ablesky.asdeploy.service.IProjectService;
 import com.ablesky.asdeploy.util.AuthUtil;
 import com.ablesky.asdeploy.util.DeployUtil;
-import com.ablesky.asdeploy.util.ZipUtil;
 
 @Controller
 @RequestMapping("/deploy")
@@ -188,7 +185,7 @@ public class DeployController {
 					.addAttribute("success", false)
 					.addAttribute("message", "压缩文件不存在!");
 		}
-		unzipDeployItem(deployItem);
+		DeployUtil.unzipDeployItem(deployItem);
 		String targetFolderPath = FilenameUtils.concat(deployItem.getFolderPath(), FilenameUtils.getBaseName(deployItem.getFileName()));
 		List<String> filePathList = DeployUtil.getDeployItemFilePathList(targetFolderPath);
 		List<ConflictInfoDto> conflictInfoList = Collections.emptyList();
@@ -208,20 +205,6 @@ public class DeployController {
 				.addAttribute("filePathList", filePathList)
 				.addAttribute("conflictInfoList", conflictInfoList)
 				.addAttribute("success", true);
-	}
-	
-	/**
-	 * 解压缩文件
-	 */
-	private void unzipDeployItem(DeployItem deployItem) throws IOException {
-		String sourceFilePath = FilenameUtils.concat(deployItem.getFolderPath(), deployItem.getFileName());
-		String targetFolderPath = FilenameUtils.concat(deployItem.getFolderPath(), FilenameUtils.getBaseName(deployItem.getFileName()));
-		String parentFolderPath = deployItem.getFolderPath();
-		File targetFolder = new File(targetFolderPath);
-		if(targetFolder.exists()) {
-			FileUtils.deleteDirectory(targetFolder);
-		}
-		ZipUtil.unzip(sourceFilePath, parentFolderPath);
 	}
 	
 	/**
