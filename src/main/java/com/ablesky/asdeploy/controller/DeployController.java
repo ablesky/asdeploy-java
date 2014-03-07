@@ -6,7 +6,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -281,10 +280,9 @@ public class DeployController {
 	
 	@RequestMapping("/readDeployLogOnRealtime")
 	public @ResponseBody Map<String, Object> readDeployLogOnRealtime(Long deployRecordId) {
-		ModelMap resultMap = new ModelMap();
-		resultMap.put("logInfoList", Arrays.asList(new String[]{"发布完成了，呵呵"}));
-		resultMap.put("isFinished", true);
-		resultMap.put("deployResult", true);
-		return resultMap;
+		return new ModelMap()
+				.addAttribute("logInfoList", Arrays.asList(new String[]{"发布完成了，呵呵"}))
+				.addAttribute("isFinished", true)
+				.addAttribute("deployResult", true);
 	}
 }

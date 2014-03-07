@@ -70,10 +70,10 @@ public class DeployServiceImpl implements IDeployService {
 	 */
 	@Override
 	public DeployLock checkCurrentLock() {
-		Map<String, Object> param = new HashMap<String, Object>();
-		param.put("isLocked", Boolean.TRUE);
-		param.put(CommonConstant.ORDER_BY, "id desc");
-		List<DeployLock> lockList = deployLockDao.list(param);
+		List<DeployLock> lockList = deployLockDao.list(new ModelMap()
+				.addAttribute("isLocked", Boolean.TRUE)
+				.addAttribute(CommonConstant.ORDER_BY, "id desc")
+		);
 		long ts = System.currentTimeMillis();
 		for(DeployLock lock: lockList) {
 			if(lock == null || !lock.getIsLocked()) {
@@ -91,9 +91,9 @@ public class DeployServiceImpl implements IDeployService {
 	
 	@Override
 	public void unlockDeploy() {
-		Map<String, Object> param = new HashMap<String, Object>();
-		param.put("isLocked", Boolean.TRUE);
-		List<DeployLock> lockList = deployLockDao.list(param);
+		List<DeployLock> lockList = deployLockDao.list(new ModelMap()
+				.addAttribute("isLocked", Boolean.TRUE)
+		);
 		boolean isSuperAdmin = AuthUtil.isSuperAdmin();
 		for(DeployLock lock: lockList) {
 			if(lock == null || !lock.getIsLocked()) {
@@ -168,10 +168,10 @@ public class DeployServiceImpl implements IDeployService {
 	
 	@Override
 	public DeployItem getDeployItemByFileNameAndVersion(String fileName, String version) {
-		Map<String, Object> param = new HashMap<String, Object>();
-		param.put("fileName__eq", fileName);
-		param.put("version__eq", version);
-		return deployItemDao.first(param);
+		return deployItemDao.first(new ModelMap()
+				.addAttribute("fileName__eq", fileName)
+				.addAttribute("version__eq", version)
+		);
 	}
 	
 	@Override
@@ -231,15 +231,7 @@ public class DeployServiceImpl implements IDeployService {
 		for(PatchFile patchFile: patchFileMap.values()) {
 			unexistedRelList.add(new PatchFileRelGroup(patchGroup.getId(), patchFile, createTime));
 		}
-//		batchSaveOrUpdatePatchFileRelGroup(unexistedRelList);
 		patchFileRelGroupDao.batchSave(unexistedRelList);
-	}
-	
-	@Deprecated
-	public void batchSaveOrUpdatePatchFileRelGroup(List<PatchFileRelGroup> relList) {
-		for(PatchFileRelGroup rel: relList) {
-			patchFileRelGroupDao.saveOrUpdate(rel);
-		}
 	}
 	
 	public void batchSaveUnexistedConflictInfo(final PatchGroup patchGroup, DeployRecord deployRecord, List<PatchFileRelGroup> conflictRelList, List<String> filePathList) {
@@ -247,7 +239,7 @@ public class DeployServiceImpl implements IDeployService {
 			return;
 		}
 		Map<String, PatchFileRelGroup> conflictRelMap = new HashMap<String, PatchFileRelGroup>();
-		for(PatchFileRelGroup conflictRel: conflictRelList) {	// 相当于relatedPathGroupId_filePath
+		for(PatchFileRelGroup conflictRel: conflictRelList) {	// key的形式相当于relatedPathGroupId_filePath
 			conflictRelMap.put(conflictRel.getPatchGroupId() + "_" + conflictRel.getPatchFile().getFilePath(), conflictRel);
 		}
 		List<PatchGroup> underTestingPatchGroupList = patchGroupDao.list(new ModelMap()
@@ -279,8 +271,7 @@ public class DeployServiceImpl implements IDeployService {
 				return new ConflictInfo(conflictRel.getPatchFile(), patchGroup.getId(), conflictRel.getPatchGroupId());
 			}
 		}));
-		batchSaveOrUpdateConflictInfo(unexistedConflictInfoList);
-//		conflictInfoDao.batchSave(unexistedConflictInfoList);
+		batchSaveOrUpdateConflictInfo(unexistedConflictInfoList);	// 批量保存后，后续需要pojo里的id，所以只能用for循环去save。后续看看是否有办法优化
 		// 此处调用下面这个方法，已经有些ugly了
 		batchSaveConflictDetail(deployRecord, new ArrayList<ConflictInfo>(CollectionUtils.union(currentExistedConflictInfoList, unexistedConflictInfoList)));
 	}
@@ -306,15 +297,7 @@ public class DeployServiceImpl implements IDeployService {
 		for(ConflictInfo conflictInfo: conflictInfoMap.values()) {
 			unexistedConflictDetailList.add(new ConflictDetail(deployRecord.getId(), conflictInfo.getId()));
 		}
-		// batchSaveOrUpdateConflictDetail(conflictDetailList);
 		conflictDetailDao.batchSave(unexistedConflictDetailList);
-	}
-	
-	@Deprecated
-	public void batchSaveOrUpdateConflictDetail(List<ConflictDetail> conflictDetailList) {
-		for(ConflictDetail conflictDetail: conflictDetailList) {
-			conflictDetailDao.saveOrUpdate(conflictDetail);
-		}
 	}
 	
 	@Deprecated
@@ -339,16 +322,7 @@ public class DeployServiceImpl implements IDeployService {
 		for(String unexistedFilePath: unexistedFilePathList) {
 			unexistedPatchFileList.add(new PatchFile(project.getId(), unexistedFilePath));
 		}
-		//batchSaveOrUpdatePatchFile(unexistedPatchFileList);
 		patchFileDao.batchSave(unexistedPatchFileList);
-	}
-	
-	@Deprecated
-	public void batchSaveOrUpdatePatchFile(List<PatchFile> patchFileList) {
-		// 暂时先简单的实现下，以后再考虑性能优化
-		for(PatchFile patchFile: patchFileList) {
-			patchFileDao.saveOrUpdate(patchFile);
-		}
 	}
 	
 	@Override

@@ -76,11 +76,11 @@ public class PatchGroupServiceImpl implements IPatchGroupService {
 			return Collections.emptyList();
 		}
 		Project project = patchGroup.getProject();
-		Map<String, Object> patchGroupParam = new HashMap<String, Object>();
-		patchGroupParam.put("status", PatchGroup.STATUS_TESTING);
-		patchGroupParam.put("id__ne", patchGroup.getId());
-		patchGroupParam.put("project_id", project.getId());
-		List<PatchGroup> otherPatchGroupList = getPatchGroupListResult(0, 0, patchGroupParam);
+		List<PatchGroup> otherPatchGroupList = patchGroupDao.list(new ModelMap()
+				.addAttribute("status", PatchGroup.STATUS_TESTING)
+				.addAttribute("id__ne", patchGroup.getId())
+				.addAttribute("project_id", project.getId())
+		);
 		if(CollectionUtils.isEmpty(otherPatchGroupList)) {
 			return Collections.emptyList();
 		}
@@ -90,10 +90,10 @@ public class PatchGroupServiceImpl implements IPatchGroupService {
 				return patchGroup.getId();
 			}
 		});
-		Map<String, Object> param = new HashMap<String, Object>();
-		param.put("patchGroupId__in", otherPatchGroupIdList);
-		param.put("patchFile_filePath__in", filePathList);
-		List<PatchFileRelGroup> conflictRelList = patchFileRelGroupDao.list(param);
+		List<PatchFileRelGroup> conflictRelList = patchFileRelGroupDao.list(new ModelMap()
+				.addAttribute("patchGroupId__in", otherPatchGroupIdList)
+				.addAttribute("patchFile_filePath__in", filePathList)
+		);
 		Map<Long, PatchGroup> otherPatchGroupMap = new HashMap<Long, PatchGroup>();
 		for(PatchGroup otherPatchGroup: otherPatchGroupList) {
 			otherPatchGroupMap.put(otherPatchGroup.getId(), otherPatchGroup);
