@@ -1,6 +1,7 @@
 package com.ablesky.asdeploy.controller;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -86,6 +87,20 @@ public class DeployRecordController {
 		List<ConflictDetail> conflictDetailList = deployRecord.getIsConflictWithOthers()
 				? deployService.getConflictDetailListResultByParam(new ModelMap().addAttribute("deployRecordId", id))
 				: Collections.<ConflictDetail>emptyList();
+		
+		Collections.sort(conflictDetailList, new Comparator<ConflictDetail>() {
+			@Override
+			public int compare(ConflictDetail detail1, ConflictDetail detail2) {
+				Long patchGroupId1 = detail1.getConflictInfo().getRelatedPatchGroupId();
+				Long patchGroupId2 = detail2.getConflictInfo().getRelatedPatchGroupId();
+				if(patchGroupId1 == patchGroupId2) {
+					String filePath1 = detail1.getConflictInfo().getPatchFile().getFilePath();
+					String filePath2 = detail2.getConflictInfo().getPatchFile().getFilePath();
+					return filePath1.compareTo(filePath2);
+				}
+				return patchGroupId1.compareTo(patchGroupId2);
+			}
+		});
 		
 		model.addAttribute("deployRecord", deployRecord)
 			.addAttribute("filePathList", filePathList)

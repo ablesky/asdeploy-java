@@ -3,6 +3,7 @@ package com.ablesky.asdeploy.controller;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -84,7 +85,7 @@ public class PatchGroupController {
 	}
 	
 	@RequestMapping("/detail/{id}")
-	public String toDetail(@PathVariable("id") Long id, Model model) {
+	public String detail(@PathVariable("id") Long id, Model model) {
 		PatchGroup patchGroup = patchGroupService.getPatchGroupById(id);
 		List<PatchFileRelGroup> relList = patchGroupService.getPatchFileRelGroupListResult(0, 0, new ModelMap()
 				.addAttribute("patchGroupId", id)
@@ -96,6 +97,19 @@ public class PatchGroupController {
 			}
 		}));
 		List<ConflictInfo> conflictInfoList = patchGroupService.getConflictInfoListResultByParam(new ModelMap().addAttribute("patchGroupId", id));
+		Collections.sort(conflictInfoList, new Comparator<ConflictInfo>() {
+			@Override
+			public int compare(ConflictInfo info1, ConflictInfo info2) {
+				Long patchGroupId1 = info1.getRelatedPatchGroupId();
+				Long patchGroupId2 = info2.getRelatedPatchGroupId();
+				if(patchGroupId1 == patchGroupId2) {
+					String filePath1 = info1.getPatchFile().getFilePath();
+					String filePath2 = info2.getPatchFile().getFilePath();
+					return filePath1.compareTo(filePath2);
+				}
+				return patchGroupId1.compareTo(patchGroupId2);
+			}
+		});
 		model.addAttribute("patchGroup", patchGroup)
 			.addAttribute("patchFileList", patchFileList)
 			.addAttribute("conflictInfoList", conflictInfoList);
