@@ -352,6 +352,34 @@ public class DeployServiceImpl implements IDeployService {
 	}
 	
 	@Override
+	public List<ConflictDetail> getConflictDetailListResultByParam(Map<String, Object> param) {
+		return getConflictDetailListResultByParam(0, 0, param);
+	}
+	
+	@Override
+	public List<ConflictDetail> getConflictDetailListResultByParam(int start, int limit, Map<String, Object> param){
+		List<ConflictDetail> list = conflictDetailDao.list(start, limit, param);
+		if(CollectionUtils.isEmpty(list)) {
+			return list;
+		}
+		List<Long> conflictInfoIdList = new ArrayList<Long>(CollectionUtils.collect(list, new Transformer<ConflictDetail, Long>() {
+			@Override
+			public Long transform(ConflictDetail conflictDetail) {
+				return conflictDetail.getConflictInfoId();
+			}
+		}));
+		List<ConflictInfo> conflictInfoList = patchGroupService.getConflictInfoListResultByParam(0, 0, new ModelMap().addAttribute("id__in", conflictInfoIdList));
+		Map<Long, ConflictInfo> conflictInfoMap = new HashMap<Long, ConflictInfo>();
+		for(ConflictInfo conflictInfo: conflictInfoList) {
+			conflictInfoMap.put(conflictInfo.getId(), conflictInfo);
+		}
+		for(ConflictDetail conflictDetail: list) {
+			conflictDetail.setConflictInfo(conflictInfoMap.get(conflictDetail.getConflictInfoId()));
+		}
+		return list;
+	}
+	
+	@Override
 	public void deploy(DeployRecord deployRecord, String deployManner) {
 		// TODO
 	}

@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  * ConflictDetail用于在DeployRecord的详情页显示当次发布的冲突情况
@@ -22,6 +23,9 @@ public class ConflictDetail extends AbstractModel {
 	private Long deployRecordId;
 	@Column(name="conflict_info_id")
 	private Long conflictInfoId;
+	
+	@Transient
+	private ConflictInfo conflictInfo;
 	
 	public ConflictDetail() {}
 	
@@ -52,6 +56,14 @@ public class ConflictDetail extends AbstractModel {
 
 	public void setConflictInfoId(Long conflictInfoId) {
 		this.conflictInfoId = conflictInfoId;
+	}
+
+	public ConflictInfo getConflictInfo() {
+		return conflictInfo;
+	}
+
+	public void setConflictInfo(ConflictInfo conflictInfo) {
+		this.conflictInfo = conflictInfo;
 	}
 	
 	

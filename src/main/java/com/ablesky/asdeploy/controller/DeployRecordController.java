@@ -10,10 +10,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.ablesky.asdeploy.pojo.ConflictDetail;
 import com.ablesky.asdeploy.pojo.DeployItem;
 import com.ablesky.asdeploy.pojo.DeployRecord;
 import com.ablesky.asdeploy.service.IDeployService;
@@ -81,9 +83,14 @@ public class DeployRecordController {
 			filePathList = DeployUtil.getDeployItemFilePathList(targetFolderPath);
 			readme = DeployUtil.loadReadmeContent(targetFolderPath);
 		}
+		List<ConflictDetail> conflictDetailList = deployRecord.getIsConflictWithOthers()
+				? deployService.getConflictDetailListResultByParam(new ModelMap().addAttribute("deployRecordId", id))
+				: Collections.<ConflictDetail>emptyList();
+		
 		model.addAttribute("deployRecord", deployRecord)
 			.addAttribute("filePathList", filePathList)
-			.addAttribute("readme", readme);
+			.addAttribute("readme", readme)
+			.addAttribute("conflictDetailList", conflictDetailList);
 		return "deployRecord/detail";
 	}
 	

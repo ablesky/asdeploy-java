@@ -45,7 +45,7 @@ h3.title {
 				<tr>
 					<td>所属补丁组:</td>
 					<td>
-						<a href="/patchGroupDetail/${deployRecord.deployItem.patchGroup.id}" target="_blank">
+						<a href="${ctx_path}/patchGroup/detail/${deployRecord.deployItem.patchGroup.id}" target="_blank">
 						${deployRecord.deployItem.patchGroup.name}
 						</a>
 					</td>
@@ -60,7 +60,7 @@ h3.title {
 		<pre style="height: 300px; overflow: auto; font-size:15px;">${readme}</pre>
 		
 		<h3 class="title">发布文件列表</h3>
-		<table id="fileListTbl" class="table table-bordered table-condensed table-hover table-striped" style="width: 100%;">
+		<table id="J_fileListTbl" class="table table-bordered table-condensed table-hover table-striped" style="width: 100%;">
 			<thead>
 				<tr><th>文件路径</th></tr>
 			</thead>
@@ -73,43 +73,33 @@ h3.title {
 			</tbody>
 		</table>
 		
-		<c:if test="${deployRecord.isConflictWithOthers == true && conflictDetail != null}" >
+		<c:if test="${fn:length(conflictDetailList) > 0}" >
 		<h3 class="title">文件冲突详情</h3>
-		<table id="conflictTbl" class="table table-bordered table-condensed table-hover table-striped" style="width: 100%;">
+		<table id="J_conflictTbl" class="table table-bordered table-condensed table-hover table-striped" style="width: 100%;">
 			<thead>
 				<tr>
-					<th width="400">文件名</th>
-					<th width="60">类型</th>
+					<th width="460">文件名</th>
 					<th width="150">冲突组名</th>
 					<th width="60">组状态</th>
 				</tr>
 			</thead>
 			<tbody>
-			{% for conflict_info in conflict_detail.conflict_infos.all %}
+			<c:forEach items="${conflictDetailList}" var="conflictDetail">
+				<c:set var="conflictInfo" value="${conflictDetail.conflictInfo}" />
+				<c:set var="relatedPatchGroupStatus" value="${conflictInfo.relatedPatchGroup.status}" />
 				<tr>
-					<td>{{conflict_info.conflict_patch_file.file_path}}</td>
-					<td>{{conflict_info.conflict_patch_file.file_type}}</td>
+					<td>${conflictInfo.patchFile.filePath}</td>
 					<td>
-						<a href="/patchGroupDetail/{{conflict_info.conflict_patch_group.id}}/" target="_blank">
-						{{conflict_info.conflict_patch_group.name}}
+						<a href="${ctx_path}/patchGroup/detail/${conflictInfo.relatedPatchGroup.id}/" target="_blank">
+						${conflictInfo.relatedPatchGroup.name}
 						</a>
 					</td>
 					<td>
-					{% if conflict_info.conflict_patch_group.status == 'created' %}
-						已创建
-					{% endif %}
-					{% if conflict_info.conflict_patch_group.status == 'testing' %}
-						测试中
-					{% endif %}
-					{% if conflict_info.conflict_patch_group.status == 'stoped' %}
-						已完成
-					{% endif %}
-					{% if conflict_info.conflict_patch_group.status == 'finished' %}
-						已终结
-					{% endif %}
+						<c:if test="${relatedPatchGroupStatus == 'testing'}">测试中</c:if>
+						<c:if test="${relatedPatchGroupStatus == 'finished'}">已完成</c:if>
 					</td>
 				</tr>
-			{% endfor %}
+			</c:forEach>
 			</tbody>
 		</table>
 		</c:if>
@@ -117,4 +107,21 @@ h3.title {
 </div>
 
 <%@ include file="../include/includeJs.jsp" %>
+<script type="text/javascript">
+$(function(){
+	highlightConflict();
+});
+
+function highlightConflict(){
+	var conflictDict = {}
+	$('#J_conflictTbl').children('tbody').find('tr td:nth-child(1)').each(function(i, v){
+		conflictDict[v.innerHTML] = true;
+	});
+	$('#J_fileListTbl').children('tbody').find('tr td:nth-child(1)').each(function(i, v){
+		if(conflictDict[v.innerHTML]){
+			$(v).parent().addClass('error');
+		}
+	})
+}
+</script>
 </html>

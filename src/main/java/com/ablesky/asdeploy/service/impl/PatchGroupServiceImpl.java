@@ -105,15 +105,22 @@ public class PatchGroupServiceImpl implements IPatchGroupService {
 	}
 	
 	@Override
-	public List<ConflictInfo> getConflictInfoListResultByPatchGroupId(Long patchGroupId) {
-		List<ConflictInfo> list = conflictInfoDao.list(new ModelMap().addAttribute("patchGroupId", patchGroupId));
+	public List<ConflictInfo> getConflictInfoListResultByParam(Map<String, Object> param) {
+		return getConflictInfoListResultByParam(0, 0, param);
+	}
+	
+	@Override
+	public List<ConflictInfo> getConflictInfoListResultByParam(int start, int limit, Map<String, Object> param) {
+		List<ConflictInfo> list = conflictInfoDao.list(start, limit, param);
+		if(CollectionUtils.isEmpty(list)) {
+			return list;
+		}
 		List<Long> relatedPatchGroupIdList = new ArrayList<Long>(CollectionUtils.collect(list, new Transformer<ConflictInfo, Long>() {
 			@Override
 			public Long transform(ConflictInfo conflictInfo) {
 				return conflictInfo.getRelatedPatchGroupId();
 			}
 		}));
-		relatedPatchGroupIdList.add(0L);	// ugly!
 		List<PatchGroup> relatedPatchGroupList = patchGroupDao.list(new ModelMap().addAttribute("id__in", relatedPatchGroupIdList));
 		Map<Long, PatchGroup> relatedPatchGroupMap = new HashMap<Long, PatchGroup>();
 		for(PatchGroup relatedPatchGroup: relatedPatchGroupList) {

@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import com.ablesky.asdeploy.pojo.ConflictDetail;
 import com.ablesky.asdeploy.pojo.DeployItem;
 import com.ablesky.asdeploy.pojo.DeployLock;
 import com.ablesky.asdeploy.pojo.DeployRecord;
@@ -36,5 +37,9 @@ public interface IDeployService {
 	void deploy(DeployRecord deployRecord, String deployManner);
 
 	void persistInfoBeforeDeployStart(DeployRecord deployRecord, PatchGroup patchGroup, List<String> filePathList);
+
+	List<ConflictDetail> getConflictDetailListResultByParam(int start, int limit, Map<String, Object> param);
+
+	List<ConflictDetail> getConflictDetailListResultByParam(Map<String, Object> param);
 
 }

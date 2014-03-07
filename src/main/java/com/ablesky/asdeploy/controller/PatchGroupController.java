@@ -95,7 +95,7 @@ public class PatchGroupController {
 				return rel.getPatchFile();
 			}
 		}));
-		List<ConflictInfo> conflictInfoList = patchGroupService.getConflictInfoListResultByPatchGroupId(id);
+		List<ConflictInfo> conflictInfoList = patchGroupService.getConflictInfoListResultByParam(new ModelMap().addAttribute("patchGroupId", id));
 		model.addAttribute("patchGroup", patchGroup)
 			.addAttribute("patchFileList", patchFileList)
 			.addAttribute("conflictInfoList", conflictInfoList);

@@ -25,6 +25,8 @@ public interface IPatchGroupService {
 
 	List<PatchFileRelGroup> getPatchFileRelGroupListResult(int start, int limit, Map<String, Object> param);
 
-	List<ConflictInfo> getConflictInfoListResultByPatchGroupId(Long patchGroupId);
+	List<ConflictInfo> getConflictInfoListResultByParam(int start, int limit, Map<String, Object> param);
+
+	List<ConflictInfo> getConflictInfoListResultByParam(Map<String, Object> param);
 
 }
