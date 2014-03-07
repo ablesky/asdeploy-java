@@ -14,6 +14,9 @@
 h3.title {
 	text-align: left;
 }
+#J_conflictTbl th, #J_conflictTbl td {
+	text-align: center;
+}
 </style>
 </head>
 <body>
@@ -65,7 +68,7 @@ h3.title {
 	
 	<div style="width: 800px; margin: 10px auto 10px;">
 		<h3 class="title">已关联文件列表</h3>
-		<table id="fileListTbl" class="table table-bordered table-condensed table-hover table-striped" style="width: 100%;">
+		<table id="J_fileListTbl" class="table table-bordered table-condensed table-hover table-striped" style="width: 100%;">
 			<thead>
 				<tr><th>文件路径</th></tr>
 			</thead>
@@ -77,35 +80,36 @@ h3.title {
 			</c:forEach>
 			</tbody>
 		</table>
-		<!-- 
-		{% if patch_group_conflict_file_list %}
-		<h3>文件冲突详情</h3>
-		<table id="conflictTbl" class="table table-bordered table-condensed table-hover table-striped" style="width: 100%;">
+		
+		<c:if test="${fn:length(conflictInfoList) > 0}">
+		<h3 class="title">文件冲突详情</h3>
+		<table id="J_conflictTbl" class="table table-bordered table-condensed table-hover table-striped" style="width: 100%;">
 			<thead>
 				<tr>
-					<th width="400">文件名</th>
-					<th width="60">类型</th>
+					<th width="460">文件名</th>
 					<th width="150">冲突组名</th>
 					<th width="60">组状态</th>
 				</tr>
 			</thead>
 			<tbody>
-			{% for conflict_file_info in patch_group_conflict_file_list %}
+			<c:forEach items="${conflictInfoList}" var="conflictInfo">
+				<c:set var="relatedPatchGroupStatus" value="${conflictInfo.relatedPatchGroup.status}" />
 				<tr>
-					<td>{{conflict_file_info.conflict_patch_file_path}}</td>
-					<td>{{conflict_file_info.conflict_patch_file_type}}</td>
+					<td style="text-align: left;">${conflictInfo.patchFile.filePath}</td>
 					<td>
-						<a href="/patchGroupDetail/{{conflict_file_info.conflict_patch_group_id}}/" target="_blank">
-						{{conflict_file_info.conflict_patch_group_name}}
+						<a href="${ctx_path}/patchGroup/detail/${conflictInfo.relatedPatchGroupId}" target="_blank">
+						${conflictInfo.relatedPatchGroup.name}
 						</a>
 					</td>
-					<td>测试中</td>
+					<td>
+						<c:if test="${relatedPatchGroupStatus == 'testing'}">测试中</c:if>
+						<c:if test="${relatedPatchGroupStatus == 'finished'}">已完成</c:if>
+					</td>
 				</tr>
-			{% endfor %}
+			</c:forEach>
 			</tbody>
 		</table>
-		{% endif %}
-		 -->
+		</c:if>
 	</div>
 </div>
 </body>
@@ -113,6 +117,7 @@ h3.title {
 <script>
 $(function(){
 	initUpdatePatchGroupBtn();
+	highlightConflict();
 });
 function initUpdatePatchGroupBtn() {
 	$('#J_editBtn').on('click', function(){
@@ -142,6 +147,18 @@ function openEditPatchGroupWin(projectId, options) {
 	].join(',');
 	var url = options.url;
 	window.open(url, '_blank', winConfig);
+}
+
+function highlightConflict(){
+	var conflictDict = {}
+	$('#J_conflictTbl').children('tbody').find('tr td:nth-child(1)').each(function(i, v){
+		conflictDict[v.innerHTML] = true;
+	});
+	$('#J_fileListTbl').children('tbody').find('tr td:nth-child(1)').each(function(i, v){
+		if(conflictDict[v.innerHTML]){
+			$(v).parent().addClass('error');
+		}
+	})
 }
 
 function reloadPage() {

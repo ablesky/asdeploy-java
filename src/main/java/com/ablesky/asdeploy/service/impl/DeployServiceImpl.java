@@ -261,6 +261,7 @@ public class DeployServiceImpl implements IDeployService {
 				return patchGroup.getId();
 			}
 		}));
+		underTestingPatchGroupIdList.add(0L);
 		List<ConflictInfo> existedConflictInfoList = conflictInfoDao.list(new ModelMap()
 				.addAttribute("patchGroupId", patchGroup.getId())
 				.addAttribute("relatedPatchGroupId__in", underTestingPatchGroupIdList)

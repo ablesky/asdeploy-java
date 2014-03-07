@@ -3,6 +3,7 @@ package com.ablesky.asdeploy.service;
 import java.util.List;
 import java.util.Map;
 
+import com.ablesky.asdeploy.pojo.ConflictInfo;
 import com.ablesky.asdeploy.pojo.PatchFile;
 import com.ablesky.asdeploy.pojo.PatchFileRelGroup;
 import com.ablesky.asdeploy.pojo.PatchGroup;
@@ -23,5 +24,7 @@ public interface IPatchGroupService {
 	List<PatchFile> getPatchFileListResult(int start, int limit, Map<String, Object> param);
 
 	List<PatchFileRelGroup> getPatchFileRelGroupListResult(int start, int limit, Map<String, Object> param);
+
+	List<ConflictInfo> getConflictInfoListResultByPatchGroupId(Long patchGroupId);
 
 }

@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ablesky.asdeploy.pojo.ConflictInfo;
 import com.ablesky.asdeploy.pojo.PatchFile;
 import com.ablesky.asdeploy.pojo.PatchFileRelGroup;
 import com.ablesky.asdeploy.pojo.PatchGroup;
@@ -94,8 +95,10 @@ public class PatchGroupController {
 				return rel.getPatchFile();
 			}
 		}));
+		List<ConflictInfo> conflictInfoList = patchGroupService.getConflictInfoListResultByPatchGroupId(id);
 		model.addAttribute("patchGroup", patchGroup)
-			.addAttribute("patchFileList", patchFileList);
+			.addAttribute("patchFileList", patchFileList)
+			.addAttribute("conflictInfoList", conflictInfoList);
 		return "patchGroup/detail";
 	}
 	

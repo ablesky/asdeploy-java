@@ -1,5 +1,6 @@
 package com.ablesky.asdeploy.service.impl;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -10,10 +11,13 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Transformer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.ModelMap;
 
+import com.ablesky.asdeploy.dao.IConflictInfoDao;
 import com.ablesky.asdeploy.dao.IPatchFileDao;
 import com.ablesky.asdeploy.dao.IPatchFileRelGroupDao;
 import com.ablesky.asdeploy.dao.IPatchGroupDao;
+import com.ablesky.asdeploy.pojo.ConflictInfo;
 import com.ablesky.asdeploy.pojo.PatchFile;
 import com.ablesky.asdeploy.pojo.PatchFileRelGroup;
 import com.ablesky.asdeploy.pojo.PatchGroup;
@@ -30,6 +34,8 @@ public class PatchGroupServiceImpl implements IPatchGroupService {
 	private IPatchFileRelGroupDao patchFileRelGroupDao;
 	@Autowired
 	private IPatchFileDao patchFileDao;
+	@Autowired
+	private IConflictInfoDao conflictInfoDao;
 	
 	@Override
 	public void saveOrUpdatePatchGroup(PatchGroup patchGroup) {
@@ -96,6 +102,27 @@ public class PatchGroupServiceImpl implements IPatchGroupService {
 			conflictRel.setPatchGroup(otherPatchGroupMap.get(conflictRel.getPatchGroupId()));
 		}
 		return conflictRelList;
+	}
+	
+	@Override
+	public List<ConflictInfo> getConflictInfoListResultByPatchGroupId(Long patchGroupId) {
+		List<ConflictInfo> list = conflictInfoDao.list(new ModelMap().addAttribute("patchGroupId", patchGroupId));
+		List<Long> relatedPatchGroupIdList = new ArrayList<Long>(CollectionUtils.collect(list, new Transformer<ConflictInfo, Long>() {
+			@Override
+			public Long transform(ConflictInfo conflictInfo) {
+				return conflictInfo.getRelatedPatchGroupId();
+			}
+		}));
+		relatedPatchGroupIdList.add(0L);	// ugly!
+		List<PatchGroup> relatedPatchGroupList = patchGroupDao.list(new ModelMap().addAttribute("id__in", relatedPatchGroupIdList));
+		Map<Long, PatchGroup> relatedPatchGroupMap = new HashMap<Long, PatchGroup>();
+		for(PatchGroup relatedPatchGroup: relatedPatchGroupList) {
+			relatedPatchGroupMap.put(relatedPatchGroup.getId(), relatedPatchGroup);
+		}
+		for(ConflictInfo conflictInfo: list) {
+			conflictInfo.setRelatedPatchGroup(relatedPatchGroupMap.get(conflictInfo.getRelatedPatchGroupId()));
+		}
+		return list;
 	}
 
 }
