@@ -30,7 +30,7 @@
 <%@ include file="./include/header.jsp" %>
 <div class="wrapper">
 	<div class="title">
-		<h1>welcome<shiro:authenticated> <shiro:principal/></shiro:authenticated></h1>
+		<h1>welcome<shiro:user> <shiro:principal/></shiro:user></h1>
 	</div>
 	<div class="lock-info">
 		<c:if test="${deployLock != null}">

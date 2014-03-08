@@ -6,11 +6,13 @@ import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.SimpleAuthenticationInfo;
 import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.authc.credential.CredentialsMatcher;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.SimplePrincipalCollection;
+import org.apache.shiro.util.SimpleByteSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +21,12 @@ import com.ablesky.asdeploy.service.IUserService;
 
 @Component("shiroDbRealm")
 public class ShiroDbRealm extends AuthorizingRealm {
+	
+	@Autowired
+	@Override
+	public void  setCredentialsMatcher(CredentialsMatcher credentialsMatcher) {
+		super.setCredentialsMatcher(credentialsMatcher);
+	}
 
 	@Autowired
 	private IUserService userService;
@@ -34,6 +42,8 @@ public class ShiroDbRealm extends AuthorizingRealm {
 			return null;
 		}
 		SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(user.getUsername(), user.getPassword(), getName());
+		// 以username作为salt，之后password会被MD5迭代3次
+		info.setCredentialsSalt(new SimpleByteSource(user.getUsername()));
 		SimplePrincipalCollection principals = (SimplePrincipalCollection) info.getPrincipals();
 		principals.add(user, getName());
 		return info;

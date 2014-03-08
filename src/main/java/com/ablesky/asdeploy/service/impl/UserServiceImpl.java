@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.ablesky.asdeploy.dao.IUserDao;
 import com.ablesky.asdeploy.pojo.User;
 import com.ablesky.asdeploy.service.IUserService;
+import com.ablesky.asdeploy.util.AuthUtil;
 import com.ablesky.asdeploy.util.Page;
 
 @Service
@@ -53,9 +54,8 @@ public class UserServiceImpl implements IUserService {
 	
 	@Override
 	public void createNewUser(String username, String rawPassword) {
-		String password = rawPassword;
 		Timestamp ts = new Timestamp(System.currentTimeMillis());
-		User user = new User(username, password, ts, ts);
+		User user = new User(username, AuthUtil.hashPassword(username, rawPassword), ts, ts);
 		saveOrUpdateUser(user);
 	}
 }

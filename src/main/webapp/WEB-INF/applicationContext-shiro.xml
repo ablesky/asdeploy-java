@@ -23,6 +23,13 @@
 		<property name="maxAge" value="604800" /><!-- 默认一年太长了，此处设为1周 -->
 	</bean>
 	
+	<!-- 自定义的credentialsMatcher会通过注解注入到shiroDbRealm中 -->
+	<bean id="credentialsMatcher" class="org.apache.shiro.authc.credential.HashedCredentialsMatcher" >
+		<property name="hashAlgorithmName" value="MD5" />
+		<property name="hashSalted" value="true" />
+		<property name="hashIterations" value="3" />	<!-- 注意与AuthUtil.hashPassword中的迭代次数保持一致 -->
+	</bean>
+	
 	<!-- Shiro Filter -->
 	<bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
 		<property name="securityManager" ref="securityManager" />
