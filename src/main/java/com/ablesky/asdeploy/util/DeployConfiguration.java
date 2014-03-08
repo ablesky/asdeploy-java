@@ -1,5 +1,9 @@
 package com.ablesky.asdeploy.util;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.SystemUtils;
+
+
 
 public class DeployConfiguration {
 	
@@ -23,8 +27,8 @@ public class DeployConfiguration {
 	private String environment;
 	
 	public DeployConfiguration() {
-		this.hostname = "localhost";
-		this.environment = "LOCALHOST";
+		hostname = DeployUtil.getHostname();
+		environment = parseEnvironment(hostname);
 	}
 
 	public String getVersion() {
@@ -51,5 +55,26 @@ public class DeployConfiguration {
 		return environment;
 	}
 	
+	
+	public static String parseEnvironment(String hostname) {
+		if(SystemUtils.IS_OS_WINDOWS 
+				|| StringUtils.isBlank(hostname) 
+				|| "unknown".equalsIgnoreCase(hostname)) {
+			return "DEVELOPMENT";
+		}
+		if(hostname.contains(".at1.")) {
+			return "ALPHA";
+		}
+		if(hostname.contains(".bt1.")) {
+			return "BETA";
+		}
+		if(hostname.contains(".ot1.")) {
+			return "OMEGA";
+		}
+		if(hostname.contains(".gt1.")) {
+			return "GAMMA";
+		}
+		return "DEVELOPMENT";
+	}
 	
 }

@@ -3,6 +3,8 @@ package com.ablesky.asdeploy.util;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -143,4 +145,19 @@ public class DeployUtil {
 		}
 		return null;
 	}
+	
+	/**
+	 * 获取服务器的hostname
+	 */
+	public static String getHostname() {
+		try {
+			InetAddress localhost =InetAddress.getLocalHost();
+			return localhost.getHostName();
+		}
+		catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
+		return "unknown";
+	}
+	
 }
