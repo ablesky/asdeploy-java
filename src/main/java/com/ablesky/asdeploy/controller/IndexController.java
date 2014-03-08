@@ -30,23 +30,13 @@ public class IndexController {
 	}
 	
 	/**
-	 * 登录操作
+	 * 登录操作(实际的登录操作在FormAuthenticationFilter中进行)
+	 * 只有登录失败后，才会进入到此方法中
 	 */
 	@RequestMapping(value="/login", method=RequestMethod.POST)
-	public String login(String username, String password, Model model) {
-		try {
-			AuthUtil.login(username, password);
-		} catch (Exception e) {
-			model.addAttribute("errorMessage", "用户名或密码错误，请重试！");
-			return "login";
-		}
-		return "redirect:/main";
-	}
-	
-	@RequestMapping("/logout")
-	public String logout() {
-		AuthUtil.logout();
-		return "redirect:/login";
+	public String loginFailed(String username, String password, Model model) {
+		model.addAttribute("errorMessage", "用户名或密码错误，请重试!");
+		return "login";
 	}
 	
 	@RequestMapping("/unauthorized")

@@ -17,13 +17,13 @@
 				<ul class="nav pull-right">
 					<li><a id="J_envLogo" href="#"><%=DeployConfiguration.INSTANCE.getEnvironment()%></a></li>
 					<li class="divider-vertical"></li>
-					<shiro:authenticated>
+					<shiro:user>
 						<li><a href="${ctx_path}/main"><strong>主页</strong></a></li>
 						<li class="divider-vertical"></li>
 						<li><a href="${ctx_path}/user/${username}"><strong><shiro:principal/></strong></a></li>
 						<li class="divider-vertical"></li>
 						<li><a href="${ctx_path}/logout" class="nav-end"><strong>退出</strong></a></li>
-					</shiro:authenticated>
+					</shiro:user>
 					<shiro:guest>
 						<li><a href="${ctx_path}/login"><strong>登录</strong></a></li>
 						<li class="divider-vertical"></li>

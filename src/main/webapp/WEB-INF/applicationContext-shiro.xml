@@ -9,18 +9,32 @@
 	<!-- shiroDbRealm为项目自定义的realm，通过注解声明 -->
 	<bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
 		<property name="realm" ref="shiroDbRealm" />
+		<property name="rememberMeManager" ref="rememberMeManager" />
+	</bean>
+	
+	<bean id="rememberMeManager" class="org.apache.shiro.web.mgt.CookieRememberMeManager">
+		<property name="cookie" ref="rememberMeCookie" />
+	</bean>
+	
+	<!-- 仅仅是一个cookie模版，用单例即可 -->
+	<bean id="rememberMeCookie" class="org.apache.shiro.web.servlet.SimpleCookie">
+		<property name="name" value="rememberMe" />
+		<property name="httpOnly" value="true" />
+		<property name="maxAge" value="604800" /><!-- 默认一年太长了，此处设为1周 -->
 	</bean>
 	
 	<!-- Shiro Filter -->
 	<bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
 		<property name="securityManager" ref="securityManager" />
 		<property name="loginUrl" value="/login" />
+		<property name="successUrl" value="/main" />
 		<property name="unauthorizedUrl" value="/unauthorized"/>
 		<property name="filterChainDefinitions">
 			<value>
-				/login = anon
+				/login = authc
+				/logout = logout
 				/static/** = anon
-				/** = authc
+				/** = user
 			</value>
 		</property>
 	</bean>

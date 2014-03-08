@@ -30,7 +30,12 @@ public class AuthUtil {
 	}
 	
 	public static void login(String username, String password) {
+		login(username, password, true);
+	}
+	
+	public static void login(String username, String password, boolean rememberMe) {
 		UsernamePasswordToken token = new UsernamePasswordToken(username, password);
+		token.setRememberMe(rememberMe);
 		getCurrentSubject().login(token);
 	}
 	

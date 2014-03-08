@@ -1,5 +1,6 @@
 package com.ablesky.asdeploy.pojo;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 import javax.persistence.Column;
@@ -10,8 +11,11 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="user")
-public class User extends AbstractModel {
-
+public class User extends AbstractModel implements Serializable {
+	// 注意，如果准备将user写入authenticationInfo的话，则user必须实现Serializable接口
+	// 否则无法使用rememberMe功能(生成rememberMe的cookie时，需要对authenticationInfo中的信息进行序列化)
+	private static final long serialVersionUID = 8647343192652652694L;
+	
 	@Id
 	@GeneratedValue
 	@Column

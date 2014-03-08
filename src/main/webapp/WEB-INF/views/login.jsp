@@ -5,7 +5,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>AbleSky代码发布系统</title></title>
+<title>AbleSky代码发布系统</title>
 <%@ include file="./include/includeCss.jsp" %>
 <style>
 .login-wrapper {
@@ -46,6 +46,7 @@ input[type="text"], input[type="password"] {
 			</div>
 		</c:if>
 		<form method="POST" action="${ctx_path}/login">
+			<input type="hidden" name="rememberMe" value="on" />
 			<table>
 				<tbody>
 					<tr>
