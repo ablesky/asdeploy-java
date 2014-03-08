@@ -31,7 +31,9 @@
 		<property name="unauthorizedUrl" value="/unauthorized"/>
 		<property name="filterChainDefinitions">
 			<value>
+				/register** = anon
 				/login = authc
+				/login/** = anon
 				/logout = logout
 				/static/** = anon
 				/** = user

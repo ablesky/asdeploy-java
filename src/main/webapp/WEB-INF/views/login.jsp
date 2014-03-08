@@ -12,7 +12,7 @@
 	width: 400px; margin: 50px auto;
 }
 .login-wrapper .alert {
-	width: 280px; margin: 0px auto 30px; text-align: center;
+	width: 240px; margin: 0px auto 30px; text-align: center;
 }
 .login-wrapper table {
 	width: 100%;
@@ -32,6 +32,9 @@ input[type="text"], input[type="password"] {
 .btn-wrapper button {
 	width: 80px;
 }
+.btn-wrapper a {
+	width: 60px;
+}
 </style>
 </head>
 <body>
@@ -39,6 +42,12 @@ input[type="text"], input[type="password"] {
 <div>
 	<h2 class="title">用户登录</h2>
 	<div class="login-wrapper">
+		<c:if test="${not empty successMessage}">
+			<div class="alert alert-success">
+				<button type="button" class="close" data-dismiss="alert">&times;</button>
+				<span style="margin-left: 40px;">${successMessage}</span>
+			</div>
+		</c:if>
 		<c:if test="${not empty errorMessage}">
 			<div class="alert alert-error">
 				<button type="button" class="close" data-dismiss="alert">&times;</button>
@@ -69,7 +78,7 @@ input[type="text"], input[type="password"] {
 						<td colspan="2" class="btn-wrapper">
 							<button class="btn" type="submit">登&nbsp;&nbsp;录</button>
 							<div class="btn-sep">&nbsp;</div>
-							<button class="btn" onclick="location.href='/register/'">注&nbsp;&nbsp;册</button>
+							<a class="btn" href="${ctx_path}/register">注&nbsp;&nbsp;册</a>
 						</td>
 					</tr>
 				</tbody>

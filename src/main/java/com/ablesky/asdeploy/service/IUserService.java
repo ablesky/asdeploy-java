@@ -20,4 +20,6 @@ public interface IUserService {
 
 	List<User> getUserListResult(int start, int limit, Map<String, Object> param);
 
+	void createNewUser(String username, String rawPassword);
+
 }

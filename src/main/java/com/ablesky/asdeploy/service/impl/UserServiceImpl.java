@@ -1,10 +1,10 @@
 package com.ablesky.asdeploy.service.impl;
 
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -51,4 +51,11 @@ public class UserServiceImpl implements IUserService {
 		return userDao.paginate(start, limit, param);
 	}
 	
+	@Override
+	public void createNewUser(String username, String rawPassword) {
+		String password = rawPassword;
+		Timestamp ts = new Timestamp(System.currentTimeMillis());
+		User user = new User(username, password, ts, ts);
+		saveOrUpdateUser(user);
+	}
 }
