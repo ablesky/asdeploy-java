@@ -68,7 +68,7 @@
 				</tr>
 				<tr>
 					<td class="btn-wrapper" colspan="2">
-						<button id="J_saveBtn" class="btn btn-primary">保存</button>
+						<button id="J_saveBtn" class="btn btn-inverse">保存</button>
 						<div class="btn-sep">&nbsp;</div>
 						<button id="J_closeBtn" class="btn">关闭</button>
 					</td>

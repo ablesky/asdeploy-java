@@ -57,11 +57,13 @@ h3.title {
 					<td>完成时间:</td>
 					<td><fmt:formatDate value="${patchGroup.finishTime}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
 				</tr>
+				<c:if test="${isSuperAdmin || patchGroup.creator.id == currentUser.id}"> 
 				<tr>
 					<td colspan="2" style="text-align: center;">
 						<button id="J_editBtn" class="btn btn-primary" onclick="javascript:void(0);" data-id="${patchGroup.id}">修改</button>
 					</td>
 				</tr>
+				</c:if>
 			</tbody>
 		</table>
 	</div>

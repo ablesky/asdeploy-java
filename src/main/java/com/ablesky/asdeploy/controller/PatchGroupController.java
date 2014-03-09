@@ -79,8 +79,10 @@ public class PatchGroupController {
 			param.put("status", status);
 		}
 		param.put(CommonConstant.ORDER_BY, "id desc");
-		model.addAttribute("projectList", projectService.getProjectListResult(0, 0, Collections.<String, Object>emptyMap()));
-		model.addAttribute("page", patchGroupService.getPatchGroupPaginateResult(start, limit, param));
+		model.addAttribute("projectList", projectService.getProjectListResult(0, 0, Collections.<String, Object>emptyMap()))
+				.addAttribute("page", patchGroupService.getPatchGroupPaginateResult(start, limit, param))
+				.addAttribute("isSuperAdmin", AuthUtil.isSuperAdmin())
+				.addAttribute("currentUser", AuthUtil.getCurrentUser());
 		return "patchGroup/list";
 	}
 	
@@ -112,7 +114,9 @@ public class PatchGroupController {
 		});
 		model.addAttribute("patchGroup", patchGroup)
 			.addAttribute("patchFileList", patchFileList)
-			.addAttribute("conflictInfoList", conflictInfoList);
+			.addAttribute("conflictInfoList", conflictInfoList)
+			.addAttribute("isSuperAdmin", AuthUtil.isSuperAdmin())
+			.addAttribute("currentUser", AuthUtil.getCurrentUser());
 		return "patchGroup/detail";
 	}
 	
@@ -144,9 +148,8 @@ public class PatchGroupController {
 		ModelMap resultMap = new ModelMap();
 		PatchGroup patchGroup = null;
 		Project project = null;
-		User user = null;
-		String username = AuthUtil.getCurrentUsername();
-		if(StringUtils.isBlank(username) || (user = userService.getUserByUsername(username)) == null) {
+		User currentUser = AuthUtil.getCurrentUser();
+		if(currentUser == null) {
 			return resultMap
 					.addAttribute("success", false)
 					.addAttribute("message", "用户未登录或不存在!");
@@ -165,9 +168,14 @@ public class PatchGroupController {
 			}
 		} else {
 			patchGroup = new PatchGroup();
-			patchGroup.setCreator(user);
+			patchGroup.setCreator(currentUser);
 			patchGroup.setProject(project);
 			patchGroup.setCreateTime(new Timestamp(System.currentTimeMillis()));
+		}
+		if(!AuthUtil.isSuperAdmin() && currentUser.getId() != patchGroup.getCreator().getId()) {
+			return resultMap
+					.addAttribute("success", false)
+					.addAttribute("message", "没有权限执行此操作!");
 		}
 		patchGroup.setName(name);
 		patchGroup.setCheckCode(checkCode);

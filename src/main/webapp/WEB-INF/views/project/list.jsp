@@ -40,7 +40,7 @@
 	<h2 class="title">项目列表</h2>
 	<div class="list-wrapper">
 		<div class="create-btn-wrapper">
-			<button id="J_createBtn" class="btn btn-primary">新&nbsp;&nbsp;增</button>
+			<button id="J_createBtn" class="btn btn-inverse">新&nbsp;&nbsp;增</button>
 		</div>
 		<table class="table table-bordered table-condensed table-hover">
 			<thead>

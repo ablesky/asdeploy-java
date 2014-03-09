@@ -1,9 +1,9 @@
 package com.ablesky.asdeploy.controller;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -53,13 +53,15 @@ public class ProjectController {
 			String name,
 			String warName) {
 		ModelMap resultMap = new ModelMap();
+		if(StringUtils.isBlank(name) || StringUtils.isBlank(warName)) {
+			return resultMap.addAttribute("success", false).addAttribute("message", "项目名称和包名称不能为空!");
+		}
 		Project project = null;
 		if(id != null && id > 0) {
 			project = projectService.getProjectById(id);
 			if(project == null) {
-				resultMap.put("success", false);
-				resultMap.put("message", "项目不存在!");
-				return resultMap;
+				return resultMap.addAttribute("success", false)
+						.addAttribute("message", "项目不存在!");
 			}
 		} else {
 			project = new Project();

@@ -164,12 +164,10 @@
 						<td>${patchGroup.status == 'testing'? '测试中': '已完成'}</td>
 						<td>
 							<a class="detail-btn" href="${ctx_path}/patchGroup/detail/${patchGroup.id}">详情</a>
+							<c:if test="${isSuperAdmin || patchGroup.creator.id == currentUser.id}">
 							&nbsp;&nbsp;
 							<a class="edit-btn" href="javascript:void(0);" data-id="${patchGroup.id}">修改</a>
-							<!-- 
-							&nbsp;&nbsp;
-							<a class="delete-btn" href="javascript:void(0);" data-id="${project.id}">删除</a>
-							 -->
+							</c:if>
 						</td>
 					</tr>
 				</c:forEach>

@@ -1,5 +1,7 @@
 package com.ablesky.asdeploy.util;
 
+import java.util.Collection;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
@@ -8,6 +10,7 @@ import org.apache.shiro.crypto.hash.HashRequest;
 import org.apache.shiro.crypto.hash.HashService;
 import org.apache.shiro.crypto.hash.SimpleHashRequest;
 import org.apache.shiro.subject.Subject;
+import org.apache.shiro.util.CollectionUtils;
 import org.apache.shiro.util.SimpleByteSource;
 
 import com.ablesky.asdeploy.pojo.User;
@@ -32,7 +35,11 @@ public class AuthUtil {
 	}
 	
 	public static User getCurrentUser() {
-		return getCurrentSubject().getPrincipals().byType(User.class).iterator().next();
+		Collection<User> users = getCurrentSubject().getPrincipals().byType(User.class);
+		if(CollectionUtils.isEmpty(users)) {
+			return null;
+		}
+		return users.iterator().next();
 	}
 	
 	public static void login(String username, String password) {
