@@ -49,6 +49,7 @@
 		<a type="button" class="btn btn-large btn-block" href="${ctx_path}/queryAblejsDependencyPage/">查看静态文件构建依赖</a>
 		<shiro:hasRole name="super_admin">
 		<a type="button" class="btn btn-inverse btn-large btn-block" href="${ctx_path}/project/list">管理项目</a>
+		<a type="button" class="btn btn-inverse btn-large btn-block" href="${ctx_path}/admin/user/list">用户项目</a>
 		</shiro:hasRole>
 	</div>
 </div>

@@ -10,6 +10,8 @@ import javax.persistence.Table;
 @Table(name="role")
 public class Role extends AbstractModel {
 	
+	public static final String NAME_SUPER_ADMIN = "super_admin";
+	
 	@Id
 	@GeneratedValue
 	@Column

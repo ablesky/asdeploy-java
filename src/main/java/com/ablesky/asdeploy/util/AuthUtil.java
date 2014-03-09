@@ -13,6 +13,7 @@ import org.apache.shiro.subject.Subject;
 import org.apache.shiro.util.CollectionUtils;
 import org.apache.shiro.util.SimpleByteSource;
 
+import com.ablesky.asdeploy.pojo.Role;
 import com.ablesky.asdeploy.pojo.User;
 
 public class AuthUtil {
@@ -57,7 +58,7 @@ public class AuthUtil {
 	}
 	
 	public static boolean isSuperAdmin() {
-		return getCurrentSubject().hasRole("super_admin");
+		return getCurrentSubject().hasRole(Role.NAME_SUPER_ADMIN);
 	}
 	
 	/**

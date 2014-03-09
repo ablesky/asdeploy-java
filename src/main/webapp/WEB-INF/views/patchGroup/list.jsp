@@ -224,7 +224,7 @@ function initUpdatePatchGroupBtn() {
 	$('#J_tbody').on('click', 'a.edit-btn', function(){
 		var $this = $(this),
 			id = $this.attr('data-id');
-			openEditPatchGroupWin(id, {
+			openEditPatchGroupWin({
 				width: 450, 
 				height: 320,
 				url: CTX_PATH + '/patchGroup/edit/' + id
@@ -232,7 +232,7 @@ function initUpdatePatchGroupBtn() {
 	});
 }
 
-function openEditPatchGroupWin(projectId, options) {
+function openEditPatchGroupWin(options) {
 	options = options || {};
 	var width = options.width || 420,
 		height = options.height || 300;

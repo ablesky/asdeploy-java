@@ -93,7 +93,7 @@ function initUpdateProjectBtn() {
 	$('#J_tbody').on('click', 'a.edit-btn', function(){
 		var $this = $(this),
 			id = $this.attr('data-id');
-			openEditProjectWin(id, {
+			openEditProjectWin({
 				width: 420, 
 				height: 280,
 				url: CTX_PATH + '/project/edit/' + id
@@ -101,7 +101,7 @@ function initUpdateProjectBtn() {
 	});
 }
 
-function openEditProjectWin(projectId, options) {
+function openEditProjectWin(options) {
 	options = options || {};
 	var width = options.width || 420,
 		height = options.height || 300;

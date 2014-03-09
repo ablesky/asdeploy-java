@@ -22,6 +22,7 @@ public class UserServiceImpl implements IUserService {
 	
 	@Override
 	public void saveOrUpdateUser(User user) {
+		user.setUpdateTime(new Timestamp(System.currentTimeMillis()));
 		userDao.saveOrUpdate(user);
 	}
 	

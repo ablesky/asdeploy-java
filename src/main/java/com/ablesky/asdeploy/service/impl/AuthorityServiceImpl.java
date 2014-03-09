@@ -2,6 +2,7 @@ package com.ablesky.asdeploy.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Transformer;
@@ -39,5 +40,35 @@ public class AuthorityServiceImpl implements IAuthorityService {
 				return rel.getRole();
 			}
 		}));
+	}
+	
+	@Override
+	public List<UserRelRole> getUserRelRoleListResultByParam(int start, int limit, Map<String, Object> param) {
+		return userRelRoleDao.list(start, limit, param);
+	}
+	
+	@Override
+	public UserRelRole getUserRelRoleByParam(Map<String, Object> param) {
+		return userRelRoleDao.first(param);
+	}
+	
+	@Override
+	public Role getRoleByName(String name) {
+		return roleDao.first(new ModelMap().addAttribute("name", name));
+	}
+	
+	@Override
+	public void saveOrUpdateUserRelRole(UserRelRole rel) {
+		userRelRoleDao.saveOrUpdate(rel);
+	}
+	
+	@Override
+	public void deleteUserRelRoleByUserIdAndRoleName(Long userId, String roleName) {
+		List<UserRelRole> relList = userRelRoleDao.list(new ModelMap()
+				.addAttribute("user_id", userId)
+				.addAttribute("role_name", roleName));
+		for(UserRelRole rel: relList) {
+			userRelRoleDao.delete(rel);
+		}
 	}
 }
