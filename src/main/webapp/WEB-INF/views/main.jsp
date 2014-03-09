@@ -37,7 +37,7 @@
 			<div class="alert alert-error">
 			  发布流程已被<strong>${deployLock.user.username}</strong>锁定
 			</div>
-			<c:if test="<%=AuthUtil.isSuperAdmin()%>"> <!-- todo 本人或超级管理员 -->
+			<c:if test="${isSuperAdmin || currentUser.id == deployLock.user.id }"> <!-- 本人或超级管理员 -->
 				<button id="J_unlockDeployBtn" class="btn btn-primary">解锁</button>
 			</c:if>
 		</c:if>

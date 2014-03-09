@@ -2,10 +2,26 @@
 DROP TABLE IF EXISTS "user";
 CREATE TABLE "user" (
 	id integer PRIMARY KEY AUTOINCREMENT,
-	username varchar(40),
-	password varchar(40),
+	username varchar(40) NOT NULL UNIQUE,
+	password varchar(40) NOT NULL,
 	create_time datetime,
 	update_time datetime
+);
+
+-- role
+DROP TABLE IF EXISTS "role";
+CREATE TABLE "role" (
+	id integer PRIMARY KEY AUTOINCREMENT,
+	name varchar(20) NOT NULL,
+	comment varchar(40)
+);
+
+-- user_rel_role
+DROP TABLE IF EXISTS "user_rel_role";
+CREATE TABLE "user_rel_role" (
+	id integer PRIMARY KEY AUTOINCREMENT,
+	user_id integer NOT NULL REFERENCES "user" ("id"),
+	role_id integer NOT NULL REFERENCES "role" ("id")
 );
 
 -- project

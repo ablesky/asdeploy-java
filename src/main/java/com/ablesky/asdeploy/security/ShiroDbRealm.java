@@ -1,6 +1,13 @@
 package com.ablesky.asdeploy.security;
 
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.Transformer;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -16,7 +23,9 @@ import org.apache.shiro.util.SimpleByteSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.ablesky.asdeploy.pojo.Role;
 import com.ablesky.asdeploy.pojo.User;
+import com.ablesky.asdeploy.service.IAuthorityService;
 import com.ablesky.asdeploy.service.IUserService;
 
 @Component("shiroDbRealm")
@@ -30,6 +39,8 @@ public class ShiroDbRealm extends AuthorizingRealm {
 
 	@Autowired
 	private IUserService userService;
+	@Autowired
+	private IAuthorityService authorityService;
 
 	/**
 	 * 认证回调函数,登录时调用.
@@ -55,6 +66,14 @@ public class ShiroDbRealm extends AuthorizingRealm {
 	@Override
 	protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
 		SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
+		Collection<User> users = principals.byType(User.class);
+		if(CollectionUtils.isNotEmpty(users)) {
+			User user = users.iterator().next();
+			List<Role> roleList = authorityService.getRoleListResultByUserId(user.getId());
+			for(Role role: roleList) {
+				info.addRole(role.getName());
+			}
+		}
 		return info;
 	}
 

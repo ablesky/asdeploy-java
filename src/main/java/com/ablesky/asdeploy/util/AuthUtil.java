@@ -50,7 +50,7 @@ public class AuthUtil {
 	}
 	
 	public static boolean isSuperAdmin() {
-		return "zyang".equals(getCurrentUsername());
+		return getCurrentSubject().hasRole("super_admin");
 	}
 	
 	/**

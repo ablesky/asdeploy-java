@@ -117,15 +117,14 @@ public class DeployController {
 		return lock;
 	}
 	
+	/**
+	 * 在deployService.unlockDeploy方法中判断解锁权限
+	 * 没有权限自然解不开
+	 */
 	@RequestMapping("/unlockDeploy")
 	public @ResponseBody Map<String, Object> unlockDeploy() {
-		ModelMap resultMap = new ModelMap();
-		if(!AuthUtil.isSuperAdmin()) {
-			return resultMap
-					.addAttribute("success", false)
-					.addAttribute("message", "没有权限!");
-		}
 		deployService.unlockDeploy();
+		ModelMap resultMap = new ModelMap();
 		return resultMap.addAttribute("success", true);
 	}
 	

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.ablesky.asdeploy.service.IDeployService;
 import com.ablesky.asdeploy.service.IUserService;
+import com.ablesky.asdeploy.util.AuthUtil;
 
 @Controller
 public class IndexController {
@@ -23,7 +24,9 @@ public class IndexController {
 	
 	@RequestMapping("/main")
 	public String main(Model model) {
-		model.addAttribute("deployLock", deployService.checkCurrentLock());
+		model.addAttribute("deployLock", deployService.checkCurrentLock())
+			.addAttribute("currentUser", AuthUtil.getCurrentUser())
+			.addAttribute("isSuperAdmin", AuthUtil.isSuperAdmin());
 		return "main";
 	}
 	
