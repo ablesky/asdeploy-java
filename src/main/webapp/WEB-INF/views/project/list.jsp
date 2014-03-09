@@ -81,7 +81,7 @@ $(function(){
 
 function initCreateProjectBtn() {
 	$('#J_createBtn').on('click', function(){
-		openEditProjectWin(0, {
+		openEditProjectWin({
 			width: 420, 
 			height: 240,
 			url: CTX_PATH + '/project/edit'

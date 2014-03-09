@@ -14,6 +14,7 @@ import com.ablesky.asdeploy.dao.IRoleDao;
 import com.ablesky.asdeploy.dao.IUserDao;
 import com.ablesky.asdeploy.dao.IUserRelRoleDao;
 import com.ablesky.asdeploy.pojo.Role;
+import com.ablesky.asdeploy.pojo.User;
 import com.ablesky.asdeploy.pojo.UserRelRole;
 import com.ablesky.asdeploy.service.IAuthorityService;
 
@@ -63,6 +64,11 @@ public class AuthorityServiceImpl implements IAuthorityService {
 	}
 	
 	@Override
+	public void saveOrUpdateRole(Role role) {
+		roleDao.saveOrUpdate(role);
+	}
+	
+	@Override
 	public void deleteUserRelRoleByUserIdAndRoleName(Long userId, String roleName) {
 		List<UserRelRole> relList = userRelRoleDao.list(new ModelMap()
 				.addAttribute("user_id", userId)
@@ -71,4 +77,24 @@ public class AuthorityServiceImpl implements IAuthorityService {
 			userRelRoleDao.delete(rel);
 		}
 	}
+	
+	/**
+	 * 添加用户与角色的关联
+	 */
+	@Override
+	public UserRelRole addUserRelRoleByUserAndRole(User user, Role role) {
+		if(user == null || role == null) {
+			return null;
+		}
+		UserRelRole rel = getUserRelRoleByParam(new ModelMap()
+			.addAttribute("user_id", user.getId())
+			.addAttribute("role_id", role.getId()));
+		if(rel != null) {
+			return rel;
+		}
+		rel = new UserRelRole(user, role);
+		saveOrUpdateUserRelRole(rel);
+		return rel;
+	}
+
 }

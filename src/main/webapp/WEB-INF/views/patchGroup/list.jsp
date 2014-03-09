@@ -212,7 +212,7 @@ function initClearBtn() {
 
 function initCreatePatchGroupBtn() {
 	$('#J_createBtn').on('click', function(){
-		openEditPatchGroupWin(0, {
+		openEditPatchGroupWin({
 			width: 450, 
 			height: 290,
 			url: CTX_PATH + '/patchGroup/edit'

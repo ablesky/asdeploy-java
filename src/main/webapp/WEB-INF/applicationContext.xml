@@ -79,6 +79,7 @@
 			<tx:method name="check*" propagation="REQUIRED" />
 			<tx:method name="persist*" propagation="REQUIRED" />
 			<tx:method name="generate*" propagation="REQUIRED" />
+			<tx:method name="assign*" propagation="REQUIRED" />
 			<tx:method name="batch*" propagation="REQUIRED" />
 			<tx:method name="*" read-only="true"/>
 		</tx:attributes>

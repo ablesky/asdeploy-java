@@ -63,31 +63,14 @@ public class UserAdminController {
 			authorityService.deleteUserRelRoleByUserIdAndRoleName(userId, Role.NAME_SUPER_ADMIN);
 			return resultMap.addAttribute("success", true);
 		}
-		
-		UserRelRole superAdminRel = authorityService.getUserRelRoleByParam(new ModelMap()
-				.addAttribute("user_id", userId)
-				.addAttribute("role_name", Role.NAME_SUPER_ADMIN));
-		if(superAdminRel != null) {
-			return resultMap.addAttribute("success", true);
-		}
-		if((superAdminRel = buildNewUserRelRole(userId, Role.NAME_SUPER_ADMIN)) == null){
+		User user = userService.getUserById(userId);
+		Role role = authorityService.getRoleByName(Role.NAME_SUPER_ADMIN);
+		UserRelRole superAdminRel = authorityService.addUserRelRoleByUserAndRole(user, role);
+		if(superAdminRel == null){
 			return resultMap.addAttribute("success", false).addAttribute("message", "用户或角色不存在!");
 		}
-		authorityService.saveOrUpdateUserRelRole(superAdminRel);
 		return resultMap.addAttribute("success", true);
 		
-	}
-	
-	private UserRelRole buildNewUserRelRole(Long userId, String roleName) {
-		User user = userService.getUserById(userId);
-		if(user == null) {
-			return null;
-		}
-		Role role = authorityService.getRoleByName(roleName);
-		if(role == null) {
-			return null;
-		}
-		return new UserRelRole(user, role);
 	}
 	
 	@RequestMapping(value="/changePassword/{userId}", method=RequestMethod.GET)
