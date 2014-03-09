@@ -1,6 +1,5 @@
 package com.ablesky.asdeploy.dto;
 
-import com.ablesky.asdeploy.pojo.ConflictInfo;
 import com.ablesky.asdeploy.pojo.PatchFileRelGroup;
 import com.ablesky.asdeploy.pojo.PatchGroup;
 

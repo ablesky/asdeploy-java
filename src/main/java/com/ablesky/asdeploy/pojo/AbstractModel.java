@@ -8,6 +8,10 @@ public abstract class AbstractModel {
 	public abstract Long getId();
 	
 	public String toString() {
-		return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+		return toString(ToStringStyle.MULTI_LINE_STYLE);
+	}
+	
+	public String toString(ToStringStyle style) {
+		return ToStringBuilder.reflectionToString(this, style);
 	}
 }
