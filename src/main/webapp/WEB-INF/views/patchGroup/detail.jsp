@@ -160,7 +160,7 @@ function highlightConflict(){
 		if(conflictDict[v.innerHTML]){
 			$(v).parent().addClass('error');
 		}
-	})
+	});
 }
 
 function reloadPage() {

@@ -7,9 +7,12 @@ import org.apache.commons.lang3.SystemUtils;
 
 public class DeployConfiguration {
 	
-	public static final DeployConfiguration INSTANCE = new DeployConfiguration();
+	private static DeployConfiguration INSTANCE;
 	
 	public static DeployConfiguration getInstance() {
+		if(INSTANCE == null) {
+			INSTANCE =  new DeployConfiguration();
+		}
 		return DeployConfiguration.INSTANCE;
 	}
 	

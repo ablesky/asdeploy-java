@@ -226,7 +226,7 @@ public class DeployController {
 					.addAttribute("message", "参数有误!");
 		}
 		DeployLock lock = deployService.checkCurrentLock();
-		if(lock == null || lock.getDeployRecord().getId().equals(deployRecordId)) {
+		if(lock == null || !lock.getDeployRecord().getId().equals(deployRecordId)) {
 			return resultMap
 					.addAttribute("success", false)
 					.addAttribute("message", "本次发布已被解锁!");

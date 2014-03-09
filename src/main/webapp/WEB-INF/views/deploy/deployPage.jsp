@@ -119,7 +119,7 @@
 			
 			
 			<!-- 文件冲突列表 -->
-			<div id="conflictFileInfoWrap">
+			<div id="J_conflictFileInfoWrapper">
 				<h3>冲突详情</h3>
 				<table id="conflictFileInfoTbl" class="table table-bordered table-condensed table-hover table-striped" style="width: 800px;">
 					<thead>
@@ -128,8 +128,14 @@
 							<th width="200">冲突补丁组</th>
 						</tr>
 					</thead>
-					<tbody>
+					<tbody id="J_conflictInfoListTbody">
 					</tbody>
+					<script type="text/x-jquery-tmpl" id="J_conflictInfoListTmpl">
+						<tr>
+		 					<td>${'${'}filePath}</td>
+		 					<td><a href="${ctx_path}/patchGroup/detail/${'${'}relatedPatchGroupId}" target="_blank">${'${'}relatedPatchGroupName}</a></td>
+		 				</tr>
+					</script>
 				</table>
 			</div>
 		</c:if>
@@ -217,7 +223,7 @@ function initFileUploadWidget(){
 				if(data.success === true){
 					var sizeUnits = ['byte', 'kb', 'MB', 'GB']
 					var size = data.size;
-					for(i=0; i <=sizeUnits.length && size > 1024; size = (size/1024).toFixed(2), i++);
+					for(var i=0; i <=sizeUnits.length && size > 1024; size = (size/1024).toFixed(2), i++);
 					var sizeStr = size + sizeUnits[i];
 					showAlert($uploadResultWrap, [
 						'文件上传成功!',
@@ -284,16 +290,18 @@ function renderFilePathList(fileList) {
 	if(!$.isArray(fileList)) {
 		return;
 	}
-	fileList = $.map(fileList, function(filePath){return {filePath: filePath}});
-	var $filePathTmpl = $('#J_filePathListTmpl');
-	$('#J_filePathListTbody').empty().append($filePathTmpl.tmpl(fileList));
+	fileList = $.map(fileList, function(filePath){return {filePath: filePath};});
+	var $filePathListTmpl = $('#J_filePathListTmpl');
+	$('#J_filePathListTbody').empty().append($filePathListTmpl.tmpl(fileList));
 }
 
 function renderConflictInfoList(conflictInfoList) {
 	if(!$.isArray(conflictInfoList)) {
 		return;
 	}
-	console.dir(conflictInfoList);
+	var $conflictInfoListTmpl = $('#J_conflictInfoListTmpl');
+	$('#J_conflictInfoListTbody').empty().append($conflictInfoListTmpl.tmpl(conflictInfoList));
+	highlightConflict();
 }
 
 function initStartDeployBtn() {
@@ -308,7 +316,7 @@ function initStartDeployBtn() {
 			deployManner: 'deploy'
 		}, function(data){
 			if(!data || data.success !== true) {
-				showDeployResultFailed('发布启动失败!');
+				showDeployResultFailed('发布启动失败! ' + (data.message || ''));
 				return;
 			}
 			showDeployInfo('发布启动成功!');
@@ -376,6 +384,18 @@ function showAlert(wrapper, msg, status, closable){
 		$alert.addClass('alert-' + status);
 	}
 	$wrapper.append($alert);
+}
+
+function highlightConflict(){
+	var conflictDict = {}
+	$('#J_conflictInfoListTbody').find('tr td:nth-child(1)').each(function(i, v){
+		conflictDict[v.innerHTML] = true;
+	});
+	$('#J_filePathListTbody').find('tr td:nth-child(1)').each(function(i, v){
+		if(conflictDict[v.innerHTML]){
+			$(v).parent().addClass('error');
+		}
+	});
 }
 
 </script>
