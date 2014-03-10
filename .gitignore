@@ -7,3 +7,4 @@ db/
 .classpath
 .settings/
 .mymetadata
+deploy.log

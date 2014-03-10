@@ -1,9 +1,9 @@
 package com.ablesky.asdeploy.controller;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +35,7 @@ import com.ablesky.asdeploy.service.IPatchGroupService;
 import com.ablesky.asdeploy.service.IProjectService;
 import com.ablesky.asdeploy.util.AuthUtil;
 import com.ablesky.asdeploy.util.DeployUtil;
+import com.ablesky.asdeploy.util.Deployer;
 
 @Controller
 @RequestMapping("/deploy")
@@ -241,14 +242,26 @@ public class DeployController {
 		String targetFolderPath = FilenameUtils.concat(item.getFolderPath(), FilenameUtils.getBaseName(item.getFileName()));
 		List<String> filePathList = DeployUtil.getDeployItemFilePathList(targetFolderPath);
 		deployService.persistInfoBeforeDeployStart(deployRecord, patchGroup, filePathList);
-		deployService.deploy(deployRecord, deployManner);
+		Deployer.executor.submit(new Deployer(deployRecord, deployManner, "ab"));
 	}
 	
 	@RequestMapping("/readDeployLogOnRealtime")
 	public @ResponseBody Map<String, Object> readDeployLogOnRealtime(Long deployRecordId) {
-		return new ModelMap()
-				.addAttribute("logInfoList", Arrays.asList(new String[]{"发布完成了，呵呵"}))
-				.addAttribute("isFinished", true)
-				.addAttribute("deployResult", true);
+		ModelMap resultMap = new ModelMap();
+		Boolean isWriting = Deployer.getLogIsWriting(deployRecordId);
+		if(isWriting == null) {	// 发布已结束，并且前面已经读完了所有日志
+			resultMap.addAttribute("isFinished", true)
+				.addAttribute("deployResult", Deployer.getDeployResult(deployRecordId));
+			Deployer.deleteDeployResult(deployRecordId);
+			Deployer.deleteLogLastReadPos(deployRecordId);
+			return resultMap;
+		}
+		if(Boolean.FALSE.equals(isWriting)) {	// 说明发布结束了，需要最后再读一次日志信息
+			Deployer.deleteLogIsWriting(deployRecordId);
+		}
+		String deployLogContent = DeployUtil.readDeployLogContent(deployRecordId);// 此处读日志的时候，就在不断更新文件指针了
+		return resultMap.addAttribute("isFinished", false)
+				.addAttribute("deployLogContent", deployLogContent);	
 	}
+	
 }

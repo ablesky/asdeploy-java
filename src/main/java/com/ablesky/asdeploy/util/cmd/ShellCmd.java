@@ -1,6 +1,7 @@
 package com.ablesky.asdeploy.util.cmd;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 
 import org.apache.commons.lang3.SystemUtils;
@@ -29,9 +30,22 @@ public class ShellCmd extends AbstractCmd<ShellCmd.ShellOperation, ShellCmd.Shel
 			for(String param: params.keySet()) {
 				cmdBuff.append(" ").append(param);
 			}
+			cmdBuff.append(" ;");
 			return cmdBuff.toString();
 		}
 		
+		public Process exec(String cmd){
+			Runtime runtime = Runtime.getRuntime();
+			Process process = null;
+			try {
+				process = runtime.exec(cmd, null, this.dir);
+			} catch (IOException e) {
+				e.printStackTrace();
+				return null;
+			}
+			logger.info(cmd);
+			return process;
+		}
 	}
 	
 	public enum ShellOperationType implements AbstractCmd.OperationType {
@@ -51,14 +65,4 @@ public class ShellCmd extends AbstractCmd<ShellCmd.ShellOperation, ShellCmd.Shel
 		
 	}
 	
-	public static void main(String[] args) {
-		ShellCmd.ShellOperation exec = new ShellCmd().oper(ShellCmd.ShellOperationType.EXEC);
-		CmdUtil.consume(exec.param("test.sh").exec(), new CmdCallback<String>() {
-			@Override
-			protected String process(String line, Map<String, String> resultMap) {
-				System.out.println(line);
-				return line;
-			}
-		});
-	}
 }

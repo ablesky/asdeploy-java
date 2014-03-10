@@ -320,6 +320,7 @@ function initStartDeployBtn() {
 				return;
 			}
 			showDeployInfo('发布启动成功!');
+			$('#J_logContent').empty();
 			setTimeout(readDeployLogOnRealtime, 1500);
 		});
 	});
@@ -335,8 +336,8 @@ function readDeployLogOnRealtime() {
 			return;
 		}
 		var $logContent = $('#J_logContent');
-		if(data.logInfoList && data.logInfoList.length > 0) {
-			$logContent.append(data.logInfoList.join('\n'));
+		if(data.deployLogContent) {
+			$logContent.append(data.deployLogContent);
 			$logContent.scrollTop($logContent[0].scrollHeight - $logContent.height());
 		}
 		if(data.isFinished == true) {
@@ -344,7 +345,7 @@ function readDeployLogOnRealtime() {
 			data.deployResult === true? showDeployResultSuccess(): showDeployResultFailed();
 			return;
 		}
-		setTimeout(readLogOnRealtime, 1500);
+		setTimeout(readDeployLogOnRealtime, 1500);
 	});
 }
 

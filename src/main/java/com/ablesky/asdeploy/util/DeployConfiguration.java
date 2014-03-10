@@ -16,6 +16,9 @@ public class DeployConfiguration {
 		return DeployConfiguration.INSTANCE;
 	}
 	
+	public static final String NEED_SEND_EMAIL_YES = "y";
+	public static final String NEED_SEND_EMAIL_NO = "n";
+	
 	// 版本
 	private String version = "1.4";
 	// 根路径
@@ -28,10 +31,13 @@ public class DeployConfiguration {
 	private String hostname;
 	// 环境名称
 	private String environment;
+	// 是否需要发邮件(测试环境均为no)
+	private String needSendEmail;
 	
 	public DeployConfiguration() {
 		hostname = DeployUtil.getHostname();
 		environment = parseEnvironment(hostname);
+		needSendEmail = NEED_SEND_EMAIL_NO;
 	}
 
 	public String getVersion() {
@@ -58,7 +64,10 @@ public class DeployConfiguration {
 		return environment;
 	}
 	
-	
+	public String getNeedSendEmail() {
+		return needSendEmail;
+	}
+
 	public static String parseEnvironment(String hostname) {
 		if(SystemUtils.IS_OS_WINDOWS 
 				|| StringUtils.isBlank(hostname) 

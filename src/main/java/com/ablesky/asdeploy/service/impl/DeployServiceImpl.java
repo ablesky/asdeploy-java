@@ -10,6 +10,8 @@ import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Transformer;
+import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
@@ -37,11 +39,16 @@ import com.ablesky.asdeploy.service.IDeployService;
 import com.ablesky.asdeploy.service.IPatchGroupService;
 import com.ablesky.asdeploy.util.AuthUtil;
 import com.ablesky.asdeploy.util.CommonConstant;
+import com.ablesky.asdeploy.util.DeployConfiguration;
 import com.ablesky.asdeploy.util.DeployUtil;
+import com.ablesky.asdeploy.util.Deployer;
 import com.ablesky.asdeploy.util.Page;
+import com.ablesky.asdeploy.util.cmd.ShellCmd;
 
 @Service
 public class DeployServiceImpl implements IDeployService {
+	
+	private Logger logger = Logger.getLogger(this.getClass());
 
 	@Autowired
 	private IProjectDao projectDao;
@@ -354,8 +361,76 @@ public class DeployServiceImpl implements IDeployService {
 	}
 	
 	@Override
-	public void deploy(DeployRecord deployRecord, String deployManner) {
-		// TODO
+	public boolean deploy(DeployRecord deployRecord, String deployManner, String serverGroupParam) {
+		boolean result = false;
+		DeployItem item = deployRecord.getDeployItem();
+		if(DeployItem.DEPLOY_TYPE_PATCH.equals(item.getDeployType())) {
+			result = deployPatch(item, deployManner, serverGroupParam);
+		} else if(DeployItem.DEPLOY_TYPE_WAR.equals(item.getDeployType())) {
+			result = deployWar(item, serverGroupParam);
+		}
+		if(result) {
+			logger.info("Deploy success and deployRecord id is [" + deployRecord.getId() + "]");
+		} else {
+			logger.info("Deploy failed and deployRecord id is [" + deployRecord.getId() + "]");
+		}
+		return result;
+		
+	}
+	
+	private boolean deployPatch(DeployItem item, String deployManner, String serverGroupParam) {
+		String scriptPath = DeployUtil.getDeployPatchScriptPath();
+		String itemPatchFolder = DeployUtil.getDeployItemPatchFolder(item, deployManner);
+		if(!"a".equals(serverGroupParam) && !"b".equals(serverGroupParam)) {
+			serverGroupParam = "ab";
+		}
+		ShellCmd.ShellOperation sh = new ShellCmd().oper(ShellCmd.ShellOperationType.EXEC);
+		sh	.param(scriptPath)
+			.param(itemPatchFolder)
+			.param(DeployConfiguration.getInstance().getNeedSendEmail())
+			.param(serverGroupParam);
+		return executeCmdAndOutputLog(sh.exec(), new File(Deployer.DEPLOY_LOG_PATH));
+	}
+	
+	private boolean deployWar(DeployItem item, String serverGroupParam) {
+		File deployLog = new File(Deployer.DEPLOY_LOG_PATH);
+		String scriptPath = DeployUtil.getDeployWarScriptPath(item.getProject().getName());
+		ShellCmd.ShellOperation sh = new ShellCmd().oper(ShellCmd.ShellOperationType.EXEC);
+		
+		String aSideCmd = sh.param(scriptPath).param(item.getProject().getName() + "-" + item.getVersion()).param("a").toString();
+		if("a".equals(serverGroupParam)) {
+			return executeCmdAndOutputLog(sh.exec(), deployLog);
+		}
+		
+		sh.clearParams();
+		
+		String bSideCmd = sh.param(scriptPath).param(item.getProject().getName() + "-" + item.getVersion()).param("b").toString();
+		if("b".equals(serverGroupParam)) {
+			return executeCmdAndOutputLog(sh.exec(), deployLog);
+		}
+		String cmd = aSideCmd + bSideCmd;
+		return executeCmdAndOutputLog(sh.exec(cmd), deployLog);
+	}
+	
+	private boolean executeCmdAndOutputLog(Process process, File logFile) {
+		if(logFile == null || process == null) {
+			return false;
+		}
+		if(logFile.exists()) {
+			logFile.delete();
+		}
+		try {
+			FileUtils.copyInputStreamToFile(process.getInputStream(), logFile);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		} 
+		try {
+			return process.waitFor() == 0;
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 	
 	

@@ -78,7 +78,7 @@ public abstract class AbstractCmd <O extends AbstractCmd.Operation<T>, T extends
 				e.printStackTrace();
 				return null;
 			}
-			logger.debug(cmd);
+			logger.info(cmd);
 			return process;
 		}
 		

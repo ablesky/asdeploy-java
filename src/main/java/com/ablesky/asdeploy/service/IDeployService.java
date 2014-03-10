@@ -34,7 +34,7 @@ public interface IDeployService {
 
 	void saveOrUpdateDeployItem(DeployItem item);
 
-	void deploy(DeployRecord deployRecord, String deployManner);
+	boolean deploy(DeployRecord deployRecord, String deployManner, String serverGroupParam);
 
 	void persistInfoBeforeDeployStart(DeployRecord deployRecord, PatchGroup patchGroup, List<String> filePathList);
 

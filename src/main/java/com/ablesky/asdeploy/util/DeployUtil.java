@@ -1,8 +1,10 @@
 package com.ablesky.asdeploy.util;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -18,6 +20,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.NameFileFilter;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.mozilla.universalchardet.UniversalDetector;
 
 import com.ablesky.asdeploy.pojo.DeployItem;
@@ -158,6 +161,33 @@ public class DeployUtil {
 			e.printStackTrace();
 		}
 		return "unknown";
+	}
+	
+	public static String readDeployLogContent(Long deployRecordId) {
+		Long startPos = Deployer.getLogLastReadPos(deployRecordId);
+		if(deployRecordId == null || startPos == null) {
+			return "";
+		}
+		StringBuilder buff = new StringBuilder();
+		File deployLog = new File(Deployer.DEPLOY_LOG_PATH);
+		if(!deployLog.exists()) {
+			return "";
+		}
+		RandomAccessFile deployLogReader = null;
+		try {
+			deployLogReader = new RandomAccessFile(deployLog, "r");
+			deployLogReader.seek(startPos);
+			String line = "";
+			while((line = deployLogReader.readLine()) != null) {
+				buff.append(line).append(SystemUtils.LINE_SEPARATOR);
+			}
+			Deployer.setLogLastReadPos(deployRecordId, deployLogReader.getFilePointer());
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			IOUtils.closeQuietly(deployLogReader);
+		}
+		return buff.toString();
 	}
 	
 }
