@@ -18,6 +18,9 @@
 	font-size: 0px;
 	line-height: 0px;
 }
+h3.title {
+	text-align: left;
+}
 </style>
 </head>
 <body>
@@ -102,7 +105,7 @@
 			
 			<!-- 文件列表 -->
 			<div id="fileListWrap">
-				<h3>文件列表</h3>
+				<h3 class="title">文件列表</h3>
 				<table class="table table-bordered table-condensed table-hover table-striped" style="width: 800px;;">
 					<thead>
 						<tr><th>文件路径</th></tr>
@@ -120,7 +123,7 @@
 			
 			<!-- 文件冲突列表 -->
 			<div id="J_conflictFileInfoWrapper">
-				<h3>冲突详情</h3>
+				<h3 class="title">冲突详情</h3>
 				<table id="conflictFileInfoTbl" class="table table-bordered table-condensed table-hover table-striped" style="width: 800px;">
 					<thead>
 						<tr>
@@ -148,7 +151,7 @@
 		</div>
 		
 		<!-- 文件冲突列表 -->
-		<h3>日志</h3>
+		<h3 class="title">日志</h3>
 		<pre id="J_logContent" style="width: 781px; height: 400px; overflow: auto; font-size: 15px;"></pre>
 		<div style="text-align: center; margin: 30px auto;">
 			<button type="button" class="btn btn-primary" id="J_unlockAndLeave">解锁并返回首页</button>
