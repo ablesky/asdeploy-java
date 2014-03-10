@@ -134,7 +134,6 @@ public class PatchGroupController {
 		return edit(0L, model);
 	}
 	
-	// TODO authz
 	@RequestMapping(value="/edit", method=RequestMethod.POST)
 	public @ResponseBody Map<String, Object> edit(
 			@RequestParam(defaultValue="0") 
@@ -150,21 +149,15 @@ public class PatchGroupController {
 		Project project = null;
 		User currentUser = AuthUtil.getCurrentUser();
 		if(currentUser == null) {
-			return resultMap
-					.addAttribute("success", false)
-					.addAttribute("message", "用户未登录或不存在!");
+			return resultMap.addAttribute("success", false).addAttribute("message", "用户未登录或不存在!");
 		}
 		if(projectId == null || projectId == 0 || (project = projectService.getProjectById(projectId)) == null) {
-			return resultMap
-					.addAttribute("success", false)
-					.addAttribute("message", "项目不存在!");
+			return resultMap.addAttribute("success", false).addAttribute("message", "项目不存在!");
 		}
 		if(id != null && id > 0) {
 			patchGroup = patchGroupService.getPatchGroupById(id);
 			if(patchGroup == null) {
-				return resultMap
-						.addAttribute("success", false)
-						.addAttribute("message", "补丁组不存在!");
+				return resultMap.addAttribute("success", false).addAttribute("message", "补丁组不存在!");
 			}
 		} else {
 			patchGroup = new PatchGroup();
@@ -172,10 +165,8 @@ public class PatchGroupController {
 			patchGroup.setProject(project);
 			patchGroup.setCreateTime(new Timestamp(System.currentTimeMillis()));
 		}
-		if(!AuthUtil.isSuperAdmin() && currentUser.getId() != patchGroup.getCreator().getId()) {
-			return resultMap
-					.addAttribute("success", false)
-					.addAttribute("message", "没有权限执行此操作!");
+		if(!AuthUtil.isSuperAdmin() && !currentUser.getId().equals(patchGroup.getCreator().getId())) {
+			return resultMap.addAttribute("success", false).addAttribute("message", "没有权限执行此操作!");
 		}
 		patchGroup.setName(name);
 		patchGroup.setCheckCode(checkCode);
@@ -184,9 +175,7 @@ public class PatchGroupController {
 			patchGroup.setFinishTime(new Timestamp(System.currentTimeMillis()));
 		}
 		patchGroupService.saveOrUpdatePatchGroup(patchGroup);
-		return resultMap
-				.addAttribute("success", true)
-				.addAttribute("message", "补丁组保存成功!");
+		return resultMap.addAttribute("success", true).addAttribute("message", "补丁组保存成功!");
 	}
 	
 	@RequestMapping(value="/listData")

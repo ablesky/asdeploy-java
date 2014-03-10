@@ -153,14 +153,10 @@ public class DeployController {
 		if(patchGroupId != null && patchGroupId > 0) {
 			patchGroup = patchGroupService.getPatchGroupById(patchGroupId);
 			if(patchGroup == null) {
-				return resultMap
-						.addAttribute("success", false)
-						.addAttribute("message", "补丁组不存在!");
+				return resultMap.addAttribute("success", false).addAttribute("message", "补丁组不存在!");
 			}
 			if(!filename.contains(patchGroup.getCheckCode())) {
-				return resultMap
-						.addAttribute("success", false)
-						.addAttribute("message", "补丁名称与补丁组的标识号不匹配!");
+				return resultMap.addAttribute("success", false).addAttribute("message", "补丁名称与补丁组的标识号不匹配!");
 			}
 		}
 		deployService.persistDeployItem(deployItemFile, project, patchGroup, deployRecord, deployType, version);
@@ -180,9 +176,7 @@ public class DeployController {
 		DeployRecord deployRecord = deployService.getDeployRecordById(deployRecordId);
 		DeployItem deployItem = deployRecord.getDeployItem();
 		if(deployItem == null) {
-			return resultMap
-					.addAttribute("success", false)
-					.addAttribute("message", "压缩文件不存在!");
+			return resultMap.addAttribute("success", false).addAttribute("message", "压缩文件不存在!");
 		}
 		DeployUtil.unzipDeployItem(deployItem);
 		String targetFolderPath = FilenameUtils.concat(deployItem.getFolderPath(), FilenameUtils.getBaseName(deployItem.getFileName()));
@@ -221,34 +215,24 @@ public class DeployController {
 		DeployRecord deployRecord = null;
 		PatchGroup patchGroup = null;
 		if(deployRecordId == null || deployRecordId <= 0 || (deployRecord = deployService.getDeployRecordById(deployRecordId)) == null) {
-			return resultMap
-					.addAttribute("success", false)
-					.addAttribute("message", "参数有误!");
+			return resultMap.addAttribute("success", false).addAttribute("message", "参数有误!");
 		}
 		DeployLock lock = deployService.checkCurrentLock();
 		if(lock == null || !lock.getDeployRecord().getId().equals(deployRecordId)) {
-			return resultMap
-					.addAttribute("success", false)
-					.addAttribute("message", "本次发布已被解锁!");
+			return resultMap.addAttribute("success", false).addAttribute("message", "本次发布已被解锁!");
 		}
 		if(DeployRecord.STATUS_PREPARE.equals(deployRecord.getStatus())) {
-			return resultMap
-					.addAttribute("success", false)
-					.addAttribute("message", "尚未上传文件");
+			return resultMap.addAttribute("success", false).addAttribute("message", "尚未上传文件");
 		}
 		if(Boolean.TRUE == null) { // TODO 发布仍在继续
-			return resultMap
-					.addAttribute("success", false)
-					.addAttribute("message", "发布仍在继续中...");
+			return resultMap.addAttribute("success", false).addAttribute("message", "发布仍在继续中...");
 		}
 		if(patchGroupId != null && patchGroupId > 0) {
 			patchGroup = patchGroupService.getPatchGroupById(patchGroupId);
 		}
 		// 开始发布
 		doDeploy(deployRecord, patchGroup, deployManner);
-		return resultMap
-				.addAttribute("success", true)
-				.addAttribute("message", "发布启动成功!");
+		return resultMap.addAttribute("success", true).addAttribute("message", "发布启动成功!");
 	}
 	
 	private void doDeploy(DeployRecord deployRecord, PatchGroup patchGroup, String deployManner) {

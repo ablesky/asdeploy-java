@@ -60,8 +60,7 @@ public class ProjectController {
 		if(id != null && id > 0) {
 			project = projectService.getProjectById(id);
 			if(project == null) {
-				return resultMap.addAttribute("success", false)
-						.addAttribute("message", "项目不存在!");
+				return resultMap.addAttribute("success", false).addAttribute("message", "项目不存在!");
 			}
 		} else {
 			project = new Project();
@@ -77,17 +76,13 @@ public class ProjectController {
 	public @ResponseBody Map<String, Object> delete(@PathVariable("id") Long id) {
 		projectService.deleteProjectById(id);
 		ModelMap resultMap = new ModelMap();
-		return resultMap
-				.addAttribute("success", true)
-				.addAttribute("message", "删除成功!");
+		return resultMap.addAttribute("success", true).addAttribute("message", "删除成功!");
 	}
 	
 	@ExceptionHandler
 	@ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
 	public @ResponseBody Map<String, Object> runtimeExceptionHandler(RuntimeException runtimeException) {
 		runtimeException.printStackTrace();
-		return new ModelMap()
-				.addAttribute("success", false)
-				.addAttribute("message", "操作失败!");
+		return new ModelMap().addAttribute("success", false).addAttribute("message", "操作失败!");
 	}
 }
