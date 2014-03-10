@@ -1,6 +1,5 @@
 package com.ablesky.asdeploy.util;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -53,14 +52,22 @@ public class DeployUtil {
 	 * 获取发布补丁的脚本目录
 	 */
 	public static String getDeployPatchScriptPath() {
-		return FilenameUtils.concat(CONFIG.getScriptRootPath(), "patch-shell/start_patch_main.sh");
+		String scriptPath = FilenameUtils.concat(CONFIG.getScriptRootPath(), "patch-shell/start_patch_main.sh");
+		if(SystemUtils.IS_OS_WINDOWS) { // for develop
+			scriptPath = FilenameUtils.getPrefix(SystemUtils.USER_DIR) + scriptPath;
+		}
+		return scriptPath;
 	}
 	
 	/**
 	 * 获取发布版本的脚本目录
 	 */
 	public static String getDeployWarScriptPath(String projectName) {
-		return FilenameUtils.concat(CONFIG.getScriptRootPath(), projectName + "-deploy/" + projectName + ".sh");
+		String scriptPath = FilenameUtils.concat(CONFIG.getScriptRootPath(), projectName + "-deploy/" + projectName + ".sh");
+		if(SystemUtils.IS_OS_WINDOWS) { // for develop
+			scriptPath = FilenameUtils.getPrefix(SystemUtils.USER_DIR) + scriptPath;
+		}
+		return scriptPath;
 	}
 	
 	/**
