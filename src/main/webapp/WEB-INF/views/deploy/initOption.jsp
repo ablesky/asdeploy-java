@@ -45,7 +45,7 @@
 	</div>
 	<div style="width: 400px; margin: 10px auto;">
 		<form class="form-horizontal" method="POST" action="${ctx_path}/deploy/toDeployPage" id="deployInitOptionForm">
-			<input type="hidden" value="" name="projId" id="project"/>
+			<input type="hidden" value="" name="projectId" id="project"/>
 			<div class="control-group">
 				<label class="control-label"><strong>发布类型:</strong></label>
 			    <div class="controls">
@@ -68,8 +68,7 @@
 					<tbody>
 						<c:forEach var="project" items="${projectList}">
 						<tr>
-							<td>
-								<input type="hidden" name="projectId" value="${project.id}"/>
+							<td data-project-id="${project.id}">
 								${project.name}
 							</td>
 						</tr>
@@ -94,7 +93,8 @@ $(function(){
 	$tdArr.click(function(){
 		$tdArr.removeClass('active');
 		var $this = $(this).addClass('active');
-		var projectId = $this.children('input:first').val();
+		//var projectId = $this.children('input:first').val();
+		var projectId = $this.attr('data-project-id');
 		$('#project').val(projectId);
 		// 查看是否有补丁组
 		if($('#deployType').val() == 'patch') {

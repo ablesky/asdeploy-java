@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -135,6 +136,24 @@ public class DeployController {
 		return "redirect:/main";
 	}
 	
+	@RequestMapping("/uploadStaticTar")
+	public @ResponseBody Map<String, Object> updateStaticTar(
+			Long projectId,
+			String version,
+			MultipartFile staticTarFile) throws IllegalStateException, IOException {
+		ModelMap resultMap = new ModelMap();
+		String filename = staticTarFile.getOriginalFilename();
+		Project project = projectService.getProjectById(projectId);
+		if(project == null) {
+			return resultMap.addAttribute("success", false).addAttribute("message", "项目不存在!");
+		}
+		staticTarFile.transferTo(new File(DeployUtil.getDeployItemUploadFolder(project.getName(), version) + filename));
+		return resultMap
+				.addAttribute("filename", filename)
+				.addAttribute("size", staticTarFile.getSize())
+				.addAttribute("success", true);
+	}
+	
 	@RequestMapping("/uploadItem")
 	public @ResponseBody Map<String, Object> uploadItem(
 			Long projectId,
@@ -225,7 +244,7 @@ public class DeployController {
 		if(DeployRecord.STATUS_PREPARE.equals(deployRecord.getStatus())) {
 			return resultMap.addAttribute("success", false).addAttribute("message", "尚未上传文件");
 		}
-		if(Boolean.TRUE == null) { // TODO 发布仍在继续
+		if(Boolean.TRUE.equals(Deployer.getLogIsWriting(deployRecordId))) { // 发布仍在继续
 			return resultMap.addAttribute("success", false).addAttribute("message", "发布仍在继续中...");
 		}
 		if(patchGroupId != null && patchGroupId > 0) {

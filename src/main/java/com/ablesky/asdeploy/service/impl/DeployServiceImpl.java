@@ -198,17 +198,19 @@ public class DeployServiceImpl implements IDeployService {
 			item.setPatchGroup(patchGroup);
 			saveOrUpdateDeployItem(item);
 		}
-		// 持久化文件列表
-		batchSaveUnexistedPatchFile(deployRecord.getProject(), filePathList);
-		// 持久化patchFile与patchGroup的关联
-		batchSaveUnexistedPatchFileRelGroup(patchGroup, filePathList);
-		// 根据文件列表检测并持久化冲突信息
-		List<PatchFileRelGroup> conflictRelList = patchGroupService.getPatchFileRelGroupListWhichConflictWith(patchGroup, filePathList);
-		batchSaveUnexistedConflictInfo(patchGroup, deployRecord, conflictRelList, filePathList);
-		// 将deployRecord的状态置为"发布中"
-		if(CollectionUtils.isNotEmpty(conflictRelList)) {
-			deployRecord.setIsConflictWithOthers(true);
+		if(DeployItem.DEPLOY_TYPE_PATCH.equals(item.getDeployType())) {
+			// 持久化文件列表
+			batchSaveUnexistedPatchFile(deployRecord.getProject(), filePathList);
+			// 持久化patchFile与patchGroup的关联
+			batchSaveUnexistedPatchFileRelGroup(patchGroup, filePathList);
+			// 根据文件列表检测并持久化冲突信息
+			List<PatchFileRelGroup> conflictRelList = patchGroupService.getPatchFileRelGroupListWhichConflictWith(patchGroup, filePathList);
+			batchSaveUnexistedConflictInfo(patchGroup, deployRecord, conflictRelList, filePathList);
+			if(CollectionUtils.isNotEmpty(conflictRelList)) {
+				deployRecord.setIsConflictWithOthers(true);
+			}
 		}
+		// 将deployRecord的状态置为"发布中"
 		deployRecord.setStatus(DeployRecord.STATUS_DEPLOYING);
 		saveOrUpdateDeployRecord(deployRecord);
 	}
@@ -315,6 +317,9 @@ public class DeployServiceImpl implements IDeployService {
 	}
 	
 	public void batchSaveUnexistedPatchFile(Project project, List<String> filePathList) {
+		if(CollectionUtils.isEmpty(filePathList)) {
+			return;
+		}
 		List<PatchFile> existedPatchFileList = patchFileDao.list(new ModelMap()
 				.addAttribute("filePath__in", filePathList)
 		);

@@ -63,7 +63,7 @@ public class DeployUtil {
 	 * 获取发布版本的脚本目录
 	 */
 	public static String getDeployWarScriptPath(String projectName) {
-		String scriptPath = FilenameUtils.concat(CONFIG.getScriptRootPath(), projectName + "-deploy/" + projectName + ".sh");
+		String scriptPath = FilenameUtils.concat(CONFIG.getScriptRootPath(), projectName + "-deploy/" + projectName + "-deploy.sh");
 		if(SystemUtils.IS_OS_WINDOWS) { // for develop
 			scriptPath = FilenameUtils.getPrefix(SystemUtils.USER_DIR) + scriptPath;
 		}

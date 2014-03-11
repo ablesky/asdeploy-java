@@ -32,6 +32,15 @@ CREATE TABLE "project" (
     "war_name" varchar(30) NOT NULL
 );
 
+INSERT INTO "project" ("name", "war_name") VALUES
+('as-web', 'ajaxablesky'),
+('as-passport', 'ableskypassport'),
+('as-search', 'ableskysearch'),
+('as-cms', 'ableskycms'),
+('as-ad', 'ableskyadvertisement'),
+('as-im', 'ableskyim'),
+('as-mobile', 'ableskymobile');
+
 -- deploy_item
 DROP TABLE IF EXISTS "deploy_item";
 CREATE TABLE "deploy_item" (

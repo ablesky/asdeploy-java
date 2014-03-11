@@ -48,6 +48,7 @@ h3.title {
 					<td>发布方式:</td>
 					<td>${deployType}</td>
 				</tr>
+				<c:if test="${deployType == 'patch' }" >
 				<tr>
 					<td>补丁分组:</td>
 					<td>
@@ -62,6 +63,7 @@ h3.title {
 						
 					</td>
 				</tr>
+				</c:if>
 			</tbody>
 		</table>
 	</div>
@@ -92,6 +94,19 @@ h3.title {
 						</div>
 					</td>
 				</tr>
+				<c:if test="${project.name == 'as-web' and deployType == 'war' }">
+				<tr>
+					<td style="font-size: 16px; padding-bottom: 10px;">
+						<strong>上传静态压缩包:&nbsp;&nbsp;</strong>
+					</td>
+					<td>
+						<div style="display: inline-block;" id="J_staticFileUploadWidget"></div>
+						<div style="display:inline-block;">
+							<button type="button" id="J_uploadStaticBtn" class="btn btn-primary" style="width: 80px; margin-bottom: 10px;">上&nbsp;&nbsp;传</button>
+						</div>
+					</td>
+				</tr>
+				</c:if>
 			</tbody>
 		</table>
 		
@@ -146,7 +161,9 @@ h3.title {
 		<!-- 发布按钮 -->
 		<div id="J_deployBtnWrapper" style="text-align: center;">
 			<button type="button" class="btn btn-primary" style="width:100px; margin: 0px 10px;" id="J_startDeployBtn">发&nbsp;&nbsp;布</button>
+			<c:if test="${deployType == 'patch' }">
 			<button type="button" class="btn btn-primary" style="width:100px; margin: 0px 10px;" id="J_startRollbackBtn">回&nbsp;&nbsp;滚</button>
+			</c:if>
 			<div style="margin-top: 20px;" id="J_deployStatus"></div>
 		</div>
 		
@@ -167,9 +184,11 @@ h3.title {
 $(function(){
 	initOnBeforeUnload();
 	initFileUploadWidget();
+	initStaticFileUploadWidget();
 	initUnlockAndLeaveBtn();
 	initDecompressBtn();
 	initStartDeployBtn();
+	initRollbackDeployBtn();
 });
 function initFileUploadWidget(){
 	var projectName = $('#J_projectName').val(),
@@ -192,21 +211,13 @@ function initFileUploadWidget(){
 			alert('请先选择要上传的文件!');
 			return false;
 		}
-		// static的情形只能发版本，上传tar.gz包
-		if( projectName != 'as-static') {
-			if(deployType == 'patch' && !(/.zip$/i).test(deployItemName)){
-				alert('请选择zip压缩格式的补丁文件!');
-				return false;
-			}
-			if(deployType == 'war' && !(/.war$/i).test(deployItemName)){
-				alert('请选择war包进行上传!');
-				return false;
-			}
-		} else {
-			if(!(/.tar.gz/i).test(deployItemName)) {
-				alert('请注意，【static】工程只能上传tar.gz包发版本!!!\请不要发补丁!!!');
-				return false;
-			}
+		if(deployType == 'patch' && !(/.zip$/i).test(deployItemName)){
+			alert('请选择zip压缩格式的补丁文件!');
+			return false;
+		}
+		if(deployType == 'war' && !(/.war$/i).test(deployItemName)){
+			alert('请选择war包进行上传!');
+			return false;
 		}
 		$this.html('上传中').attr({disabled: true});
 		var $uploadResultWrap = $('#J_uploadResultWrap');
@@ -247,6 +258,71 @@ function initFileUploadWidget(){
 		return false;
 	});
 }
+/**
+ * 仅在as-web发布版本时需要
+ */
+function initStaticFileUploadWidget(){
+	var projectName = $('#J_projectName').val(),
+		version = $('#J_version').val(),
+		projectId = $('#J_projectId').val(),
+		deployType = $('#J_deployType').val();
+	if(deployType != 'war' || projectName != 'as-web') {
+		return;
+	}
+	$('#J_staticFileUploadWidget').bootstrapFileInput({
+		width: '500px',
+		btnWidth: '80px',
+		fileInputId: 'J_staticTarFile',
+		fileInputName: 'staticTarFile'
+	});
+	$('#J_uploadStaticBtn').on('click', function(){
+		var $this = $(this);
+		var deployItemName = $('#J_staticTarFile').val();
+		if(!deployItemName){
+			alert('请先选择要上传的文件!');
+			return false;
+		}
+		if(!(/.tar(.gz)?$/i).test(deployItemName)){
+			alert('请选择tar包进行上传!');
+			return false;
+		}
+		$this.html('上传中').attr({disabled: true});
+		var $uploadResultWrap = $('#J_uploadResultWrap');
+		$.ajaxFileUpload({
+			url: '/deploy/uploadStaticTar',
+			secureuri: false, 
+			fileElementId:'J_staticTarFile',
+			dataType: 'json',
+			data: {
+				projectId: projectId,
+				version: version
+			},
+			success: function (data, status){
+				if(data.success === true){
+					var sizeUnits = ['byte', 'kb', 'MB', 'GB']
+					var size = data.size;
+					for(var i=0; i <=sizeUnits.length && size > 1024; size = (size/1024).toFixed(2), i++);
+					var sizeStr = size + sizeUnits[i];
+					showAlert($uploadResultWrap, [
+						'文件上传成功!',
+						'文  件  名: <strong>' + data.filename + '</strong>',
+						'文件大小: <strong>' + sizeStr + '</strong>'
+					].join('<br/>'), 'success');
+				}else{
+					this.error(data, status);
+					return;
+				}
+				$this.html('上&nbsp;&nbsp;传').attr({disabled: false});
+			},
+			error: function(data, status, e){
+				showAlert($uploadResultWrap, data.message || '文件上传失败!', 'error');
+				$this.html('上&nbsp;&nbsp;传').attr({disabled: false});
+			}
+		});
+		return false;
+	});
+}
+
 function initUnlockAndLeaveBtn() {
 	$('#J_unlockAndLeave').on('click', function(){
 		if(!confirm('确认要解锁本次发布并离开?')){
@@ -323,6 +399,28 @@ function initStartDeployBtn() {
 				return;
 			}
 			showDeployInfo('发布启动成功!');
+			$('#J_logContent').empty();
+			setTimeout(readDeployLogOnRealtime, 1500);
+		});
+	});
+}
+
+function initRollbackDeployBtn() {
+	$('#J_startRollbackBtn').on('click', function(){
+		var $this = $(this),
+			$deployBtnWrapper = $('#J_deployBtnWrapper');
+		$deployBtnWrapper.children('button').attr({disabled: true});
+		$this.html('回滚中');
+		$.post(CTX_PATH + '/deploy/startDeploy', {
+			deployRecordId: $('#J_deployRecordId').val(),
+			patchGroupId: $('#J_patchGroupId').val(),
+			deployManner: 'rollback'
+		}, function(data){
+			if(!data || data.success !== true) {
+				showDeployResultFailed('回滚启动失败! ' + (data.message || ''));
+				return;
+			}
+			showDeployInfo('回滚启动成功!');
 			$('#J_logContent').empty();
 			setTimeout(readDeployLogOnRealtime, 1500);
 		});
