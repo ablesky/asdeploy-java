@@ -8,6 +8,9 @@
 <title>AbleSky代码发布系统</title>
 <%@ include file="../include/includeCss.jsp" %>
 <style>
+.wrapper {
+	margin-bottom: 50px;
+}
 .table > thead {
 	background-color: #eee;
 }
@@ -31,7 +34,7 @@ h3.title {
 <input type="hidden" id="J_projectName" value="${project.name}" />
 <input type="hidden" id="J_deployRecordId" value="${deployRecord.id}" />
 <input type="hidden" id="J_patchGroupId" value="${patchGroup.id}" />
-<div class="wrap">
+<div class="wrapper">
 	<h2 class="title">发布工程</h2>
 	<div style="width: 490px; text-align: left; margin:30px auto 10px;">
 		<table class="table table-bordered">
@@ -76,7 +79,7 @@ h3.title {
 						<strong>无宕机选项:&nbsp;&nbsp;</strong>
 					</td>
 					<td>
-						<select id="serverGroupSel" style="font-size: 16px;">
+						<select id="J_serverGroupSel" style="font-size: 16px;">
 							<option value="ab" selected="selected">全部</option>
 							<option value="a">a组</option>
 							<option value="b">b组</option>
@@ -392,7 +395,8 @@ function initStartDeployBtn() {
 		$.post(CTX_PATH + '/deploy/startDeploy', {
 			deployRecordId: $('#J_deployRecordId').val(),
 			patchGroupId: $('#J_patchGroupId').val(),
-			deployManner: 'deploy'
+			deployManner: 'deploy',
+			serverGroupParam: $('#J_serverGroupSel').val()
 		}, function(data){
 			if(!data || data.success !== true) {
 				showDeployResultFailed('发布启动失败! ' + (data.message || ''));
@@ -414,7 +418,8 @@ function initRollbackDeployBtn() {
 		$.post(CTX_PATH + '/deploy/startDeploy', {
 			deployRecordId: $('#J_deployRecordId').val(),
 			patchGroupId: $('#J_patchGroupId').val(),
-			deployManner: 'rollback'
+			deployManner: 'rollback',
+			serverGroupParam: $('#J_serverGroupSel').val()
 		}, function(data){
 			if(!data || data.success !== true) {
 				showDeployResultFailed('回滚启动失败! ' + (data.message || ''));

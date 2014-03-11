@@ -29,7 +29,7 @@ public class ShellCmd extends AbstractCmd<ShellCmd.ShellOperation, ShellCmd.Shel
 			for(String param: params.keySet()) {
 				cmdBuff.append(" ").append(param);
 			}
-			cmdBuff.append(" ;");
+			cmdBuff.append(" ");
 			return cmdBuff.toString();
 		}
 		

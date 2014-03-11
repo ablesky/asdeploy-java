@@ -230,7 +230,9 @@ public class DeployController {
 			Long deployRecordId, 
 			@RequestParam(defaultValue = "0")
 			Long patchGroupId,
-			String deployManner) {
+			String deployManner,
+			@RequestParam(defaultValue="ab")
+			String serverGroupParam) {
 		ModelMap resultMap = new ModelMap();
 		DeployRecord deployRecord = null;
 		PatchGroup patchGroup = null;
@@ -251,17 +253,17 @@ public class DeployController {
 			patchGroup = patchGroupService.getPatchGroupById(patchGroupId);
 		}
 		// 开始发布
-		doDeploy(deployRecord, patchGroup, deployManner);
+		doDeploy(deployRecord, patchGroup, deployManner, serverGroupParam);
 		return resultMap.addAttribute("success", true).addAttribute("message", "发布启动成功!");
 	}
 	
-	private void doDeploy(DeployRecord deployRecord, PatchGroup patchGroup, String deployManner) {
+	private void doDeploy(DeployRecord deployRecord, PatchGroup patchGroup, String deployManner, String serverGroupParam) {
 		// 1. 记录补丁组及冲突信息
 		DeployItem item = deployRecord.getDeployItem();
 		String targetFolderPath = FilenameUtils.concat(item.getFolderPath(), FilenameUtils.getBaseName(item.getFileName()));
 		List<String> filePathList = DeployUtil.getDeployItemFilePathList(targetFolderPath);
 		deployService.persistInfoBeforeDeployStart(deployRecord, patchGroup, filePathList);
-		Deployer.executor.submit(new Deployer(deployRecord, deployManner, "ab"));
+		Deployer.executor.submit(new Deployer(deployRecord, deployManner, serverGroupParam));
 	}
 	
 	@RequestMapping("/readDeployLogOnRealtime")

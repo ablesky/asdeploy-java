@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Transformer;
@@ -201,13 +202,15 @@ public class DeployServiceImpl implements IDeployService {
 		if(DeployItem.DEPLOY_TYPE_PATCH.equals(item.getDeployType())) {
 			// 持久化文件列表
 			batchSaveUnexistedPatchFile(deployRecord.getProject(), filePathList);
-			// 持久化patchFile与patchGroup的关联
-			batchSaveUnexistedPatchFileRelGroup(patchGroup, filePathList);
-			// 根据文件列表检测并持久化冲突信息
-			List<PatchFileRelGroup> conflictRelList = patchGroupService.getPatchFileRelGroupListWhichConflictWith(patchGroup, filePathList);
-			batchSaveUnexistedConflictInfo(patchGroup, deployRecord, conflictRelList, filePathList);
-			if(CollectionUtils.isNotEmpty(conflictRelList)) {
-				deployRecord.setIsConflictWithOthers(true);
+			if(patchGroup != null) {
+				// 持久化patchFile与patchGroup的关联
+				batchSaveUnexistedPatchFileRelGroup(patchGroup, filePathList);
+				// 根据文件列表检测并持久化冲突信息
+				List<PatchFileRelGroup> conflictRelList = patchGroupService.getPatchFileRelGroupListWhichConflictWith(patchGroup, filePathList);
+				batchSaveUnexistedConflictInfo(patchGroup, deployRecord, conflictRelList, filePathList);
+				if(CollectionUtils.isNotEmpty(conflictRelList)) {
+					deployRecord.setIsConflictWithOthers(true);
+				}
 			}
 		}
 		// 将deployRecord的状态置为"发布中"
@@ -372,7 +375,7 @@ public class DeployServiceImpl implements IDeployService {
 		if(DeployItem.DEPLOY_TYPE_PATCH.equals(item.getDeployType())) {
 			result = deployPatch(item, deployManner, serverGroupParam);
 		} else if(DeployItem.DEPLOY_TYPE_WAR.equals(item.getDeployType())) {
-			result = deployWar(item, serverGroupParam);
+			result = deployWar(item, serverGroupParam, deployRecord.getId());
 		}
 		if(result) {
 			logger.info("Deploy success and deployRecord id is [" + deployRecord.getId() + "]");
@@ -397,24 +400,31 @@ public class DeployServiceImpl implements IDeployService {
 		return executeCmdAndOutputLog(sh.exec(), new File(Deployer.DEPLOY_LOG_PATH));
 	}
 	
-	private boolean deployWar(DeployItem item, String serverGroupParam) {
+	private boolean deployWar(DeployItem item, String serverGroupParam, Long deployRecordId) {
 		File deployLog = new File(Deployer.DEPLOY_LOG_PATH);
 		String scriptPath = DeployUtil.getDeployWarScriptPath(item.getProject().getName());
-		ShellCmd.ShellOperation sh = new ShellCmd().oper(ShellCmd.ShellOperationType.EXEC);
-		
-		String aSideCmd = sh.param(scriptPath).param(item.getProject().getName() + "-" + item.getVersion()).param("a").toString();
-		if("a".equals(serverGroupParam)) {
-			return executeCmdAndOutputLog(sh.exec(), deployLog);
+		if(serverGroupParam.contains("a")) {
+			ShellCmd.ShellOperation shSideA = new ShellCmd().oper(ShellCmd.ShellOperationType.EXEC)
+					.param(scriptPath).param(item.getProject().getName() + "-" + item.getVersion()).param("a");
+			Deployer.setLogLastReadPos(deployRecordId, 0L);
+			if(!executeCmdAndOutputLog(shSideA.exec(), deployLog)) {
+				return false;
+			}
 		}
 		
-		sh.clearParams();
+		try {
+			TimeUnit.SECONDS.sleep(3L);	// 睡3s，好让前端有机会吧上面的日志读完
+		} catch (InterruptedException e) {}
 		
-		String bSideCmd = sh.param(scriptPath).param(item.getProject().getName() + "-" + item.getVersion()).param("b").toString();
-		if("b".equals(serverGroupParam)) {
-			return executeCmdAndOutputLog(sh.exec(), deployLog);
+		if(serverGroupParam.contains("b")) {
+			ShellCmd.ShellOperation shSideB = new ShellCmd().oper(ShellCmd.ShellOperationType.EXEC)
+					.param(scriptPath).param(item.getProject().getName() + "-" + item.getVersion()).param("b");
+			Deployer.setLogLastReadPos(deployRecordId, 0L);
+			if(!executeCmdAndOutputLog(shSideB.exec(), deployLog)) {
+				return false;
+			}
 		}
-		String cmd = aSideCmd + bSideCmd;
-		return executeCmdAndOutputLog(sh.exec(cmd), deployLog);
+		return true;
 	}
 	
 	private boolean executeCmdAndOutputLog(Process process, File logFile) {

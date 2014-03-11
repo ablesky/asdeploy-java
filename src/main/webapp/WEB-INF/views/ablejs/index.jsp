@@ -154,7 +154,7 @@ function processRelativePathQueryValue(queryType, queryValue) {
 	queryValue = queryValue.replace(/\\/g, '/');
 	var webrootFlag = 'WebRoot/';
 	var webrootPos = queryValue.indexOf(webrootFlag)
-	var relativePathBeginPos = queryValue.indexOf('/', webrootPos + webrootFlag.length);
+	var relativePathBeginPos = webrootPos >= 0? queryValue.indexOf('/', webrootPos + webrootFlag.length): -1;
 	return queryValue.substring(relativePathBeginPos + 1);
 }
 

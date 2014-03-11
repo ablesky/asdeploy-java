@@ -145,7 +145,7 @@
 			</thead>
 			<tbody id="J_tbody">
 				<c:forEach items="${page.list}" var="deployRecord">
-					<tr>
+					<tr <c:if test="${deployRecord.isConflictWithOthers == true}">class="error" </c:if>>
 						<td>${deployRecord.id}</td>
 						<td>${deployRecord.user.username}</td>
 						<td><fmt:formatDate value="${deployRecord.createTime}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
