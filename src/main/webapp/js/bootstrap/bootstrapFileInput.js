@@ -106,6 +106,6 @@ $(function(){
 		btnWidth: '80px',
 		fileInputId: '',
 		fileInputName: ''
-	}
+	};
 	
 })(jQuery);

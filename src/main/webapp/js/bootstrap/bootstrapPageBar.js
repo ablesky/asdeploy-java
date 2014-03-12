@@ -27,17 +27,17 @@
 		
 		for(var i=0, l=pageNumArr.length; i<l; i++) {
 			if(i > 0 && pageNumArr[i] - pageNumArr[i-1] > 1){
-				var $li = $('<li class="disabled"><a href="javascript:void(0);">...</a></li>')
+				var $li = $('<li class="disabled"><a href="javascript:void(0);">...</a></li>');
 				$ul.append($li);
 			}
 			var $li = buildPageBtnLi(i, pageNumArr[i], opts.curPageNum == pageNumArr[i], opts.click);
 			$ul.append($li);
 		}
 		
-		$ul.prepend(buildPageBtnLi(-1, opts.curPageNum-1, opts.curPageNum == 1, opts.click, '&lt;'));
-		$ul.prepend(buildPageBtnLi(-2, 1, opts.curPageNum == 1, opts.click, '&lt;&lt;'));
-		$ul.append(buildPageBtnLi(-1, opts.curPageNum + 1, opts.curPageNum == opts.totalPageNum, opts.click, '&gt;'));
-		$ul.append(buildPageBtnLi(-2, opts.totalPageNum, opts.curPageNum == opts.totalPageNum, opts.click, '&gt;&gt;'));
+		$ul.prepend(buildPageBtnLi(-1, opts.curPageNum-1, opts.curPageNum <= 1, opts.click, '&lt;'));
+		$ul.prepend(buildPageBtnLi(-2, 1, opts.curPageNum <= 1, opts.click, '&lt;&lt;'));
+		$ul.append(buildPageBtnLi(-1, opts.curPageNum + 1, opts.curPageNum >= opts.totalPageNum, opts.click, '&gt;'));
+		$ul.append(buildPageBtnLi(-2, opts.totalPageNum, opts.curPageNum >= opts.totalPageNum, opts.click, '&gt;&gt;'));
 		
 		return $ul;
 	}
@@ -90,7 +90,7 @@
 			if(remainedBtnNum > 0){
 				leftBtnNum = rightBtnNum = Math.floor(remainedBtnNum / 2);
 				// 有可能比maxBtnNum少1， 无所谓了
-				var leftOffset = Math.min(centerLeftPageNum - 1, leftBtnNum)
+				var leftOffset = Math.min(centerLeftPageNum - 1, leftBtnNum);
 				for(var i=1; i<=leftBtnNum; i++){
 					pageNumArr.push(i<centerLeftPageNum? i: i+centerRightPageNum - leftOffset);
 				}
