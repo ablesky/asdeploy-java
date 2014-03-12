@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -262,7 +261,7 @@ public class DeployController {
 		DeployItem item = deployRecord.getDeployItem();
 		String targetFolderPath = FilenameUtils.concat(item.getFolderPath(), FilenameUtils.getBaseName(item.getFileName()));
 		List<String> filePathList = DeployUtil.getDeployItemFilePathList(targetFolderPath);
-		deployService.persistInfoBeforeDeployStart(deployRecord, patchGroup, filePathList);
+		deployService.persistInfoBeforeDeployStart(deployRecord, patchGroup, filePathList, deployManner);
 		Deployer.executor.submit(new Deployer(deployRecord, deployManner, serverGroupParam));
 	}
 	

@@ -34,9 +34,7 @@ public interface IDeployService {
 
 	void saveOrUpdateDeployItem(DeployItem item);
 
-	boolean deploy(DeployRecord deployRecord, String deployManner, String serverGroupParam);
-
-	void persistInfoBeforeDeployStart(DeployRecord deployRecord, PatchGroup patchGroup, List<String> filePathList);
+	void persistInfoBeforeDeployStart(DeployRecord deployRecord, PatchGroup patchGroup, List<String> filePathList, String deployManner);
 
 	List<ConflictDetail> getConflictDetailListResultByParam(int start, int limit, Map<String, Object> param);
 

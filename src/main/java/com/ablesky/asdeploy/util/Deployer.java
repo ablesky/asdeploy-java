@@ -1,23 +1,35 @@
 package com.ablesky.asdeploy.util;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.SystemUtils;
+import org.apache.log4j.Logger;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.springframework.orm.hibernate4.SessionFactoryUtils;
 
+import com.ablesky.asdeploy.pojo.DeployItem;
 import com.ablesky.asdeploy.pojo.DeployRecord;
-import com.ablesky.asdeploy.service.IDeployService;
+import com.ablesky.asdeploy.util.cmd.ShellCmd;
 
 public class Deployer implements Callable<Boolean> {
+	
+	private static final Logger logger = Logger.getLogger(Deployer.class);
+	
+	public static final String DEPLOY_MANNER_DEPLOY = "deploy";
+	public static final String DEPLOY_MANNER_ROLLBACK = "rollback";
 	
 	private static final ConcurrentHashMap<String, Object> deployCache = new ConcurrentHashMap<String, Object>();
 	
 	public static final ExecutorService executor = Executors.newSingleThreadExecutor();
-	
-	private static IDeployService deployService;
 	
 	private static final String DEPLOY_RESULT_KEY_PREFIX = "deploy_result_";
 	private static final String LOG_IS_WRITING_KEY_PREFIX = "log_is_writing_";
@@ -41,17 +53,112 @@ public class Deployer implements Callable<Boolean> {
 		Long deployRecordId = deployRecord.getId();
 		setLogIsWriting(deployRecordId, Boolean.TRUE);
 		setLogLastReadPos(deployRecordId, 0L);
-		Boolean result = ensureDeployService().deploy(deployRecord, deployManner, serverGroupParam);
+		Boolean result = deploy(deployRecord, deployManner, serverGroupParam);
 		setDeployResult(deployRecordId, result);
 		setLogIsWriting(deployRecordId, Boolean.FALSE);
+		renewDeployResultStatus(deployRecord, deployManner, result);
 		return result;
 	}
-
-	private static IDeployService ensureDeployService() {
-		if(deployService == null) {
-			deployService = SpringUtil.getBean(IDeployService.class);
+	
+	private void renewDeployResultStatus(DeployRecord  deployRecord, String deployManner, Boolean result) {
+		String status = null;
+		if(DEPLOY_MANNER_DEPLOY.equals(deployManner)) {
+			status = Boolean.TRUE.equals(result)? DeployRecord.STATUS_DEPLOY_SUCCESS: DeployRecord.STATUS_DEPLOY_FAILURE;
+		} else if (DEPLOY_MANNER_ROLLBACK.equals(deployManner)) {
+			status = Boolean.TRUE.equals(result)? DeployRecord.STATUS_ROLLBACK_SUCCESS: DeployRecord.STATUS_ROLLBACK_FAILURE;
+		} else {
+			return;
 		}
-		return deployService;
+		Session session = null;
+		try {
+			session = SessionFactoryUtils.openSession(SpringUtil.getBean(SessionFactory.class));
+			deployRecord.setStatus(status);
+			session.saveOrUpdate(deployRecord);
+			session.flush();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			SessionFactoryUtils.closeSession(session);
+		}
+	}
+	
+	private static boolean deploy(DeployRecord deployRecord, String deployManner, String serverGroupParam) {
+		boolean result = false;
+		DeployItem item = deployRecord.getDeployItem();
+		if(DeployItem.DEPLOY_TYPE_PATCH.equals(item.getDeployType())) {
+			result = deployPatch(item, deployManner, serverGroupParam);
+		} else if(DeployItem.DEPLOY_TYPE_WAR.equals(item.getDeployType())) {
+			result = deployWar(item, serverGroupParam, deployRecord.getId());
+		}
+		if(result) {
+			logger.info("Deploy success and deployRecord id is [" + deployRecord.getId() + "]");
+		} else {
+			logger.info("Deploy failed and deployRecord id is [" + deployRecord.getId() + "]");
+		}
+		return result;
+		
+	}
+	
+	private static boolean deployPatch(DeployItem item, String deployManner, String serverGroupParam) {
+		String scriptPath = DeployUtil.getDeployPatchScriptPath();
+		String itemPatchFolder = DeployUtil.getDeployItemPatchFolder(item, deployManner);
+		if(!"a".equals(serverGroupParam) && !"b".equals(serverGroupParam)) {
+			serverGroupParam = "ab";
+		}
+		ShellCmd.ShellOperation sh = new ShellCmd().oper(ShellCmd.ShellOperationType.EXEC);
+		sh	.param(scriptPath)
+			.param(itemPatchFolder)
+			.param(DeployConfiguration.getInstance().getNeedSendEmail())
+			.param(serverGroupParam);
+		return executeCmdAndOutputLog(sh.exec(), new File(Deployer.DEPLOY_LOG_PATH));
+	}
+	
+	private static boolean deployWar(DeployItem item, String serverGroupParam, Long deployRecordId) {
+		File deployLog = new File(Deployer.DEPLOY_LOG_PATH);
+		String scriptPath = DeployUtil.getDeployWarScriptPath(item.getProject().getName());
+		if(serverGroupParam.contains("a")) {
+			ShellCmd.ShellOperation shSideA = new ShellCmd().oper(ShellCmd.ShellOperationType.EXEC)
+					.param(scriptPath).param(item.getProject().getName() + "-" + item.getVersion()).param("a");
+			Deployer.setLogLastReadPos(deployRecordId, 0L);
+			if(!executeCmdAndOutputLog(shSideA.exec(), deployLog)) {
+				return false;
+			}
+		}
+		
+		try {
+			TimeUnit.SECONDS.sleep(3L);	// 睡3s，好让前端有机会吧上面的日志读完
+		} catch (InterruptedException e) {}
+		
+		if(serverGroupParam.contains("b")) {
+			ShellCmd.ShellOperation shSideB = new ShellCmd().oper(ShellCmd.ShellOperationType.EXEC)
+					.param(scriptPath).param(item.getProject().getName() + "-" + item.getVersion()).param("b");
+			Deployer.setLogLastReadPos(deployRecordId, 0L);
+			if(!executeCmdAndOutputLog(shSideB.exec(), deployLog)) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	private static boolean executeCmdAndOutputLog(Process process, File logFile) {
+		if(logFile == null || process == null) {
+			return false;
+		}
+		if(logFile.exists()) {
+			logFile.delete();
+		}
+		try {
+			FileUtils.copyInputStreamToFile(process.getInputStream(), logFile);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		} 
+		try {
+			return process.waitFor() == 0;
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 	
 	public static void setDeployResult(Long deployRecordId, Boolean result) {

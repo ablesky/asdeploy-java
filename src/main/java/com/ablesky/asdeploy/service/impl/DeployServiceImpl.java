@@ -7,12 +7,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Transformer;
-import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
@@ -40,17 +37,13 @@ import com.ablesky.asdeploy.service.IDeployService;
 import com.ablesky.asdeploy.service.IPatchGroupService;
 import com.ablesky.asdeploy.util.AuthUtil;
 import com.ablesky.asdeploy.util.CommonConstant;
-import com.ablesky.asdeploy.util.DeployConfiguration;
 import com.ablesky.asdeploy.util.DeployUtil;
 import com.ablesky.asdeploy.util.Deployer;
 import com.ablesky.asdeploy.util.Page;
-import com.ablesky.asdeploy.util.cmd.ShellCmd;
 
 @Service
 public class DeployServiceImpl implements IDeployService {
 	
-	private Logger logger = Logger.getLogger(this.getClass());
-
 	@Autowired
 	private IProjectDao projectDao;
 	@Autowired
@@ -193,7 +186,7 @@ public class DeployServiceImpl implements IDeployService {
 	}
 	
 	@Override
-	public void persistInfoBeforeDeployStart(DeployRecord deployRecord, PatchGroup patchGroup, List<String> filePathList) {
+	public void persistInfoBeforeDeployStart(DeployRecord deployRecord, PatchGroup patchGroup, List<String> filePathList, String deployManner) {
 		DeployItem item = deployRecord.getDeployItem();
 		if(patchGroup != null && DeployItem.DEPLOY_TYPE_PATCH.equals(deployRecord.getDeployItem().getDeployType())) {
 			item.setPatchGroup(patchGroup);
@@ -214,7 +207,17 @@ public class DeployServiceImpl implements IDeployService {
 			}
 		}
 		// 将deployRecord的状态置为"发布中"
-		deployRecord.setStatus(DeployRecord.STATUS_DEPLOYING);
+		renewDeployingStatus(deployRecord, deployManner);
+	}
+	
+	private void renewDeployingStatus(DeployRecord deployRecord, String deployManner) {
+		if(Deployer.DEPLOY_MANNER_DEPLOY.equalsIgnoreCase(deployManner)) {
+			deployRecord.setStatus(DeployRecord.STATUS_DEPLOYING);
+		} else if (Deployer.DEPLOY_MANNER_ROLLBACK.equalsIgnoreCase(deployManner)) {
+			deployRecord.setStatus(DeployRecord.STATUS_ROLLBACKING);
+		} else {
+			return;
+		}
 		saveOrUpdateDeployRecord(deployRecord);
 	}
 	
@@ -367,86 +370,5 @@ public class DeployServiceImpl implements IDeployService {
 		}
 		return list;
 	}
-	
-	@Override
-	public boolean deploy(DeployRecord deployRecord, String deployManner, String serverGroupParam) {
-		boolean result = false;
-		DeployItem item = deployRecord.getDeployItem();
-		if(DeployItem.DEPLOY_TYPE_PATCH.equals(item.getDeployType())) {
-			result = deployPatch(item, deployManner, serverGroupParam);
-		} else if(DeployItem.DEPLOY_TYPE_WAR.equals(item.getDeployType())) {
-			result = deployWar(item, serverGroupParam, deployRecord.getId());
-		}
-		if(result) {
-			logger.info("Deploy success and deployRecord id is [" + deployRecord.getId() + "]");
-		} else {
-			logger.info("Deploy failed and deployRecord id is [" + deployRecord.getId() + "]");
-		}
-		return result;
-		
-	}
-	
-	private boolean deployPatch(DeployItem item, String deployManner, String serverGroupParam) {
-		String scriptPath = DeployUtil.getDeployPatchScriptPath();
-		String itemPatchFolder = DeployUtil.getDeployItemPatchFolder(item, deployManner);
-		if(!"a".equals(serverGroupParam) && !"b".equals(serverGroupParam)) {
-			serverGroupParam = "ab";
-		}
-		ShellCmd.ShellOperation sh = new ShellCmd().oper(ShellCmd.ShellOperationType.EXEC);
-		sh	.param(scriptPath)
-			.param(itemPatchFolder)
-			.param(DeployConfiguration.getInstance().getNeedSendEmail())
-			.param(serverGroupParam);
-		return executeCmdAndOutputLog(sh.exec(), new File(Deployer.DEPLOY_LOG_PATH));
-	}
-	
-	private boolean deployWar(DeployItem item, String serverGroupParam, Long deployRecordId) {
-		File deployLog = new File(Deployer.DEPLOY_LOG_PATH);
-		String scriptPath = DeployUtil.getDeployWarScriptPath(item.getProject().getName());
-		if(serverGroupParam.contains("a")) {
-			ShellCmd.ShellOperation shSideA = new ShellCmd().oper(ShellCmd.ShellOperationType.EXEC)
-					.param(scriptPath).param(item.getProject().getName() + "-" + item.getVersion()).param("a");
-			Deployer.setLogLastReadPos(deployRecordId, 0L);
-			if(!executeCmdAndOutputLog(shSideA.exec(), deployLog)) {
-				return false;
-			}
-		}
-		
-		try {
-			TimeUnit.SECONDS.sleep(3L);	// 睡3s，好让前端有机会吧上面的日志读完
-		} catch (InterruptedException e) {}
-		
-		if(serverGroupParam.contains("b")) {
-			ShellCmd.ShellOperation shSideB = new ShellCmd().oper(ShellCmd.ShellOperationType.EXEC)
-					.param(scriptPath).param(item.getProject().getName() + "-" + item.getVersion()).param("b");
-			Deployer.setLogLastReadPos(deployRecordId, 0L);
-			if(!executeCmdAndOutputLog(shSideB.exec(), deployLog)) {
-				return false;
-			}
-		}
-		return true;
-	}
-	
-	private boolean executeCmdAndOutputLog(Process process, File logFile) {
-		if(logFile == null || process == null) {
-			return false;
-		}
-		if(logFile.exists()) {
-			logFile.delete();
-		}
-		try {
-			FileUtils.copyInputStreamToFile(process.getInputStream(), logFile);
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
-		} 
-		try {
-			return process.waitFor() == 0;
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		return false;
-	}
-	
 	
 }
