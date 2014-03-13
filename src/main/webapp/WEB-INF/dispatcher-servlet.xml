@@ -11,7 +11,7 @@
 	<context:component-scan base-package="com.ablesky.asdeploy" />
 
 	<mvc:annotation-driven />
-	<mvc:resources mapping="/static/**" location="/"/>
+	<mvc:resources mapping="/static/**" location="/" cache-period="28800"/>
 
 	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 		<property name="prefix" value="/WEB-INF/views/" />
