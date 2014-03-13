@@ -74,7 +74,8 @@ h3.title {
 		<table style="width: 800px; margin: 30px auto;">
 			<tbody>
 				<%-- 只有as-web需要无宕机选项 --%>
-				<tr id="J_serverGroupWrap" <c:if test="${project.name != 'as-web'}">style="display: none;"</c:if>>
+				<c:if test="${project.name == 'as-web'}">
+				<tr id="J_serverGroupWrap">
 					<td style="width: 170px; font-size: 16px; padding-bottom: 10px;">
 						<strong>无宕机选项:&nbsp;&nbsp;</strong>
 					</td>
@@ -86,6 +87,7 @@ h3.title {
 						</select>
 					</td>
 				</tr>
+				</c:if>
 				<tr>
 					<td style="font-size: 16px; padding-bottom: 10px;">
 						<strong>上传文件:&nbsp;&nbsp;</strong>

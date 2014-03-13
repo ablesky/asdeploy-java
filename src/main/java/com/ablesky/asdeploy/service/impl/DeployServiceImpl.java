@@ -134,6 +134,9 @@ public class DeployServiceImpl implements IDeployService {
 			String deployType, 
 			String version) throws IllegalStateException, IOException {
 		String filename = deployItemFile.getOriginalFilename();
+		if(DeployItem.DEPLOY_TYPE_WAR.equals(deployType)) {
+			filename = project.getWarName() + ".war";
+		}
 		File itemUploadFolder = new File(DeployUtil.getDeployItemUploadFolder(project.getName(), version));
 		if(!itemUploadFolder.exists()) {
 			itemUploadFolder.mkdirs();

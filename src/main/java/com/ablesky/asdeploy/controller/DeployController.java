@@ -230,7 +230,7 @@ public class DeployController {
 			@RequestParam(defaultValue = "0")
 			Long patchGroupId,
 			String deployManner,
-			@RequestParam(defaultValue="ab")
+			@RequestParam(defaultValue="a")
 			String serverGroupParam) {
 		ModelMap resultMap = new ModelMap();
 		DeployRecord deployRecord = null;

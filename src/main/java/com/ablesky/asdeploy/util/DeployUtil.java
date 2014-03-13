@@ -23,6 +23,7 @@ import org.apache.commons.lang3.SystemUtils;
 import org.mozilla.universalchardet.UniversalDetector;
 
 import com.ablesky.asdeploy.pojo.DeployItem;
+import com.ablesky.asdeploy.pojo.Project;
 
 public class DeployUtil {
 	
@@ -62,8 +63,16 @@ public class DeployUtil {
 	/**
 	 * 获取发布版本的脚本目录
 	 */
-	public static String getDeployWarScriptPath(String projectName) {
-		String scriptPath = FilenameUtils.concat(CONFIG.getScriptRootPath(), projectName + "-deploy/" + projectName + "-deploy.sh");
+	public static String getDeployWarScriptPath(Project project) {
+		Integer deployScriptType = project.getDeployScriptType();
+		String projectName = project.getName();
+		String scriptPath = null;
+		// war包发布脚本的机制产生了变更，也许需要待机制成熟后做进一步的更改
+		if(Long.valueOf(0L).equals(deployScriptType)) {
+			scriptPath = FilenameUtils.concat(CONFIG.getScriptRootPath(), projectName + "-deploy/" + projectName + "-deploy.sh");
+		} else {
+			scriptPath = FilenameUtils.concat(CONFIG.getScriptRootPath(),  "deploy-as/deploy.sh");
+		}
 		if(SystemUtils.IS_OS_WINDOWS) { // for develop
 			scriptPath = FilenameUtils.getPrefix(SystemUtils.USER_DIR) + scriptPath;
 		}

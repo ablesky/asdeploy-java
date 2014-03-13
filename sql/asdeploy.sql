@@ -29,17 +29,18 @@ DROP TABLE IF EXISTS "project";
 CREATE TABLE "project" (
     "id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
     "name" varchar(30) NOT NULL,
-    "war_name" varchar(30) NOT NULL
+    "war_name" varchar(30) NOT NULL,
+    "deploy_script_type" integer DEFAULT 1
 );
 
-INSERT INTO "project" ("name", "war_name") VALUES
-('as-web', 'ajaxablesky'),
-('as-passport', 'ableskypassport'),
-('as-search', 'ableskysearch'),
-('as-cms', 'ableskycms'),
-('as-ad', 'ableskyadvertisement'),
-('as-im', 'ableskyim'),
-('as-mobile', 'ableskymobile');
+INSERT INTO "project" ("name", "war_name", "deploy_script_type") VALUES
+('as-web', 'ajaxablesky', 0),
+('as-passport', 'ableskypassport', 0),
+('as-search', 'ableskysearch', 0),
+('as-cms', 'ableskycms', 0),
+('as-ad', 'ableskyadvertisement', 0),
+('as-im', 'ableskyim', 0),
+('as-mobile', 'ableskymobile', 0);
 
 -- deploy_item
 DROP TABLE IF EXISTS "deploy_item";

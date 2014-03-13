@@ -115,10 +115,12 @@ public class Deployer implements Callable<Boolean> {
 	
 	private static boolean deployWar(DeployItem item, String serverGroupParam, Long deployRecordId) {
 		File deployLog = new File(Deployer.DEPLOY_LOG_PATH);
-		String scriptPath = DeployUtil.getDeployWarScriptPath(item.getProject().getName());
+		String scriptPath = DeployUtil.getDeployWarScriptPath(item.getProject());
 		if(serverGroupParam.contains("a")) {
 			ShellCmd.ShellOperation shSideA = new ShellCmd().oper(ShellCmd.ShellOperationType.EXEC)
-					.param(scriptPath).param(item.getProject().getName() + "-" + item.getVersion()).param("a");
+					.param(scriptPath)
+					.param(item.getProject().getName() + "-" + item.getVersion())
+					.param("a");
 			Deployer.setLogLastReadPos(deployRecordId, 0L);
 			if(!executeCmdAndOutputLog(shSideA.exec(), deployLog)) {
 				return false;
@@ -126,12 +128,14 @@ public class Deployer implements Callable<Boolean> {
 		}
 		
 		try {
-			TimeUnit.SECONDS.sleep(3L);	// 睡3s，好让前端有机会吧上面的日志读完
+			TimeUnit.SECONDS.sleep(3L);	// 睡3秒，好让前端有机会把之前的日志读完
 		} catch (InterruptedException e) {}
 		
 		if(serverGroupParam.contains("b")) {
 			ShellCmd.ShellOperation shSideB = new ShellCmd().oper(ShellCmd.ShellOperationType.EXEC)
-					.param(scriptPath).param(item.getProject().getName() + "-" + item.getVersion()).param("b");
+					.param(scriptPath)
+					.param(item.getProject().getName() + "-" + item.getVersion())
+					.param("b");
 			Deployer.setLogLastReadPos(deployRecordId, 0L);
 			if(!executeCmdAndOutputLog(shSideB.exec(), deployLog)) {
 				return false;
