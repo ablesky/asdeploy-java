@@ -71,7 +71,7 @@ h3.title {
 		</table>
 	</div>
 	<div style="width: 800px; margin: 20px auto 10px;">
-		<table style="width: 800px; margin: 30px auto;">
+		<table style="width: 800px; margin: 30px auto 0px;">
 			<tbody>
 				<%-- 只有as-web需要无宕机选项 --%>
 				<c:if test="${project.name == 'as-web'}">
@@ -99,6 +99,13 @@ h3.title {
 						</div>
 					</td>
 				</tr>
+				<tr>
+					<td></td>
+					<td>
+						<div id="J_uploadProgressBar" class="progress progress-striped" style="width: 582px;">
+						</div>
+					</td>
+				</tr>
 				<c:if test="${project.name == 'as-web' and deployType == 'war' }">
 				<tr>
 					<td style="font-size: 16px; padding-bottom: 10px;">
@@ -109,6 +116,12 @@ h3.title {
 						<div style="display:inline-block;">
 							<button type="button" id="J_uploadStaticBtn" class="btn btn-primary" style="width: 80px; margin-bottom: 10px;">上&nbsp;&nbsp;传</button>
 						</div>
+					</td>
+				</tr>
+				<tr>
+					<td></td>
+					<td>
+						<div id="J_uploadStaticProgressBar" class="progress progress-striped" style="width: 582px;" title=""></div>
 					</td>
 				</tr>
 				</c:if>
@@ -188,7 +201,7 @@ h3.title {
 </body>
 <%@ include file="../include/includeJs.jsp" %>
 <script type="text/javascript" src="${ctx_path}/js/bootstrap/bootstrapFileInput.js"></script>
-<script type="text/javascript" src="${ctx_path}/js/jquery/ajaxfileupload.js"></script>
+<script type="text/javascript" src="${ctx_path}/js/bootstrap/bootstrapFileUploadBtn.js"></script>
 <script type="text/javascript" src="${ctx_path}/js/jquery/jquery.tmpl.js"></script>
 <script>
 $(function(){
@@ -214,59 +227,57 @@ function initFileUploadWidget(){
 		fileInputId: 'J_deployItemField',
 		fileInputName: 'deployItemField'
 	});
-	$('#J_uploadBtn').on('click', function(){
-		var $this = $(this);
-		var deployItemName = $('#J_deployItemField').val();
-		if(!deployItemName){
-			alert('请先选择要上传的文件!');
-			return false;
-		}
-		if(deployType == 'patch' && !(/.zip$/i).test(deployItemName)){
-			alert('请选择zip压缩格式的补丁文件!');
-			return false;
-		}
-		if(deployType == 'war' && !(/.war$/i).test(deployItemName)){
-			alert('请选择war包进行上传!');
-			return false;
-		}
-		$this.html('上传中').attr({disabled: true});
-		var $uploadResultWrap = $('#J_uploadResultWrap');
-		$.ajaxFileUpload({
-			url: '/deploy/uploadItem',
-			secureuri: false, 
-			fileElementId:'J_deployItemField',
-			dataType: 'json',
-			data: {
-				projectId: projectId,
-				version: version,
-				deployType: deployType,
-				deployRecordId: deployRecordId,
-				patchGroupId: patchGroupId
-			},
-			success: function (data, status){
-				if(data.success === true){
-					var sizeUnits = ['byte', 'kb', 'MB', 'GB']
-					var size = data.size;
-					for(var i=0; i <=sizeUnits.length && size > 1024; size = (size/1024).toFixed(2), i++);
-					var sizeStr = size + sizeUnits[i];
-					showAlert($uploadResultWrap, [
-						'文件上传成功!',
-						'文  件  名: <strong>' + data.filename + '</strong>',
-						'文件大小: <strong>' + sizeStr + '</strong>'
-					].join('<br/>'), 'success');
-				}else{
-					this.error(data, status);
-					return;
-				}
-				$this.html('上&nbsp;&nbsp;传').attr({disabled: false});
-			},
-			error: function(data, status, e){
-				showAlert($uploadResultWrap, data.message || '文件上传失败!', 'error');
-				$this.html('上&nbsp;&nbsp;传').attr({disabled: false});
+	
+	var $uploadResultWrap = $('#J_uploadResultWrap');
+	
+	$('#J_uploadBtn').bootstrapFileUploadBtn({
+		progressBar: '#J_uploadProgressBar',
+		fileInput: '#J_deployItemField',
+		url: '${ctx_path}/deploy/uploadItem',
+		data: {
+			projectId: projectId,
+			version: version,
+			deployType: deployType,
+			deployRecordId: deployRecordId,
+			patchGroupId: patchGroupId 
+		},
+		validator: function() {
+			var deployItemName = $('#J_deployItemField').val();
+			if(!deployItemName){
+				alert('请先选择要上传的文件!');
+				return false;
 			}
-		});
-		return false;
+			if(deployType == 'patch' && !(/.zip$/i).test(deployItemName)){
+				alert('请选择zip压缩格式的补丁文件!');
+				return false;
+			}
+			if(deployType == 'war' && !(/.war$/i).test(deployItemName)){
+				alert('请选择war包进行上传!');
+				return false;
+			}
+			return true;
+		},
+		success: function (data, status, ev){
+			if(data.success === true){
+				var sizeUnits = ['byte', 'kb', 'MB', 'GB']
+				var size = data.size;
+				for(var i=0; i <=sizeUnits.length && size > 1024; size = (size/1024).toFixed(2), i++);
+				var sizeStr = size + sizeUnits[i];
+				showAlert($uploadResultWrap, [
+					'文件上传成功!',
+					'文  件  名: <strong>' + data.filename + '</strong>',
+					'文件大小: <strong>' + sizeStr + '</strong>'
+				].join('<br/>'), 'success');
+			}else{
+				this.error(data, status);
+				return;
+			}
+		},
+		error: function(data, status, ev){
+			showAlert($uploadResultWrap, data.message || '文件上传失败!', 'error');
+		}
 	});
+	
 }
 /**
  * 仅在as-web发布版本时需要
@@ -285,52 +296,49 @@ function initStaticFileUploadWidget(){
 		fileInputId: 'J_staticTarFile',
 		fileInputName: 'staticTarFile'
 	});
-	$('#J_uploadStaticBtn').on('click', function(){
-		var $this = $(this);
-		var deployItemName = $('#J_staticTarFile').val();
-		if(!deployItemName){
-			alert('请先选择要上传的文件!');
-			return false;
-		}
-		if(!(/.tar(.gz)?$/i).test(deployItemName)){
-			alert('请选择tar包进行上传!');
-			return false;
-		}
-		$this.html('上传中').attr({disabled: true});
-		var $uploadResultWrap = $('#J_uploadResultWrap');
-		$.ajaxFileUpload({
-			url: '/deploy/uploadStaticTar',
-			secureuri: false, 
-			fileElementId:'J_staticTarFile',
-			dataType: 'json',
-			data: {
-				projectId: projectId,
-				version: version
-			},
-			success: function (data, status){
-				if(data.success === true){
-					var sizeUnits = ['byte', 'kb', 'MB', 'GB']
-					var size = data.size;
-					for(var i=0; i <=sizeUnits.length && size > 1024; size = (size/1024).toFixed(2), i++);
-					var sizeStr = size + sizeUnits[i];
-					showAlert($uploadResultWrap, [
-						'文件上传成功!',
-						'文  件  名: <strong>' + data.filename + '</strong>',
-						'文件大小: <strong>' + sizeStr + '</strong>'
-					].join('<br/>'), 'success');
-				}else{
-					this.error(data, status);
-					return;
-				}
-				$this.html('上&nbsp;&nbsp;传').attr({disabled: false});
-			},
-			error: function(data, status, e){
-				showAlert($uploadResultWrap, data.message || '文件上传失败!', 'error');
-				$this.html('上&nbsp;&nbsp;传').attr({disabled: false});
+	
+	var $uploadResultWrap = $('#J_uploadResultWrap');
+	
+	$('#J_uploadStaticBtn').bootstrapFileUploadBtn({
+		progressBar: '#J_uploadStaticProgressBar',
+		fileInput: '#J_staticTarFile',
+		url: '${ctx_path}/deploy/uploadStaticTar',
+		data: {
+			projectId: projectId,
+			version: version
+		},
+		validator: function() {
+			var deployItemName = $('#J_staticTarFile').val();
+			if(!deployItemName){
+				alert('请先选择要上传的文件!');
+				return false;
 			}
-		});
-		return false;
+			if(!(/.tar(.gz)?$/i).test(deployItemName)){
+				alert('请选择tar包进行上传!');
+				return false;
+			}
+			return true;
+		},
+		success: function (data, status){
+			if(data.success === true){
+				var sizeUnits = ['byte', 'kb', 'MB', 'GB']
+				var size = data.size;
+				for(var i=0; i <=sizeUnits.length && size > 1024; size = (size/1024).toFixed(2), i++);
+				var sizeStr = size + sizeUnits[i];
+				showAlert($uploadResultWrap, [
+					'文件上传成功!',
+					'文  件  名: <strong>' + data.filename + '</strong>',
+					'文件大小: <strong>' + sizeStr + '</strong>'
+				].join('<br/>'), 'success');
+			}else{
+				this.error(data, status);
+			}
+		},
+		error: function(data, status, e){
+			showAlert($uploadResultWrap, data.message || '文件上传失败!', 'error');
+		}
 	});
+	
 }
 
 function initUnlockAndLeaveBtn() {
@@ -362,11 +370,11 @@ function initDecompressBtn() {
 			deployRecordId: $('#J_deployRecordId').val(),
 			patchGroupId: $('#J_patchGroupId').val() || 0
 		}, function(data){
+			$this.html('解压补丁文件').attr({disabled:false});
 			if(data.success !== true) {
 				alert('解压缩失败!');
 				return;
 			}
-			$this.html('解压补丁文件').attr({disabled:false});
 			renderFilePathList(data.filePathList);
 			renderConflictInfoList(data.conflictInfoList);
 			renderReadme(data.readme);

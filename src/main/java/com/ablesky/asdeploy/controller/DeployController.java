@@ -197,7 +197,12 @@ public class DeployController {
 		if(deployItem == null) {
 			return resultMap.addAttribute("success", false).addAttribute("message", "压缩文件不存在!");
 		}
-		DeployUtil.unzipDeployItem(deployItem);
+		try {
+			DeployUtil.unzipDeployItem(deployItem);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return resultMap.addAttribute("success", false).addAttribute("message", "文件解压缩失败!");
+		}
 		String targetFolderPath = FilenameUtils.concat(deployItem.getFolderPath(), FilenameUtils.getBaseName(deployItem.getFileName()));
 		List<String> filePathList = DeployUtil.getDeployItemFilePathList(targetFolderPath);
 		List<ConflictInfoDto> conflictInfoList = Collections.emptyList();
