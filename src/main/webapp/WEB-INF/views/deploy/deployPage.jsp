@@ -123,6 +123,11 @@ h3.title {
 				<button type="button" class="btn btn-primary" id="J_decompressBtn">解压补丁文件</button>
 			</div>
 			
+			<div>
+				<h3 class="title">README</h3>
+				<pre id="J_readmeContent" style="height: 300px; overflow: auto; font-size:15px;"></pre>
+			</div>
+			
 			<!-- 文件列表 -->
 			<div id="fileListWrap">
 				<h3 class="title">文件列表</h3>
@@ -364,6 +369,7 @@ function initDecompressBtn() {
 			$this.html('解压补丁文件').attr({disabled:false});
 			renderFilePathList(data.filePathList);
 			renderConflictInfoList(data.conflictInfoList);
+			renderReadme(data.readme);
 			alert('解压缩成功!');
 			return;
 		});
@@ -386,6 +392,10 @@ function renderConflictInfoList(conflictInfoList) {
 	var $conflictInfoListTmpl = $('#J_conflictInfoListTmpl');
 	$('#J_conflictInfoListTbody').empty().append($conflictInfoListTmpl.tmpl(conflictInfoList));
 	highlightConflict();
+}
+
+function renderReadme(readme) {
+	readme && $('#J_readmeContent').html(readme);
 }
 
 function initStartDeployBtn() {

@@ -27,6 +27,8 @@ import com.ablesky.asdeploy.pojo.Project;
 
 public class DeployUtil {
 	
+	public static final String README_FILENAME = "readme.txt";
+	
 	private static final DeployConfiguration CONFIG = DeployConfiguration.getInstance();
 
 	private DeployUtil() {}
@@ -106,6 +108,9 @@ public class DeployUtil {
 		List<String> filePathList = new ArrayList<String>(fileList.size());
 		targetFolderPath = targetFolderPath.substring(FilenameUtils.getPrefixLength(targetFolderPath));
 		for(File file: fileList) {
+			if(README_FILENAME.equalsIgnoreCase(file.getName())) {
+				continue;
+			}
 			String filePath = FilenameUtils.normalize(file.getAbsolutePath());
 			filePath = filePath.substring(FilenameUtils.getPrefixLength(filePath));
 			filePath = filePath.replace(targetFolderPath + File.separator, "");
@@ -122,7 +127,7 @@ public class DeployUtil {
 		if(!targetFolder.exists()) {
 			return "";
 		}
-		Collection<File> list = FileUtils.listFiles(new File(targetFolderPath), new NameFileFilter("readme.txt", IOCase.INSENSITIVE), (IOFileFilter)null);
+		Collection<File> list = FileUtils.listFiles(new File(targetFolderPath), new NameFileFilter(README_FILENAME, IOCase.INSENSITIVE), (IOFileFilter)null);
 		if(CollectionUtils.isEmpty(list)) {
 			return "";
 		}

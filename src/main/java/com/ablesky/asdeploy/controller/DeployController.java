@@ -216,6 +216,7 @@ public class DeployController {
 		return resultMap
 				.addAttribute("filePathList", filePathList)
 				.addAttribute("conflictInfoList", conflictInfoList)
+				.addAttribute("readme", DeployUtil.loadReadmeContent(targetFolderPath))
 				.addAttribute("success", true);
 	}
 	
