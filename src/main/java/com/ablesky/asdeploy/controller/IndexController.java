@@ -82,7 +82,8 @@ public class IndexController {
 			return "register";
 		}
 		userService.createNewUser(username, password);
-		return "redirect:/login/registerSuccess";
+		AuthUtil.login(username, password, true);
+		return "redirect:/main";
 	}
 	
 	@RequestMapping("/unauthorized")
