@@ -68,7 +68,7 @@ public class DeployUtil {
 		String projectName = project.getName();
 		String scriptPath = null;
 		// war包发布脚本的机制产生了变更，也许需要待机制成熟后做进一步的更改
-		if(Long.valueOf(0L).equals(deployScriptType)) {
+		if(Integer.valueOf(0).equals(deployScriptType)) {
 			scriptPath = FilenameUtils.concat(CONFIG.getScriptRootPath(), projectName + "-deploy/" + projectName + "-deploy.sh");
 		} else {
 			scriptPath = FilenameUtils.concat(CONFIG.getScriptRootPath(),  "deploy-as/deploy.sh");

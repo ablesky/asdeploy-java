@@ -67,6 +67,7 @@ public class ProjectController {
 		}
 		project.setName(name);
 		project.setWarName(warName);
+		project.setDeployScriptType(1);
 		projectService.saveOrUpdateProject(project);
 		return resultMap.addAttribute("success", true);
 	}

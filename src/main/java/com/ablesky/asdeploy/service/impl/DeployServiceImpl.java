@@ -100,7 +100,7 @@ public class DeployServiceImpl implements IDeployService {
 			if(lock == null || !lock.getIsLocked()) {
 				continue;
 			}
-			if(isSuperAdmin || lock.getUser().getId() == AuthUtil.getCurrentUser().getId()) {
+			if(isSuperAdmin || lock.getUser().getId().equals(AuthUtil.getCurrentUser().getId())) {
 				lock.setIsLocked(Boolean.FALSE);
 				saveOrUpdateDeployLock(lock);
 			}
