@@ -3,28 +3,35 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee 
 	http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
-  <display-name>asdeploy</display-name>
-  <description>patch deploy system</description>
-  <context-param>
+	<display-name>asdeploy</display-name>
+	<description>patch deploy system</description>
+	
+	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>
-			/WEB-INF/dispatcher-servlet.xml,
-			/WEB-INF/applicationContext.xml,
-			/WEB-INF/applicationContext-shiro.xml
+			classpath*:/applicationContext.xml,
+			classpath*:/applicationContext-shiro.xml
 		</param-value>
 	</context-param>
-	
+	<context-param>
+		<param-name>spring.profiles.default</param-name>
+		<param-value>production</param-value>
+	</context-param>
+
 	<listener>
 		<listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
 	</listener>
 	
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+
 	<servlet>
 		<servlet-name>dispatcher</servlet-name>
 		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
 		<init-param>
 			<param-name>contextConfigLocation</param-name>
-			<param-value>
-			</param-value>
+			<param-value>/WEB-INF/dispatcher-servlet.xml</param-value>
 		</init-param>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
@@ -45,7 +52,7 @@
 		<filter-name>UrlRewriteFilter</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
-	
+
 	<filter>
 		<filter-name>Character Encoding</filter-name>
 		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
@@ -62,18 +69,18 @@
 		<filter-name>Character Encoding</filter-name>
 		<url-pattern>/</url-pattern>
 	</filter-mapping>
-	
+
 	<!-- 将hibernate的session绑定到request的线程上 -->
 	<filter>
 		<filter-name>openSessionInViewFilter</filter-name>
 		<filter-class>org.springframework.orm.hibernate4.support.OpenSessionInViewFilter</filter-class>
 	</filter>
-	
+
 	<filter-mapping>
 		<filter-name>openSessionInViewFilter</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
-	
+
 	<!-- Shiro Filter -->
 	<filter>
 		<filter-name>shiroFilter</filter-name>
@@ -91,10 +98,6 @@
 		<dispatcher>FORWARD</dispatcher>
 		<dispatcher>INCLUDE</dispatcher>
 	</filter-mapping>
-	
-	<listener>
-		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-	</listener>
 
 	<session-config>
 		<session-timeout>30</session-timeout>

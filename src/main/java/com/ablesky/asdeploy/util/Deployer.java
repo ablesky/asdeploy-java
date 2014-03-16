@@ -71,7 +71,7 @@ public class Deployer implements Callable<Boolean> {
 		}
 		Session session = null;
 		try {
-			session = SessionFactoryUtils.openSession(SpringUtil.getBean(SessionFactory.class));
+			session = SpringUtil.getBean(SessionFactory.class).openSession();
 			deployRecord.setStatus(status);
 			session.saveOrUpdate(deployRecord);
 			session.flush();

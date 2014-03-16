@@ -70,8 +70,8 @@ public abstract class AbstractDaoImpl<E extends AbstractModel> implements IAbstr
 	}
 	
 	@Override
-	public int count(String hql, Map<String, Object> param) {
-		return basicHibernateDaoImpl.count(hql, param);
+	public int count(Map<String, Object> param) {
+		return basicHibernateDaoImpl.count(generateHqlByParam(param), param);
 	}
 	
 	@Override

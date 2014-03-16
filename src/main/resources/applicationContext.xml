@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+    	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+    	http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.2.xsd">
+
+	<context:component-scan base-package="com.ablesky.asdeploy">
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+	</context:component-scan>
+
+	<!-- bean id="dataSource"
+		class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql://localhost:3306/asdeploydb" />
+		<property name="username" value="root" />
+		<property name="password" value="123456" />
+	</bean> -->
+	
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<!-- prop key="hibernate.dialect">
+					org.hibernate.dialect.MySQLDialect
+				</prop -->
+				<prop key="hibernate.dialect">
+					com.ablesky.asdeploy.util.SQLiteDialect
+				</prop>
+				<prop key="hibernate.current_session_context_class">
+					org.springframework.orm.hibernate4.SpringSessionContext
+				</prop>
+				<prop key="hibernate.show_sql">false</prop>
+				<prop key="hibernate.hbm2ddl.auto">none</prop>
+				<prop key="hibernate.cache.provider_class">
+					org.hibernate.cache.OSCacheProvider
+				</prop>
+				<prop key="hibernate.cache.use_query_cache">false</prop>
+				<prop key="hibernate.jdbc.batch_size">30</prop>
+				<prop key="hibernate.cache.use_second_level_cache">
+					false
+				</prop>
+				<prop key="hibernate.order_inserts">true</prop>
+				<prop key="hibernate.order_updates">true</prop>
+			</props>
+		</property>
+		<property name="packagesToScan">
+			<list>
+				<value>com.ablesky.asdeploy.pojo</value>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean> --> <!-- 由于用的是hibernate4，所以不能再继续用DataSourceTransactionManager了 -->
+	
+	<bean id="txManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+	    <property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	<tx:advice id="txAdvice" transaction-manager="txManager">
+		<tx:attributes>
+			<tx:method name="save*" propagation="REQUIRED" />
+			<tx:method name="add*" propagation="REQUIRED" />
+			<tx:method name="create*" propagation="REQUIRED" />
+			<tx:method name="insert*" propagation="REQUIRED" />
+			<tx:method name="update*" propagation="REQUIRED" />
+			<tx:method name="renew*" propagation="REQUIRED" />
+			<tx:method name="delete*" propagation="REQUIRED" />
+			<tx:method name="remove*" propagation="REQUIRED" />
+			<tx:method name="unlock*" propagation="REQUIRED" />
+			<tx:method name="check*" propagation="REQUIRED" />
+			<tx:method name="persist*" propagation="REQUIRED" />
+			<tx:method name="generate*" propagation="REQUIRED" />
+			<tx:method name="assign*" propagation="REQUIRED" />
+			<tx:method name="batch*" propagation="REQUIRED" />
+			<!-- tx:method name="*" read-only="true"/> --> 
+			<!-- 配上read-only="true"后，sqlite的jdbc驱动会报错，虽然报错貌似也不影响正常使用 -->
+		</tx:attributes>
+	</tx:advice>
+
+	<aop:config proxy-target-class="true">
+		<aop:advisor advice-ref="txAdvice"
+			pointcut="execution(* com.ablesky..service..*.*(..))" />
+	</aop:config>
+	
+	<beans profile="production">
+		<bean id="dataSource"
+			class="org.apache.tomcat.jdbc.pool.DataSource" destroy-method="close">
+			<property name="driverClassName" value="org.sqlite.JDBC" />
+			<property name="url" value="jdbc:sqlite:#{systemProperties['user.dir']}/db/asdeploy.db" />
+			<property name="username" value="sa" />
+			<property name="password" value="" />
+		</bean>
+	</beans>
+	
+	<beans profile="development">
+		<bean id="dataSource"
+			class="org.apache.tomcat.jdbc.pool.DataSource" destroy-method="close">
+			<property name="driverClassName" value="org.sqlite.JDBC" />
+			<property name="url" value="jdbc:sqlite:#{systemProperties['user.dir']}/db/asdeploy.db" />
+			<property name="username" value="sa" />
+			<property name="password" value="" />
+		</bean>
+	</beans>
+	
+	<beans profile="test">
+		<bean id="dataSource"
+			class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
+			<property name="driverClass" value="org.sqlite.JDBC" />
+			<property name="url" value="jdbc:sqlite:#{systemProperties['user.dir']}/db/asdeploy.test.db" />
+			<property name="username" value="sa" />
+			<property name="password" value="" />
+		</bean>
+		<!-- 初始化数据表结构 与默认数据-->
+		<jdbc:initialize-database data-source="dataSource" ignore-failures="ALL">
+			<jdbc:script location="classpath:sql/sqlite/schema.sql" />
+			<jdbc:script location="classpath:sql/sqlite/import-data.sql" encoding="UTF-8"/>
+		</jdbc:initialize-database>
+	</beans>
+
+</beans>
