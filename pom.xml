@@ -123,9 +123,10 @@
 		
 		<!-- 连接池 -->
 		<dependency>
-			<groupId>commons-dbcp</groupId>
-			<artifactId>commons-dbcp</artifactId>
-			<version>1.4</version>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>tomcat-jdbc</artifactId>
+			<version>7.0.42</version>
+			<scope>runtime</scope>
 		</dependency>
 		
 		<!-- Shiro 相关 -->
