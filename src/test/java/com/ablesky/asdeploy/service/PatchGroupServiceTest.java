@@ -1,12 +1,12 @@
 package com.ablesky.asdeploy.service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.shiro.util.CollectionUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,7 +46,7 @@ public class PatchGroupServiceTest {
 	@Test
 	public void getPatchFileRelGroupListWhichConflictWith() {
 		PatchGroup patchGroup = new PatchGroup();
-		List<String> filePathList = Arrays.asList(new String[]{"com.ablesky.asdeploy.service.IUserService", "com.ablesky.asdeploy.service.IDeployService"});
+		List<String> filePathList = CollectionUtils.asList("com.ablesky.asdeploy.service.IUserService", "com.ablesky.asdeploy.service.IDeployService");
 		patchGroup.setId(1L);
 		prepareForGetPatchFileRelGroupListWhichConflictWith(patchGroup, filePathList);
 		Assert.assertEquals(8, patchGroupService.getPatchFileRelGroupListWhichConflictWith(patchGroup, filePathList).size());

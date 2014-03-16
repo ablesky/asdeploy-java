@@ -8,7 +8,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.sql.Timestamp;
-import java.util.Arrays;
 
 import org.apache.shiro.util.CollectionUtils;
 import org.junit.Before;
@@ -89,7 +88,7 @@ public class DeployServiceTest {
 		when(deployLockDao.list(new ModelMap()
 			.addAttribute("isLocked", Boolean.TRUE)
 			.addAttribute(CommonConstant.ORDER_BY, "id desc")
-		)).thenReturn(Arrays.asList(new DeployLock[]{lock3, lock2, lock1}));	// 倒序返回
+		)).thenReturn(CollectionUtils.asList(lock3, lock2, lock1));	// 倒序返回
 	
 		DeployLock lock = deployService.checkCurrentLock();
 		assertEquals(lock2, lock);	// 获取的是未超时的锁

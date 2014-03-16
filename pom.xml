@@ -14,10 +14,10 @@
 		<jackson.version>2.1.5</jackson.version>
 		<shiro.version>1.2.1</shiro.version>
 		<mockito.version>1.9.5</mockito.version>
+		<spring.profiles.active>development</spring.profiles.active>
 	</properties>
 	
 	<dependencies>
-	
 		<!-- servlet相关 -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -115,11 +115,11 @@
 		</dependency>
 
 		<!-- mysql connector -->
-		<dependency>
+		<!-- dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 			<version>5.1.22</version>
-		</dependency>
+		</dependency>-->
 
 		<!-- sqlite database jdbc -->
 		<dependency>
@@ -252,11 +252,47 @@
 			<version>${mockito.version}</version>
 			<scope>test</scope>
 		</dependency>
-
 	</dependencies>
+	
+	<profiles>
+		<profile>
+			<id>production</id>
+			<properties>
+				<spring.profiles.active>production</spring.profiles.active>
+			</properties>
+		</profile>
+		<profile>
+			<id>development</id>
+			<properties>
+				<spring.profiles.active>development</spring.profiles.active>
+			</properties>
+		</profile>
+		<profile>
+			<id>test</id>
+			<properties>
+				<spring.profiles.active>test</spring.profiles.active>
+			</properties>
+		</profile>
+	</profiles>
+	
 	<build>
 		<finalName>asdeploy</finalName>
 		<plugins>
+			<!-- tomcat7:run -->
+			<plugin>
+				<groupId>org.apache.tomcat.maven</groupId>
+				<artifactId>tomcat7-maven-plugin</artifactId>
+				<version>2.2</version>
+				<configuration>
+					<path>/</path>
+					<port>8099</port>
+					<charset>UTF-8</charset>
+					<uriEncoding>UTF-8</uriEncoding>
+					<systemProperties>
+						<spring.profiles.active>${spring.profiles.active}</spring.profiles.active>
+					</systemProperties>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>tomcat-maven-plugin</artifactId>
@@ -265,9 +301,13 @@
 					<port>8099</port>
 					<charset>UTF-8</charset>
 					<uriEncoding>UTF-8</uriEncoding>
+					<systemProperties>
+						<spring.profiles.active>${spring.profiles.active}</spring.profiles.active>
+					</systemProperties>
 				</configuration>
 				<version>1.1</version>
 			</plugin>
 		</plugins>
 	</build>
+	
 </project>

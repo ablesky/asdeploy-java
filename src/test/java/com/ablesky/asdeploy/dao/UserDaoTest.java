@@ -13,7 +13,7 @@ import com.ablesky.asdeploy.pojo.User;
 import com.ablesky.asdeploy.test.SpringTransactionalTestCase;
 import com.ablesky.asdeploy.util.AuthUtil;
 
-@ContextConfiguration(locations = {"classpath:/applicationContext-shiro.xml", "classpath:/applicationContext.xml"})
+@ContextConfiguration(locations = {"/applicationContext.xml"})
 public class UserDaoTest extends SpringTransactionalTestCase {
 
 	@Autowired

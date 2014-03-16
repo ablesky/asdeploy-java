@@ -10,7 +10,7 @@ import org.springframework.ui.ModelMap;
 
 import com.ablesky.asdeploy.test.SpringTransactionalTestCase;
 
-@ContextConfiguration(locations = {"classpath:/applicationContext-shiro.xml", "classpath:/applicationContext.xml"})
+@ContextConfiguration(locations = {"/applicationContext.xml"})
 public class ProjectDaoTest extends SpringTransactionalTestCase {
 	
 	@Autowired
