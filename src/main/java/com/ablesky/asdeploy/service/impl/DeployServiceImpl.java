@@ -164,9 +164,9 @@ public class DeployServiceImpl implements IDeployService {
 		item.setProject(project);
 		item.setPatchGroup(patchGroup);
 		item.setUser(AuthUtil.getCurrentUser());
-		long ts = System.currentTimeMillis();
-		item.setCreateTime(new Timestamp(ts));
-		item.setUpdateTime(new Timestamp(ts));
+		Timestamp ts = new Timestamp(System.currentTimeMillis());
+		item.setCreateTime(ts);
+		item.setUpdateTime(ts);
 		return item;
 	}
 	
