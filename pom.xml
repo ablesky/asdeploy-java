@@ -15,6 +15,7 @@
 		<shiro.version>1.2.1</shiro.version>
 		<mockito.version>1.9.5</mockito.version>
 		<spring.profiles.active>development</spring.profiles.active>
+		<antbuild.target>nothing</antbuild.target>
 	</properties>
 	
 	<dependencies>
@@ -273,11 +274,30 @@
 				<spring.profiles.active>test</spring.profiles.active>
 			</properties>
 		</profile>
+		<profile>
+			<id>initDb</id>	<!-- 开发环境初始化数据库 -->
+			<properties>
+				<antbuild.target>initDb</antbuild.target>
+			</properties>
+		</profile>
 	</profiles>
 	
 	<build>
 		<finalName>asdeploy</finalName>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<configuration>
+					<tasks>
+						<property name="runtime_classpath" refid="maven.runtime.classpath" />
+						<property name="build_directory" value="${project.build.directory}"/>
+						<ant antfile="${basedir}/build.xml">
+							<target name="${antbuild.target}" />
+						</ant>
+					</tasks>
+				</configuration>
+			</plugin>
 			<!-- tomcat7:run -->
 			<plugin>
 				<groupId>org.apache.tomcat.maven</groupId>

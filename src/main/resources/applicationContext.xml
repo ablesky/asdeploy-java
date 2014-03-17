@@ -115,6 +115,20 @@
 		</bean>
 	</beans>
 	
+	<beans profile="development-init">
+		<bean id="dataSource"
+			class="org.apache.tomcat.jdbc.pool.DataSource" destroy-method="close">
+			<property name="driverClassName" value="org.sqlite.JDBC" />
+			<property name="url" value="jdbc:sqlite:#{systemProperties['user.dir']}/db/asdeploy.db" />
+			<property name="username" value="sa" />
+			<property name="password" value="" />
+		</bean>
+		
+		<jdbc:initialize-database data-source="dataSource" ignore-failures="ALL">
+			<jdbc:script location="classpath:sql/sqlite/schema.sql" />
+		</jdbc:initialize-database>
+	</beans>
+	
 	<beans profile="test">
 		<bean id="dataSource"
 			class="org.springframework.jdbc.datasource.SimpleDriverDataSource">

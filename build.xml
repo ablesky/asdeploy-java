@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="asdeploy" default="nothing" >
+	<target name="nothing">
+		<echo>do nothing</echo>
+	</target>
+	<target name="classpath">
+		<echo>${runtime_classpath}</echo>
+	</target>
+	<target name="initDb">
+		<java classname="com.ablesky.asdeploy.util.DbUtil">
+			<classpath>
+				<pathelement path="${runtime_classpath}"/>
+			</classpath>
+		</java>
+	</target>
+</project>
