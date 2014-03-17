@@ -7,6 +7,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.File;
+import java.io.IOException;
 import java.sql.Timestamp;
 
 import org.apache.shiro.util.CollectionUtils;
@@ -14,8 +16,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.ablesky.asdeploy.dao.IConflictDetailDao;
 import com.ablesky.asdeploy.dao.IConflictInfoDao;
@@ -26,7 +30,11 @@ import com.ablesky.asdeploy.dao.IPatchFileDao;
 import com.ablesky.asdeploy.dao.IPatchFileRelGroupDao;
 import com.ablesky.asdeploy.dao.IPatchGroupDao;
 import com.ablesky.asdeploy.dao.IProjectDao;
+import com.ablesky.asdeploy.pojo.DeployItem;
 import com.ablesky.asdeploy.pojo.DeployLock;
+import com.ablesky.asdeploy.pojo.DeployRecord;
+import com.ablesky.asdeploy.pojo.PatchGroup;
+import com.ablesky.asdeploy.pojo.Project;
 import com.ablesky.asdeploy.pojo.User;
 import com.ablesky.asdeploy.service.impl.DeployServiceImpl;
 import com.ablesky.asdeploy.test.ShiroTestUtils;
@@ -125,6 +133,93 @@ public class DeployServiceTest {
 		deployService.unlockDeploy();
 		assertFalse(lock1.getIsLocked());
 		assertFalse(lock2.getIsLocked());
+	}
+	
+	// 感觉下面这样的测试用例，实际上并没有什么作用
+	// 另外，良好的测试用例应该是简洁的，清晰的。所以下面这些测试用例貌似是不良好的。
+	// 还有，测试用例总比被测试的代码本身要长，这个是正常现象么?
+	@Test
+	public void persistDeployItemWhichExisted() throws IllegalStateException, IOException {
+		String patchFolderPath = "/d/content/web-app-bak/ableskyapps/as-web-6.1/";
+		String patchFilename = "20140317-website-patch-zyang-upgrade-todo.zip";
+		File patchDest = new File(patchFolderPath + patchFilename);
+		
+		MultipartFile deployItemFile = Mockito.mock(MultipartFile.class);
+		Mockito.when(deployItemFile.getOriginalFilename()).thenReturn(patchFilename);
+		
+		Project project = new Project();
+		project.setName("as-web");
+		
+		PatchGroup patchGroup = new PatchGroup();
+		patchGroup.setProject(project);
+		
+		DeployRecord deployRecord = new DeployRecord();
+		deployRecord.setStatus(DeployRecord.STATUS_PREPARE);
+		deployRecord.setProject(project);
+		
+		String version = "6.1";
+		
+		DeployItem deployItem = new DeployItem();
+		deployItem.setId(1L);
+		deployItem.setDeployType(DeployItem.DEPLOY_TYPE_PATCH);
+		deployItem.setFileName(patchFilename);
+		deployItem.setFolderPath(patchFolderPath);
+		deployItem.setPatchGroup(patchGroup);
+		deployItem.setProject(project);
+		
+		Mockito.when(deployItemDao.first(new ModelMap()
+				.addAttribute("fileName__eq", patchFilename)
+				.addAttribute("version__eq", version)
+		)).thenReturn(deployItem);
+		
+		assertEquals(deployItem, deployService.persistDeployItem(deployItemFile, project, patchGroup, deployRecord, DeployItem.DEPLOY_TYPE_PATCH, version));
+		assertTrue(new File(patchFolderPath).isDirectory());
+		Mockito.verify(deployItemFile, Mockito.times(1)).transferTo(patchDest);
+		Mockito.verify(deployItemDao, Mockito.times(1)).saveOrUpdate(deployItem);
+		Mockito.verify(deployRecordDao, Mockito.times(1)).saveOrUpdate(deployRecord);
+		assertEquals(deployItem, deployRecord.getDeployItem());
+		assertEquals(DeployRecord.STATUS_UPLOADED, deployRecord.getStatus());
+	}
+	
+	@Test
+	public void persistDeployItemWhichNotExisted() throws IllegalStateException, IOException {
+		String patchFolderPath = "/d/content/web-app-bak/ableskyapps/as-web-6.1/";
+		String patchFilename = "20140317-website-patch-zyang-upgrade-todo.zip";
+		File patchDest = new File(patchFolderPath + patchFilename);
+		
+		MultipartFile deployItemFile = Mockito.mock(MultipartFile.class);
+		Mockito.when(deployItemFile.getOriginalFilename()).thenReturn(patchFilename);
+		
+		User user = new User();
+		user.setUsername("zyang");
+		ShiroTestUtils.mockCurrentUser(user, false);
+		
+		Project project = new Project();
+		project.setName("as-web");
+		
+		PatchGroup patchGroup = new PatchGroup();
+		patchGroup.setProject(project);
+		
+		DeployRecord deployRecord = new DeployRecord();
+		deployRecord.setStatus(DeployRecord.STATUS_PREPARE);
+		deployRecord.setProject(project);
+		
+		String version = "6.1";
+		
+		Mockito.when(deployItemDao.first(new ModelMap()
+				.addAttribute("fileName__eq", patchFilename)
+				.addAttribute("version__eq", version)
+		)).thenReturn(null);
+		
+		DeployItem deployItem = deployService.persistDeployItem(deployItemFile, project, patchGroup, deployRecord, DeployItem.DEPLOY_TYPE_PATCH, version);
+		assertTrue(new File(patchFolderPath).isDirectory());
+		Mockito.verify(deployItemFile, Mockito.times(1)).transferTo(patchDest);
+		Mockito.verify(deployItemDao, Mockito.times(1)).saveOrUpdate(deployItem);
+		Mockito.verify(deployRecordDao, Mockito.times(1)).saveOrUpdate(deployRecord);
+		assertEquals(user, deployItem.getUser());
+		assertEquals(deployItem, deployRecord.getDeployItem());
+		assertEquals(project, deployItem.getProject());
+		assertEquals(DeployRecord.STATUS_UPLOADED, deployRecord.getStatus());
 	}
 	
 	// 复杂的方法完全不知道该怎么测
