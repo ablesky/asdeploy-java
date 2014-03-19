@@ -24,7 +24,7 @@ public interface IDeployService {
 
 	void unlockDeploy();
 
-	DeployItem getDeployItemByFileNameAndVersion(String fileName, String version);
+	DeployItem getDeployItemByFileNameAndProjectIdAndVersion(String fileName,Long projectId, String version);
 
 	DeployItem persistDeployItem(MultipartFile deployItemFile, Project project, PatchGroup patchGroup, DeployRecord deployRecord, String deployType, String version) throws IllegalStateException, IOException;
 

@@ -142,7 +142,7 @@ public class DeployServiceImpl implements IDeployService {
 			itemUploadFolder.mkdirs();
 		}
 		deployItemFile.transferTo(new File(DeployUtil.getDeployItemUploadFolder(project.getName(), version) + filename));
-		DeployItem deployItem = getDeployItemByFileNameAndVersion(filename, version);
+		DeployItem deployItem = getDeployItemByFileNameAndProjectIdAndVersion(filename, project.getId(), version);
 		if(deployItem == null) {
 			deployItem = buildNewDeployItem(project, patchGroup, deployType, version, filename);
 		} else {
@@ -171,9 +171,10 @@ public class DeployServiceImpl implements IDeployService {
 	}
 	
 	@Override
-	public DeployItem getDeployItemByFileNameAndVersion(String fileName, String version) {
+	public DeployItem getDeployItemByFileNameAndProjectIdAndVersion(String fileName, Long projectId, String version) {
 		return deployItemDao.first(new ModelMap()
 				.addAttribute("fileName__eq", fileName)
+				.addAttribute("project_id__eq", projectId)
 				.addAttribute("version__eq", version)
 		);
 	}
