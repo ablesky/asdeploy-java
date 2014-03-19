@@ -148,6 +148,7 @@ public class DeployServiceTest {
 		Mockito.when(deployItemFile.getOriginalFilename()).thenReturn(patchFilename);
 		
 		Project project = new Project();
+		project.setId(1L);
 		project.setName("as-web");
 		
 		PatchGroup patchGroup = new PatchGroup();
@@ -169,6 +170,7 @@ public class DeployServiceTest {
 		
 		Mockito.when(deployItemDao.first(new ModelMap()
 				.addAttribute("fileName__eq", patchFilename)
+				.addAttribute("project_id__eq", project.getId())
 				.addAttribute("version__eq", version)
 		)).thenReturn(deployItem);
 		
@@ -195,6 +197,7 @@ public class DeployServiceTest {
 		ShiroTestUtils.mockCurrentUser(user, false);
 		
 		Project project = new Project();
+		project.setId(1L);
 		project.setName("as-web");
 		
 		PatchGroup patchGroup = new PatchGroup();
@@ -208,6 +211,7 @@ public class DeployServiceTest {
 		
 		Mockito.when(deployItemDao.first(new ModelMap()
 				.addAttribute("fileName__eq", patchFilename)
+				.addAttribute("project_id__eq", project.getId())
 				.addAttribute("version__eq", version)
 		)).thenReturn(null);
 		
