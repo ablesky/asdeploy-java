@@ -30,7 +30,7 @@
 </style>
 </head>
 <body>
-<div class="wrap">
+<div>
 	<h3 class="title">修改密码</h3>
 	<div class="edit-wrapper">
 		<table class="table table-bordered table-condensed" style="width: 100%">

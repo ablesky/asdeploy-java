@@ -36,7 +36,7 @@
 <body>
 <%@ include file="../include/header.jsp" %>
 
-<div>
+<div class="wrapper">
 	<h2 class="title">项目列表</h2>
 	<div class="list-wrapper">
 		<div class="create-btn-wrapper">

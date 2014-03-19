@@ -30,7 +30,7 @@
 </style>
 </head>
 <body>
-<div class="wrap">
+<div>
 	<h3 class="title">
 		<c:choose>
 			<c:when test="${project != null}">修改项目</c:when>

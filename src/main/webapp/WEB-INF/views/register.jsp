@@ -36,7 +36,7 @@ input[type="text"], input[type="password"] {
 </head>
 <body>
 <%@ include file="./include/header.jsp" %>
-<div class="wrap">
+<div class="wrapper">
 	<h2 class="title">用户注册</h2>
 	<div class="register-wrapper">
 		<form method="POST" action="${ctx_path}/register">

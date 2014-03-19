@@ -8,28 +8,28 @@
 <title>AbleSky代码发布系统</title>
 <%@ include file="../include/includeCss.jsp" %>
 <style>
-	form label {
-		font-size: 16px;
-	}
-	.table th, .table td {
-		text-align: center;
-	}
-	.table thead {
-		background-color: #eee;
-	}
-	#tbody td, #tbody th {
-		font-size:16px;
-	}
-	#toggleTypeBtn li {
-		text-align: left;
-		cursor: pointer;
-	}
+form label {
+	font-size: 16px;
+}
+.table th, .table td {
+	text-align: center;
+}
+.table thead {
+	background-color: #eee;
+}
+#tbody td, #tbody th {
+	font-size:16px;
+}
+#toggleTypeBtn li {
+	text-align: left;
+	cursor: pointer;
+}
 </style>
 </head>
 <body>
 <%@ include file="../include/header.jsp" %>
 
-<div class="wrap">
+<div class="wrapper">
 	<h2 class="title">静态文件构建依赖</h2>
 	<div style="width: 700px; margin: 20px auto 10px;">
 		<form id="patch_group_query_form" style="margin-bottom: 0px;" action="." method="post">

@@ -10,3 +10,7 @@
 .table thead {
 	background-color: #eee;
 }
+
+.wrapper {
+	margin-bottom: 100px;
+}

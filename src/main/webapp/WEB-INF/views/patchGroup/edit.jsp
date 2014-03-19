@@ -35,7 +35,7 @@
 </style>
 </head>
 <body>
-<div class="wrap">
+<div>
 	<h3 class="title">
 		<c:choose>
 			<c:when test="${patchGroup != null}">修改补丁组</c:when>

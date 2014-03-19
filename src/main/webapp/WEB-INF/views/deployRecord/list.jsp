@@ -8,9 +8,6 @@
 <title>AbleSky代码发布系统</title>
 <%@ include file="../include/includeCss.jsp" %>
 <style>
-.wrapper {
-	margin-bottom: 100px;
-}
 .title {
 	text-align: center;
 	font-family: 微软雅黑;

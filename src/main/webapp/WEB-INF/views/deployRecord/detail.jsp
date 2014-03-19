@@ -11,9 +11,6 @@
 h3.title {
 	text-align: left;
 }
-.wrapper {
-	margin-bottom: 100px;
-}
 </style>
 </head>
 <body>

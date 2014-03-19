@@ -32,7 +32,7 @@
 </head>
 <body>
 <%@ include file="../include/header.jsp" %>
-<div class="wrap">
+<div class="wrapper">
 	<h2 class="title">请选择项目及参数</h2>
 	<div style="width: 350px; height: 40px; margin:30px auto 0px;">
 	<%-- 	{% if error_msg %}

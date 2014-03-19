@@ -8,9 +8,6 @@
 <title>AbleSky代码发布系统</title>
 <%@ include file="../include/includeCss.jsp" %>
 <style>
-.wrapper {
-	margin-bottom: 50px;
-}
 .table > thead {
 	background-color: #eee;
 }
