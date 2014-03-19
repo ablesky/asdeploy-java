@@ -10,7 +10,8 @@
 		<param-name>contextConfigLocation</param-name>
 		<param-value>
 			classpath*:/applicationContext.xml,
-			classpath*:/applicationContext-shiro.xml
+			classpath*:/applicationContext-shiro.xml,
+			/WEB-INF/dispatcher-servlet.xml
 		</param-value>
 	</context-param>
 	<context-param>
@@ -31,7 +32,7 @@
 		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
 		<init-param>
 			<param-name>contextConfigLocation</param-name>
-			<param-value>/WEB-INF/dispatcher-servlet.xml</param-value>
+			<param-value></param-value>	<!-- 将dispatcher-servlet.xml配在此处，有些修改的sql就发不出来。以前也曾遇到过类似的诡异情形，这个问题待解决 -->
 		</init-param>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
