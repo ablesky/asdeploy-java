@@ -1,4 +1,4 @@
-package com.ablesky.asdeploy.test;
+package com.ablesky.asdeploy.util;
 
 /**
  * Spring profile 常用方法与profile名称。
@@ -12,6 +12,7 @@ public class Profiles {
 
 	public static final String PRODUCTION = "production";
 	public static final String DEVELOPMENT = "development";
+	public static final String DEVELOPMENT_INIT = "development-init";
 	public static final String UNIT_TEST = "test";
 	public static final String FUNCTIONAL_TEST = "functional";
 

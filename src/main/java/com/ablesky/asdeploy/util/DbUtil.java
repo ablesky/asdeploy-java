@@ -20,7 +20,7 @@ public class DbUtil {
 		if(!dbFolder.exists()) {
 			dbFolder.mkdirs();
 		}
-		System.setProperty("spring.profiles.active", "development-init");
+		Profiles.setProfileAsSystemProperty(Profiles.DEVELOPMENT_INIT);
 		new ClassPathXmlApplicationContext("applicationContext.xml");
 	}
 	
