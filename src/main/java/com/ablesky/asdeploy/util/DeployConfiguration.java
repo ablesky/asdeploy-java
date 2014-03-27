@@ -27,6 +27,8 @@ public class DeployConfiguration {
 	private String itemRootPath = rootPath + "ableskyapps/";
 	// 脚本根路径
 	private String scriptRootPath = rootPath + "deployment/";
+	// ablejs的filemap的根路径，后续还要按工程去拼接具体目录
+	private String ablejsFilemapRootPath = rootPath + "ableskyapps/optimize-src/";
 	// 服务器的hostname
 	private String hostname;
 	// 环境名称
@@ -54,6 +56,10 @@ public class DeployConfiguration {
 
 	public String getScriptRootPath() {
 		return scriptRootPath;
+	}
+
+	public String getAblejsFilemapRootPath() {
+		return ablejsFilemapRootPath;
 	}
 
 	public String getHostname() {

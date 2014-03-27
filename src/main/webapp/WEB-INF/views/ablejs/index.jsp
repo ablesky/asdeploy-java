@@ -20,7 +20,7 @@ form label {
 #tbody td, #tbody th {
 	font-size:16px;
 }
-#toggleTypeBtn li {
+#toggleTypeBtn li, #selectProjectBtn li {
 	text-align: left;
 	cursor: pointer;
 }
@@ -35,9 +35,22 @@ form label {
 		<form id="patch_group_query_form" style="margin-bottom: 0px;" action="." method="post">
 			<table style="width: 100%; margin: 0px auto;">
 				<tr>
-					<td style="text-align: right; width: 30%;">
+					<td style="text-align: center; width: 120px;">
 						<div class="btn-group" style="margin-bottom: 10px;">
-							<a class="btn dropdown-toggle" data-toggle="dropdown">
+							<a class="btn dropdown-toggle" data-toggle="dropdown" style="width: 80px;">
+								<span id="projectName" data-value="as-web">as-web</span>
+								<span class="caret"></span>
+							</a>
+							<ul class="dropdown-menu" id="selectProjectBtn">
+								<c:forEach var="project" items="${projectList}">
+									<li><a data-value="${project.name}">${project.name}</a></li>
+								</c:forEach>
+							</ul>
+						</div>
+					</td>
+					<td style="text-align: center; width: 120px;">
+						<div class="btn-group" style="margin-bottom: 10px;">
+							<a class="btn dropdown-toggle" data-toggle="dropdown" style="width: 80px;">
 								<span id="queryType" data-value="hashcode">hashcode</span>
 								<span class="caret"></span>
 							</a>
@@ -47,7 +60,7 @@ form label {
 							</ul>
 						</div>
 					</td>
-					<td style="padding-left: 20px;">	
+					<td style="padding-left: 20px; text-align: left;">	
 						<input id="queryValue" name="queryValue" type="text" value="" style="width: 300px;" />
 					</td>
 				</tr>
@@ -86,6 +99,7 @@ $(function(){
 	initQueryBtn();
 	initClearQueryBtn();
 	initToggleQueryTypeBtn();
+	initSelectProjectBtn();
 });
 
 function initToggleQueryTypeBtn() {
@@ -97,17 +111,28 @@ function initToggleQueryTypeBtn() {
 	});
 }
 
+function initSelectProjectBtn() {
+	var $projectName = $('#projectName');
+	$('#selectProjectBtn').on('click', 'a', function(){
+		var $this = $(this);
+		var projectName = $this.attr('data-value');
+		$projectName.html($this.html()).attr('data-value', projectName);
+	});
+}
+
 function initQueryBtn() {
 	var $tbody = $('#tbody');
 	$('#queryBtn').click(function(){
 		var queryType = $('#queryType').attr('data-value') || 'hashcode',
-			queryValue = processQueryValue(queryType, $('#queryValue').val());
+			queryValue = processQueryValue(queryType, $('#queryValue').val()),
+			projectName = $('#projectName').attr('data-value') || 'as-web';
 		if(!queryValue) {
 			alert('请输入查询内容!');
 			return;
 		}
 		$('#queryValue').val(queryValue);
 		$.getJSON(CTX_PATH + '/ablejs/query', {
+			projectName: projectName,
 			queryType: queryType,
 			queryValue: queryValue
 		}, function(data){
@@ -139,7 +164,7 @@ function processHashcodeQueryValue(queryType, queryValue) {
 	if(/^[0-9a-zA-Z]{7,9}$/.test(queryValue)) {
 		return queryValue;
 	}
-	var re = /([0-9a-zA-Z]{7,9})\.(?:js|css|jpg|gif|png|jpeg|ico)/;
+	var re = /(?:http.+?(?:images|js_optimize|css_optimize)\/)?(.+)\.(?:js|css|jpg|gif|png|jpeg|ico)/;
 	var result = re.exec(queryValue);
 	return result? result[1]: queryValue;
 }

@@ -15,4 +15,6 @@ public interface IProjectService {
 
 	List<Project> getProjectListResult(int start, int limit, Map<String, Object> param);
 
+	List<Project> getProjectListResult();
+
 }

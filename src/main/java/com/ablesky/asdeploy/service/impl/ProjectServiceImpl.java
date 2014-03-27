@@ -1,5 +1,6 @@
 package com.ablesky.asdeploy.service.impl;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -34,6 +35,11 @@ public class ProjectServiceImpl implements IProjectService {
 	@Override
 	public List<Project> getProjectListResult(int start, int limit, Map<String, Object> param) {
 		return projectDao.list(start, limit, param);
+	}
+	
+	@Override
+	public List<Project> getProjectListResult() {
+		return projectDao.list(Collections.<String, Object>emptyMap());
 	}
 	
 }
