@@ -92,7 +92,7 @@ public class DeployConfiguration {
 		if(hostname.contains(".gt1.")) {
 			return "GAMMA";
 		}
-		if(hostname.contains(".st1")) {
+		if(hostname.contains(".st1.")) {
 			return "SIGMA";
 		}
 		return "DEVELOPMENT";

@@ -14,31 +14,37 @@ import com.ablesky.asdeploy.util.DeployConfiguration;
 
 public class AblejsCmd extends AbstractCmd<AblejsCmd.AblejsOperation, AblejsCmd.AblejsOperationType> {
 	
+	// 如果后续会新增项目，则此处的配置有可能会继续增加。 
+	// 如果ablejs的context-path目录能与项目保持一一映射，则不需要配置，直接用项目名(project.name)就可以了
 	@SuppressWarnings("serial")
-	public static final Map<String, String> PROJECT_ALIAS = Collections.unmodifiableMap(new HashMap<String, String>(){{
+	public static final Map<String, String> PROJECT_MAPPING_FOR_ABLEJS = Collections.unmodifiableMap(new HashMap<String, String>(){{
 		put("as-web", "default");
 		put("as-search", "default");
 	}});
 	
 	public static final String ABLEJS_FILEMAP_ROOT_PATH = DeployConfiguration.getInstance().getAblejsFilemapRootPath();
 	
-	private static String getProjectNameAlias(String projectName) {
+	private static String getProjectMappedName(String projectName) {
 		if(StringUtils.isBlank(projectName)) {
 			return "default";
 		}
-		String alias = PROJECT_ALIAS.get(projectName);
-		if(StringUtils.isNotBlank(alias)) {
-			return alias;
+		String mappedName = PROJECT_MAPPING_FOR_ABLEJS.get(projectName);
+		if(StringUtils.isNotBlank(mappedName)) {
+			return mappedName;
 		}
 		return projectName;
 	}
 	
+	/**
+	 * 根据项目名称拼接相应的filemap.json文件的存储路径
+	 * 注意要与ablejs的配置保持一致
+	 */
 	private static String getAblejsContextPathByProjectName(String projectName) {
-		return FilenameUtils.concat(ABLEJS_FILEMAP_ROOT_PATH, getProjectNameAlias(projectName));
+		return FilenameUtils.concat(ABLEJS_FILEMAP_ROOT_PATH, getProjectMappedName(projectName));
 	}
 	
 	/**
-	 * 工程名称
+	 * 项目名称，决定了工程所对应的filemap.json的存储路径
 	 */
 	private String projectName;
 
@@ -96,7 +102,8 @@ public class AblejsCmd extends AbstractCmd<AblejsCmd.AblejsOperation, AblejsCmd.
 	
 	public enum AblejsOperationType implements AbstractCmd.OperationType {
 		
-		PATH("--filemap-path"), FINGERPRINT("--filemap-fingerprint");
+		PATH("--filemap-path"), 				// 根据相对路径查询依赖信息
+		FINGERPRINT("--filemap-fingerprint");	// 根据hash后的路径查询依赖信息
 		
 		private String option;
 		
