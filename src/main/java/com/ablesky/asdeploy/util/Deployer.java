@@ -101,23 +101,27 @@ public class Deployer implements Callable<Boolean> {
 	
 	private static boolean deployPatch(DeployItem item, String deployManner, String serverGroupParam) {
 		String scriptPath = DeployUtil.getDeployPatchScriptPath();
+		File scriptParentFolder = new File(FilenameUtils.getFullPath(scriptPath));
 		String itemPatchFolder = DeployUtil.getDeployItemPatchFolder(item, deployManner);
 		if(!"a".equals(serverGroupParam) && !"b".equals(serverGroupParam)) {
 			serverGroupParam = "ab";
 		}
-		ShellCmd.ShellOperation sh = new ShellCmd().oper(ShellCmd.ShellOperationType.EXEC);
-		sh	.param(scriptPath)
-			.param(itemPatchFolder)
-			.param(DeployConfiguration.getInstance().getNeedSendEmail())
-			.param(serverGroupParam);
+		ShellCmd.ShellOperation sh = new ShellCmd(scriptParentFolder)
+				.oper(ShellCmd.ShellOperationType.EXEC)
+				.param(scriptPath)
+				.param(itemPatchFolder)
+				.param(DeployConfiguration.getInstance().getNeedSendEmail())
+				.param(serverGroupParam);
 		return executeCmdAndOutputLog(sh.exec(), new File(Deployer.DEPLOY_LOG_PATH));
 	}
 	
 	private static boolean deployWar(DeployItem item, String serverGroupParam, Long deployRecordId) {
 		File deployLog = new File(Deployer.DEPLOY_LOG_PATH);
 		String scriptPath = DeployUtil.getDeployWarScriptPath(item.getProject());
+		File scriptParentFolder = new File(FilenameUtils.getFullPath(scriptPath));
 		if(serverGroupParam.contains("a")) {
-			ShellCmd.ShellOperation shSideA = new ShellCmd().oper(ShellCmd.ShellOperationType.EXEC)
+			ShellCmd.ShellOperation shSideA = new ShellCmd(scriptParentFolder)
+					.oper(ShellCmd.ShellOperationType.EXEC)
 					.param(scriptPath)
 					.param(item.getProject().getName() + "-" + item.getVersion())
 					.param("a");
@@ -132,7 +136,8 @@ public class Deployer implements Callable<Boolean> {
 		} catch (InterruptedException e) {}
 		
 		if(serverGroupParam.contains("b")) {
-			ShellCmd.ShellOperation shSideB = new ShellCmd().oper(ShellCmd.ShellOperationType.EXEC)
+			ShellCmd.ShellOperation shSideB = new ShellCmd(scriptParentFolder)
+					.oper(ShellCmd.ShellOperationType.EXEC)
 					.param(scriptPath)
 					.param(item.getProject().getName() + "-" + item.getVersion())
 					.param("b");
