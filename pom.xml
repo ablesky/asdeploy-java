@@ -4,7 +4,7 @@
 	<groupId>com.ablesky</groupId>
 	<artifactId>asdeploy</artifactId>
 	<packaging>war</packaging>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.4</version>
 	<name>asdeploy Maven Webapp</name>
 	<url>http://maven.apache.org</url>
 	
@@ -99,7 +99,7 @@
 		</dependency>
 		<dependency>
 		    <groupId>org.ow2.asm</groupId>
-		    <artifactId>asm-debug-all</artifactId>
+		    <artifactId>asm-all</artifactId>
 		    <version>4.2</version>
 		</dependency>
 		
@@ -272,6 +272,12 @@
 			<id>test</id>
 			<properties>
 				<spring.profiles.active>test</spring.profiles.active>
+			</properties>
+		</profile>
+		<profile>
+			<id>classpath</id>	<!-- 打印工程的classpath -->
+			<properties>
+				<antbuild.target>classpath</antbuild.target>
 			</properties>
 		</profile>
 		<profile>

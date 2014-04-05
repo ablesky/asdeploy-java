@@ -2,7 +2,6 @@ package com.ablesky.asdeploy.controller;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
 
 import org.apache.commons.io.IOUtils;
 import org.aspectj.util.FileUtil;
