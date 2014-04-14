@@ -134,6 +134,27 @@ public class BasicHibernateDaoImpl {
 	}
 	
 	/**
+	 * 可用来获取sql中的字符串边界
+	 * 主要用来克服字符串中所出现的sql转义字符
+	 */
+	private int indexOfNextKeyChar(String sql, char c, int fromIndex) {
+		int pos = -1, len = sql.length();
+		for(pos = sql.indexOf(c, fromIndex); pos > -1 && pos < len; pos = sql.indexOf(c, fromIndex)) {
+			if(pos > 0 && sql.charAt(pos - 1) == '\\') {
+				fromIndex = pos + 1;
+				continue;
+			}
+			// '作为转义符，只能放在另一个'的前面，即''的情形
+			if(c == '\'' && pos < len - 1 && sql.charAt(pos + 1) == '\'') {
+				fromIndex = pos + 2;
+				continue;
+			}
+			break;
+		}
+		return pos;
+	}
+	
+	/**
 	 * 获取sql/hql中的所有占位符(形如":XXX")
 	 * @author zyang
 	 */
@@ -146,22 +167,22 @@ public class BasicHibernateDaoImpl {
 		int idx1 = 0, idx2 = 0, idx = 0, minIdx = 0;
 		int sqlLen = sql.length();
 		while(idx < sqlLen){
-			idx1 = sql.indexOf("'", idx);
-			idx2 = sql.indexOf("\"", idx);
+			idx1 = indexOfNextKeyChar(sql, '\'', idx);
+			idx2 = indexOfNextKeyChar(sql, '"', idx);
 			if(idx1 == -1){
-				idx1 = sql.length();
+				idx1 = sqlLen;
 			}
 			if(idx2 == -1){
-				idx2 = sql.length();
+				idx2 = sqlLen;
 			}
 			minIdx = Math.min(idx1, idx2);
 			clearedSqlBuff.append(sql.substring(idx, minIdx));
 			if(minIdx == sqlLen){
 				break;
 			}
-			idx = (idx1 < idx2? sql.indexOf("'", idx1 + 1): sql.indexOf("\"", idx2 + 1)) + 1;
+			idx = (idx1 < idx2? indexOfNextKeyChar(sql, '\'', idx1 + 1): indexOfNextKeyChar(sql, '"', idx2 + 1)) + 1;
 		}
-		String clearedSql = clearedSqlBuff.toString();
+		String clearedSql = clearedSqlBuff.toString();	// 剔除了字符串后的sql
 		List<String> placeHolderList = new LinkedList<String>();
 		String prefix = ":";
 		int clearedSqlLen = clearedSql.length();

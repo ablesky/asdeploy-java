@@ -1,10 +1,12 @@
 package com.ablesky.asdeploy.dao.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -17,7 +19,7 @@ import com.ablesky.asdeploy.util.Page;
 public abstract class AbstractDaoImpl<E extends AbstractModel> implements IAbstractDao<E> {
 
 	@Autowired
-	private BasicHibernateDaoImpl basicHibernateDaoImpl;
+	protected BasicHibernateDaoImpl basicHibernateDao;
 	
 	@SuppressWarnings("unchecked")
 	private Class<E> entityClass = ClassUtil.getSuperClassGenericType(this.getClass(), 0);
@@ -25,22 +27,22 @@ public abstract class AbstractDaoImpl<E extends AbstractModel> implements IAbstr
 	
 	@Override
 	public void saveOrUpdate(E entity) {
-		basicHibernateDaoImpl.saveOrUpdate(entity);
+		basicHibernateDao.saveOrUpdate(entity);
 	}
 	
 	@Override
 	public void delete(E entity) {
-		basicHibernateDaoImpl.delete(entity);
+		basicHibernateDao.delete(entity);
 	}
 	
 	@Override
 	public void deleteById(Long id) {
-		basicHibernateDaoImpl.deleteById(entityClass, id);;
+		basicHibernateDao.deleteById(entityClass, id);;
 	}
 	
 	@Override
 	public E getById(Long id) {
-		return basicHibernateDaoImpl.getById(entityClass, id);
+		return basicHibernateDao.getById(entityClass, id);
 	}
 	
 	@Override
@@ -61,7 +63,7 @@ public abstract class AbstractDaoImpl<E extends AbstractModel> implements IAbstr
 	
 	@Override
 	public List<E> list(int start, int limit, Map<String, Object> param) {
-		return basicHibernateDaoImpl.list(start, limit, generateHqlByParam(param), param);
+		return basicHibernateDao.list(start, limit, generateHqlByParam(param), param);
 	}
 	
 	@Override
@@ -71,20 +73,47 @@ public abstract class AbstractDaoImpl<E extends AbstractModel> implements IAbstr
 	
 	@Override
 	public int count(Map<String, Object> param) {
-		return basicHibernateDaoImpl.count(generateHqlByParam(param), param);
+		return basicHibernateDao.count(generateHqlByParam(param), param);
 	}
 	
 	@Override
 	public Page<E> paginate(int start, int limit, Map<String, Object> param) {
-		return basicHibernateDaoImpl.paginate(start, limit, generateHqlByParam(param), param);
+		return basicHibernateDao.paginate(start, limit, generateHqlByParam(param), param);
 	}
 	
 	protected String generateHqlByParam(Map<String, Object> param) {
 		return "from " + this.entityClassName + generateWhereByParam(param) + generateOrderByByParam(param);
 	}
 	
+	/**
+	 * 有一定的局限性，尤其是or的时候，key也不能重复(有些情形可以用in作变通)
+	 * 但这机制本身就是为了提高简单场景下的开发效率的，所以不用考虑特别复杂的情形
+	 */
+	@SuppressWarnings("unchecked")
 	protected String generateWhereByParam(Map<String, Object> param) {
-		StringBuilder buff = new StringBuilder(" where 1 = 1 ");
+		List<Map<String, Object>> orParamList = new ArrayList<Map<String,Object>>();
+		List<String> keyList = new ArrayList<String>(param.keySet());
+		for(String key: keyList) {
+			if(key == null || !key.toLowerCase().endsWith("__or")) {
+				continue;
+			}
+			Map<String, Object> orParam = (Map<String, Object>)param.remove(key);
+			if(MapUtils.isEmpty(orParam)) {
+				continue;
+			}
+			orParamList.add(orParam);
+		}
+		StringBuilder buff = new StringBuilder(" where ")
+			.append(generateAndConditionsByParam(param));
+		for(Map<String, Object> orParam: orParamList) {
+			buff.append(" and (").append(generateOrConditionsByParam(orParam)).append(")");
+			param.putAll(orParam);
+		}
+		return buff.toString();
+	}
+	
+	private String generateAndConditionsByParam(Map<String, Object> param) {
+		StringBuilder buff = new StringBuilder(" 1 = 1 ");
 		for(Entry<String, Object> entry: param.entrySet()) {
 			if(CommonConstant.ORDER_BY.equals(entry.getKey())) {
 				continue;
@@ -94,6 +123,24 @@ public abstract class AbstractDaoImpl<E extends AbstractModel> implements IAbstr
 				continue;
 			}
 			buff.append(" and ")
+				.append(parsedResult[0])
+				.append(parsedResult[1])
+				.append(parsedResult[2]);
+		}
+		return buff.toString();
+	}
+	
+	private String generateOrConditionsByParam(Map<String, Object> param) {
+		StringBuilder buff = new StringBuilder(" 1 = 2 ");
+		for(Entry<String, Object> entry: param.entrySet()) {
+			if(CommonConstant.ORDER_BY.equals(entry.getKey())) {
+				continue;
+			}
+			String[] parsedResult = parseOperation(entry.getKey());
+			if(parsedResult == null) {
+				continue;
+			}
+			buff.append(" or ")
 				.append(parsedResult[0])
 				.append(parsedResult[1])
 				.append(parsedResult[2]);
@@ -135,11 +182,20 @@ public abstract class AbstractDaoImpl<E extends AbstractModel> implements IAbstr
 		} else if ("contain".equalsIgnoreCase(operName)) {
 			oper = " like ";
 			placeholder = "concat('%', " + placeholder + ", '%')";
+		} else if ("not_contain".equalsIgnoreCase(operName)) {
+			oper = " not like ";
+			placeholder = "concat('%', " + placeholder + ", '%')";
 		} else if ("start_with".equalsIgnoreCase(operName)) {
 			oper = " like ";
 			placeholder = "concat(" + placeholder + ", '%')";
+		} else if ("not_start_with".equalsIgnoreCase(operName)) {
+			oper = " not like ";
+			placeholder = "concat(" + placeholder + ", '%')";
 		} else if ("end_with".equalsIgnoreCase(operName)) {
 			oper = " like ";
+			placeholder = " concat('%', " + placeholder + ")";
+		} else if ("not_end_with".equalsIgnoreCase(operName)) {
+			oper = " not like ";
 			placeholder = " concat('%', " + placeholder + ")";
 		} else if("in".equalsIgnoreCase(operName)) {
 			oper = " in ";
@@ -147,15 +203,18 @@ public abstract class AbstractDaoImpl<E extends AbstractModel> implements IAbstr
 		} else if("not_in".equalsIgnoreCase(operName)) {
 			oper = " not in ";
 			placeholder = " ( " + placeholder + " ) ";
+		} else if("is_null".equalsIgnoreCase(operName)) {
+			oper = " is null ";
+			placeholder = "";
 		}
 		return new String[] { oriKey.replaceAll("_", "."), oper, placeholder };
 	}
 	
 	public void executeSql(String sql) {
-		basicHibernateDaoImpl.executeSql(sql);
+		basicHibernateDao.executeSql(sql);
 	}
 	
 	public void executeSql(String sql, Map<String, Object> param) {
-		basicHibernateDaoImpl.executeSql(sql, param);
+		basicHibernateDao.executeSql(sql, param);
 	}
 }
