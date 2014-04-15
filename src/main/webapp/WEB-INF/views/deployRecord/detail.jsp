@@ -32,7 +32,18 @@ h3.title {
 				</tr>
 				<tr>
 					<td>发布结果:</td>
-					<td>${deployRecord.status}</td>
+					<td>
+						<c:choose>
+							<c:when test="${deployRecord.status == 'prepare' }"><span class="badge">准备中</span></c:when>
+							<c:when test="${deployRecord.status == 'uploaded' }"><span class="badge badge-info">已上传</span></c:when>
+							<c:when test="${deployRecord.status == 'deploying' }"><span class="badge badge-warning">发布中</span></c:when>
+							<c:when test="${deployRecord.status == 'deploy_success' }"><span class="badge badge-success">发布成功</span></c:when>
+							<c:when test="${deployRecord.status == 'deploy_failure' }"><span class="badge badge-important">发布失败</span></c:when>
+							<c:when test="${deployRecord.status == 'rollbacking' }"><span class="badge badge-warning">回滚中</span></c:when>
+							<c:when test="${deployRecord.status == 'rollback_success' }"><span class="badge badge-success">回滚成功</span></c:when>
+							<c:when test="${deployRecord.status == 'rollback_failure' }"><span class="badge badge-important">回滚失败</span></c:when>
+						</c:choose>
+					</td>
 				</tr>
 				<tr>
 					<td>上传文件名:</td>

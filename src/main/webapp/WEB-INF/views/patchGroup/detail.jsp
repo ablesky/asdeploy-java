@@ -42,8 +42,10 @@ h3.title {
 				<tr>
 					<td>状态:</td>
 					<td>
-						<c:if test="${'testing' == patchGroup.status}">测试中</c:if>
-						<c:if test="${'finished' == patchGroup.status}">已完成</c:if>
+						<c:choose>
+							<c:when test="${patchGroup.status == 'testing'}"><span class="badge badge-info">测试中</span></c:when>
+							<c:when test="${patchGroup.status == 'finished'}"><span class="badge badge-success">已完成</span></c:when>
+						</c:choose>
 					</td>
 				</tr>
 				<tr>
@@ -101,8 +103,10 @@ h3.title {
 						</a>
 					</td>
 					<td>
-						<c:if test="${relatedPatchGroupStatus == 'testing'}">测试中</c:if>
-						<c:if test="${relatedPatchGroupStatus == 'finished'}">已完成</c:if>
+						<c:choose>
+							<c:when test="${patchGroup.status == 'testing'}"><span class="badge badge-info">测试中</span></c:when>
+							<c:when test="${patchGroup.status == 'finished'}"><span class="badge badge-success">已完成</span></c:when>
+						</c:choose>
 					</td>
 				</tr>
 			</c:forEach>

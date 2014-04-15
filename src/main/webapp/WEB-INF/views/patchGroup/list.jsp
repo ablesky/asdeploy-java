@@ -158,9 +158,14 @@
 						<td>${patchGroup.creator.username}</td>
 						<td><fmt:formatDate value="${patchGroup.createTime}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
 						<td><fmt:formatDate value="${patchGroup.finishTime}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
-						<td>${patchGroup.status == 'testing'? '测试中': '已完成'}</td>
 						<td>
-							<a class="detail-btn" href="${ctx_path}/patchGroup/detail/${patchGroup.id}">详情</a>
+							<c:choose>
+								<c:when test="${patchGroup.status == 'testing'}"><span class="badge badge-info">测试中</span></c:when>
+								<c:when test="${patchGroup.status == 'finished'}"><span class="badge badge-success">已完成</span></c:when>
+							</c:choose>
+						</td>
+						<td>
+							<a class="detail-btn" href="${ctx_path}/patchGroup/detail/${patchGroup.id}" target="_blank">详情</a>
 							<c:if test="${isSuperAdmin || patchGroup.creator.id == currentUser.id}">
 							&nbsp;&nbsp;
 							<a class="edit-btn" href="javascript:void(0);" data-id="${patchGroup.id}">修改</a>

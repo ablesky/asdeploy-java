@@ -150,9 +150,19 @@
 						<td>${deployRecord.deployItem.version}</td>
 						<td>${deployRecord.deployItem.deployType}</td>
 						<td>${deployRecord.deployItem.fileName}</td>
-						<td>${deployRecord.status}</td>
 						<td>
-							<a class="detail-btn" href="${ctx_path}/deployRecord/detail/${deployRecord.id}">详情</a>
+						<c:choose>
+							<c:when test="${deployRecord.status == 'prepare' }"><span class="badge">准备中</span></c:when>
+							<c:when test="${deployRecord.status == 'uploaded' }"><span class="badge badge-info">已上传</span></c:when>
+							<c:when test="${deployRecord.status == 'deploying' }"><span class="badge badge-warning">发布中</span></c:when>
+							<c:when test="${deployRecord.status == 'deploy_success' }"><span class="badge badge-success">发布成功</span></c:when>
+							<c:when test="${deployRecord.status == 'deploy_failure' }"><span class="badge badge-important">发布失败</span></c:when>
+							<c:when test="${deployRecord.status == 'rollbacking' }"><span class="badge badge-warning">回滚中</span></c:when>
+							<c:when test="${deployRecord.status == 'rollback_success' }"><span class="badge badge-success">回滚成功</span></c:when>
+							<c:when test="${deployRecord.status == 'rollback_failure' }"><span class="badge badge-important">回滚失败</span></c:when>
+						</c:choose>
+						<td>
+							<a class="detail-btn" href="${ctx_path}/deployRecord/detail/${deployRecord.id}" target="_blank">详情</a>
 						</td>
 					</tr>
 				</c:forEach>

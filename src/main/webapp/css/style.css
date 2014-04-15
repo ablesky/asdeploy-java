@@ -14,3 +14,7 @@
 .wrapper {
 	margin-bottom: 100px;
 }
+
+span.badge {
+	font-size: 13px;
+}
