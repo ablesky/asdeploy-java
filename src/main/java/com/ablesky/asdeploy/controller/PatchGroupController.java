@@ -98,6 +98,8 @@ public class PatchGroupController {
 				return rel.getPatchFile();
 			}
 		}));
+		Collections.sort(patchFileList);
+		
 		List<ConflictInfo> conflictInfoList = patchGroupService.getConflictInfoListResultByParam(new ModelMap().addAttribute("patchGroupId", id));
 		Collections.sort(conflictInfoList, new Comparator<ConflictInfo>() {
 			@Override

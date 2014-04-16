@@ -9,7 +9,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="patch_file")
-public class PatchFile extends AbstractModel {
+public class PatchFile extends AbstractModel implements Comparable<PatchFile> {
 
 	@Id
 	@GeneratedValue
@@ -44,6 +44,18 @@ public class PatchFile extends AbstractModel {
 	}
 	public void setProjectId(Long projectId) {
 		this.projectId = projectId;
+	}
+
+	@Override
+	public int compareTo(PatchFile anotherPatchFile) {
+		if(anotherPatchFile == null) {
+			return 1;
+		}
+		int result = this.projectId.compareTo(anotherPatchFile.projectId);
+		if(result == 0) {
+			result = this.filePath.compareTo(anotherPatchFile.filePath);
+		}
+		return result;
 	}
 	
 }

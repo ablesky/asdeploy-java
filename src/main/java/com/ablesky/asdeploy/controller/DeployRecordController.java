@@ -1,5 +1,6 @@
 package com.ablesky.asdeploy.controller;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -101,9 +102,21 @@ public class DeployRecordController {
 				return patchGroupId1.compareTo(patchGroupId2);
 			}
 		});
+		List<String> originFilePathList = new ArrayList<String>();
+		List<String> optimizedFilePathList = new ArrayList<String>();
+		for(String filePath: filePathList) {
+			if(filePath.contains("_optimize")) {
+				optimizedFilePathList.add(filePath);
+			} else {
+				originFilePathList.add(filePath);
+			}
+		}
+		Collections.sort(originFilePathList);
+		Collections.sort(optimizedFilePathList);
 		
 		model.addAttribute("deployRecord", deployRecord)
-			.addAttribute("filePathList", filePathList)
+			.addAttribute("originFilePathList", originFilePathList)
+			.addAttribute("optimizedFilePathList", optimizedFilePathList)
 			.addAttribute("readme", readme)
 			.addAttribute("conflictDetailList", conflictDetailList);
 		return "deployRecord/detail";

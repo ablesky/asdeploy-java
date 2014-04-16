@@ -73,13 +73,27 @@ h3.title {
 				<tr><th>文件路径</th></tr>
 			</thead>
 			<tbody>
-			<c:forEach items="${filePathList}" var="filePath">
+			<c:forEach items="${originFilePathList}" var="filePath">
 				<tr>
 					<td>${filePath}</td>
 				</tr>
 			</c:forEach>
 			</tbody>
 		</table>
+		<c:if test="${fn:length(optimizedFilePathList) > 0}">
+			<table class="table table-bordered table-condensed table-hover table-striped" style="width: 100%;">
+				<thead>
+					<tr><th>静态构建追加文件</th></tr>
+				</thead>
+				<tbody>
+				<c:forEach items="${optimizedFilePathList}" var="filePath">
+					<tr>
+						<td>${filePath}</td>
+					</tr>
+				</c:forEach>
+				</tbody>
+			</table>
+		</c:if>
 		
 		<c:if test="${fn:length(conflictDetailList) > 0}" >
 		<h3 class="title">文件冲突详情</h3>
