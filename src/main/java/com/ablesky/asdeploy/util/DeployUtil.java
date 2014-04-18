@@ -89,9 +89,7 @@ public class DeployUtil {
 		String targetFolderPath = FilenameUtils.concat(deployItem.getFolderPath(), FilenameUtils.getBaseName(deployItem.getFileName()));
 		String parentFolderPath = deployItem.getFolderPath();
 		File targetFolder = new File(targetFolderPath);
-		if(targetFolder.exists()) {
-			FileUtils.deleteDirectory(targetFolder);
-		}
+		FileUtils.deleteDirectory(targetFolder);
 		ZipUtil.unzip(sourceFilePath, parentFolderPath);
 	}
 	

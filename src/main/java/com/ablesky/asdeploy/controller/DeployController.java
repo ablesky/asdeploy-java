@@ -136,7 +136,7 @@ public class DeployController {
 	}
 	
 	@RequestMapping("/uploadStaticTar")
-	public @ResponseBody Map<String, Object> updateStaticTar(
+	public @ResponseBody Map<String, Object> uploadStaticTar(
 			Long projectId,
 			String version,
 			MultipartFile staticTarFile) throws IllegalStateException, IOException {
