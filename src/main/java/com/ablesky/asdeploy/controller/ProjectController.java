@@ -76,8 +76,26 @@ public class ProjectController {
 	@RequestMapping(value="/delete/{id}", method=RequestMethod.POST)
 	public @ResponseBody Map<String, Object> delete(@PathVariable("id") Long id) {
 		projectService.deleteProjectById(id);
-		ModelMap resultMap = new ModelMap();
-		return resultMap.addAttribute("success", true).addAttribute("message", "删除成功!");
+		return new ModelMap().addAttribute("success", true).addAttribute("message", "删除成功!");
+	}
+	
+	/**
+	 * 修改项目所使用的发布脚本的类型
+	 * 目前发war包的脚本，有新老版本的区别，对应不同的脚本路径
+	 * @param id
+	 * @param deployScriptType	0表示用旧版脚本，1表示用新版脚本
+	 * @return
+	 */
+	@RequestMapping(value="/switch/{id}", method=RequestMethod.POST)
+	public @ResponseBody Map<String, Object> switchDeployScriptTyppe(
+			@PathVariable("id") Long id,
+			@RequestParam Integer deployScriptType) {
+		Project project = projectService.getProjectById(id);
+		if(!deployScriptType.equals(project.getDeployScriptType())) {
+			project.setDeployScriptType(deployScriptType);
+			projectService.saveOrUpdateProject(project);
+		}
+		return new ModelMap().addAttribute("success", true).addAttribute("deployScriptType", deployScriptType);
 	}
 	
 	@ExceptionHandler

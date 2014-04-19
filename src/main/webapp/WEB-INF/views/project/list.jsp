@@ -7,6 +7,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>AbleSky代码发布系统</title>
 <%@ include file="../include/includeCss.jsp" %>
+<link rel="stylesheet" href="${ctx_path}/css/bootstrapSwitch.css" />
 <style>
 .title {
 	text-align: center;
@@ -46,8 +47,9 @@
 			<thead>
 				<tr>
 					<th style="width: 50px;">id</th>
-					<th style="width: 300px;">项目名称</th>
-					<th style="width: 300px;">包名称</th>
+					<th style="width: 250px;">项目名称</th>
+					<th style="width: 250px;">包名称</th>
+					<th style="width: 100px;">脚本类型</th>
 					<th style="width: 150px;">操作</th>
 				</tr>
 			</thead>
@@ -58,11 +60,12 @@
 						<td>${project.name}</td>
 						<td>${project.warName}</td>
 						<td>
+							<div class="switch switch-mini" data-id="${project.id}" data-on-label="新" data-off-label="旧">
+    							<input type="checkbox" <c:if test="${project.deployScriptType > 0 }">checked</c:if>/>
+							</div>
+						</td>
+						<td>
 							<a class="edit-btn" href="javascript:void(0);" data-id="${project.id}">修改</a>
-							<!-- 
-							&nbsp;&nbsp;
-							<a class="delete-btn" href="javascript:void(0);" data-id="${project.id}">删除</a>
-							 -->
 						</td>
 					</tr>
 				</c:forEach>
@@ -72,11 +75,13 @@
 </div>
 </body>
 <%@ include file="../include/includeJs.jsp" %>
+<script type="text/javascript" src="${ctx_path}/js/bootstrap/bootstrapSwitch.js"></script>
 <script>
 $(function(){
 	initCreateProjectBtn();
 	initDeleteProjectBtn();
 	initUpdateProjectBtn();
+	initDeployScriptTypeSwitch();
 });
 
 function initCreateProjectBtn() {
@@ -127,6 +132,33 @@ function initDeleteProjectBtn() {
 			if(data.success === true) {
 				location.reload();
 			}
+		});
+	});
+}
+
+function initDeployScriptTypeSwitch() {
+	var states = {};
+	$('#J_tbody').on('switch-change', '.switch', function(e, data){
+		var $this = $(this),
+			prevValue = !data.value,
+			projectId = $this.attr('data-id');
+		if(states[projectId]) {	// 正在请求中
+			return;
+		}
+		states[projectId] = true;
+		var deployScriptType = data.value? 1: 0;	// 1 means the new script while 0 means the old one
+		$.ajax({
+			url: CTX_PATH + '/project/switch/' + projectId,
+			type: 'POST',
+			data: {deployScriptType: deployScriptType}
+		}).done(function(){
+			if(data.deployScriptType !== deployScriptType) {
+				$this.bootstrapSwitch('setState', data.deployScriptType); 
+			}
+		}).fail(function(){
+			$this.bootstrapSwitch('setState', prevValue); 
+		}).always(function(){
+			states[projectId] = false;
 		});
 	});
 }
