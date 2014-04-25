@@ -369,7 +369,7 @@ function initDecompressBtn() {
 		}, function(data){
 			$this.html('解压补丁文件').attr({disabled:false});
 			if(data.success !== true) {
-				alert('解压缩失败!');
+				alert(data.message || '解压缩失败!');
 				return;
 			}
 			renderFilePathList(data.filePathList);

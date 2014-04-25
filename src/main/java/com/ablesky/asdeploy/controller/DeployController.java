@@ -205,6 +205,9 @@ public class DeployController {
 		}
 		String targetFolderPath = FilenameUtils.concat(deployItem.getFolderPath(), FilenameUtils.getBaseName(deployItem.getFileName()));
 		List<String> filePathList = DeployUtil.getDeployItemFilePathList(targetFolderPath);
+		if(CollectionUtils.isEmpty(filePathList)) {
+			return resultMap.addAttribute("success", false).addAttribute("message", "解压后的文件夹中无内容! 请确认压缩包文件名与被压缩的目录名是否一致!");
+		}
 		List<ConflictInfoDto> conflictInfoList = Collections.emptyList();
 		if(patchGroupId != null && patchGroupId > 0) {
 			final PatchGroup patchGroup = patchGroupService.getPatchGroupById(patchGroupId);
