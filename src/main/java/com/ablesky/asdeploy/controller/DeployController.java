@@ -244,6 +244,10 @@ public class DeployController {
 		ModelMap resultMap = new ModelMap();
 		DeployRecord deployRecord = null;
 		PatchGroup patchGroup = null;
+		File deployPatchScript = new File(DeployUtil.getDeployPatchScriptPath());
+		if(!deployPatchScript.isFile()) {	// 粗略的判断下，主要是应对d盘未挂载的情形。
+			return resultMap.addAttribute("success", false).addAttribute("message", "发布脚本不存在!");
+		}
 		if(deployRecordId == null || deployRecordId <= 0 || (deployRecord = deployService.getDeployRecordById(deployRecordId)) == null) {
 			return resultMap.addAttribute("success", false).addAttribute("message", "参数有误!");
 		}
