@@ -94,7 +94,7 @@ public class DeployRecordController {
 			public int compare(ConflictDetail detail1, ConflictDetail detail2) {
 				Long patchGroupId1 = detail1.getConflictInfo().getRelatedPatchGroupId();
 				Long patchGroupId2 = detail2.getConflictInfo().getRelatedPatchGroupId();
-				if(patchGroupId1 == patchGroupId2) {
+				if(patchGroupId1.equals(patchGroupId2)) {
 					String filePath1 = detail1.getConflictInfo().getPatchFile().getFilePath();
 					String filePath2 = detail2.getConflictInfo().getPatchFile().getFilePath();
 					return filePath1.compareTo(filePath2);

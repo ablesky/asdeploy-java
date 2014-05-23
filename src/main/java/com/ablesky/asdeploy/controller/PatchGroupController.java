@@ -106,7 +106,7 @@ public class PatchGroupController {
 			public int compare(ConflictInfo info1, ConflictInfo info2) {
 				Long patchGroupId1 = info1.getRelatedPatchGroupId();
 				Long patchGroupId2 = info2.getRelatedPatchGroupId();
-				if(patchGroupId1 == patchGroupId2) {
+				if(patchGroupId1.equals(patchGroupId2)) {
 					String filePath1 = info1.getPatchFile().getFilePath();
 					String filePath2 = info2.getPatchFile().getFilePath();
 					return filePath1.compareTo(filePath2);

@@ -40,10 +40,10 @@ public class AblejsController {
 		try {
 			if("relativePath".equals(queryType)) {
 				in = ablejs.path().param(queryValue).exec().getInputStream();
-				result = new String(FileUtil.readAsByteArray(in));
+				result = new String(FileUtil.readAsByteArray(in), "UTF8");
 			} else if("hashcode".equals(queryType)) {
 				in = ablejs.fingerprint().param(queryValue).exec().getInputStream();
-				result = new String(FileUtil.readAsByteArray(in));
+				result = new String(FileUtil.readAsByteArray(in), "UTF8");
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

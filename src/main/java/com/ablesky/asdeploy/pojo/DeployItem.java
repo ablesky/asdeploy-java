@@ -14,8 +14,8 @@ import javax.persistence.Table;
 @Table(name="deploy_item")
 public class DeployItem extends AbstractModel {
 	
-	public static String DEPLOY_TYPE_PATCH = "patch";
-	public static String DEPLOY_TYPE_WAR = "war";
+	public static final String DEPLOY_TYPE_PATCH = "patch";
+	public static final String DEPLOY_TYPE_WAR = "war";
 
 	@Id
 	@GeneratedValue
