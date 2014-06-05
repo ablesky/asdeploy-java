@@ -72,10 +72,12 @@ public class SQLiteDialect extends Dialect {
 		return "select last_insert_rowid()";
 	}
 
+	@Deprecated
 	public boolean supportsLimit() {
 		return true;
 	}
 
+	@Deprecated
 	public String getLimitString(String query, boolean hasOffset) {
 		return new StringBuffer(query.length() + 20).append(query).append(
 				hasOffset ? " limit ?, ?" : " limit ?").toString();
