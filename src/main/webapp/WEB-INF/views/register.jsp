@@ -32,6 +32,11 @@ input[type="text"], input[type="password"] {
 .btn-wrapper button {
 	width: 80px;
 }
+#J_verifyImage {
+	width: 58px;
+	height: 20px;
+	cursor:pointer;
+}
 </style>
 </head>
 <body>
@@ -93,6 +98,26 @@ input[type="text"], input[type="password"] {
 							<input type="password" id="J_confirmedPassword" name="confirmedPassword"/>
 						</td>
 					</tr>
+					<c:if test="${verifyCodeError != null}">
+					<tr>
+						<td colspan="2">
+							<div class="alert alert-error">${verifyCodeError}</div>
+						</td>
+					</tr>
+					</c:if>
+					<tr>
+						<td class="label-wrapper">
+							<label for="J_verifyCode">
+								<strong>验证码:&nbsp;&nbsp;</strong>
+							</label>
+						</td>
+						<td>
+							<div class="input-append">
+								<input type="text" id="J_verifyCode" name="verifyCode" style="width: 110px;"/>
+								<img class="add-on" id="J_verifyImage" title="换一张" src="${ctx_path}/register/verifyImage">
+							</div>
+						</td>
+					</tr>
 					<tr>
 						<td colspan="2" class="btn-wrapper">
 							<button class="btn" type="submit">注&nbsp;&nbsp;册</button>
@@ -107,6 +132,17 @@ input[type="text"], input[type="password"] {
 </div>
 </body>
 <%@ include file="./include/includeJs.jsp" %>
+<script>
+$(function(){
+	initVerifyImage();
+});
+
+function initVerifyImage() {
+	$('#J_verifyImage').on('click', function(){
+		$(this).attr('src', CTX_PATH + '/register/verifyImage?_=' + $.now());
+	});
+}
+</script>
 <script type="text/javascript">
 </script>
 </html>

@@ -53,7 +53,7 @@ public class ShadowGimpy implements GimpyEngine
 
 		// draw lines over the image and/or text
 //		noiseProducer.makeNoise(distortedImage, .1f, .1f, .25f, .25f);
-		noiseProducer.makeNoise(distortedImage, .1f, .25f, .5f, .9f);
+//		noiseProducer.makeNoise(distortedImage, .1f, .25f, .5f, .9f);
 
 		return distortedImage;
 	}

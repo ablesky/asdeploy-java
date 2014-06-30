@@ -1,12 +1,15 @@
 package com.ablesky.asdeploy.controller;
 
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.UUID;
 
+import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -22,11 +25,11 @@ import com.ablesky.asdeploy.service.IDeployService;
 import com.ablesky.asdeploy.service.IUserService;
 import com.ablesky.asdeploy.util.AuthUtil;
 import com.ablesky.asdeploy.util.ImageUtil;
-import com.sun.image.codec.jpeg.JPEGCodec;
-import com.sun.image.codec.jpeg.JPEGImageEncoder;
 
 @Controller
 public class IndexController {
+	
+	public static final String REGISTER_VERIFY_CODE = "registerVerifyCode";
 	
 	@Autowired
 	private IUserService userService;
@@ -77,7 +80,7 @@ public class IndexController {
 	}
 	
 	@RequestMapping(value="/register", method=RequestMethod.POST)
-	public String register(String username, String password, String confirmedPassword, Model model) {
+	public String register(String username, String password, String confirmedPassword, String verifyCode, HttpSession session, Model model) {
 		ModelMap validateResult = new ModelMap();
 		if(StringUtils.isBlank(username)) {
 			validateResult.addAttribute("usernameError", "用户名不能为空!");
@@ -89,6 +92,11 @@ public class IndexController {
 		} else if (!password.equals(confirmedPassword)) {
 			validateResult.addAttribute("confirmedPasswordError", "两次输入的密码不一致!");
 		}
+		if(StringUtils.isBlank(verifyCode)) {
+			validateResult.addAttribute("verifyCodeError", "验证码不能为空!");
+		} else if(!verifyCode.toLowerCase().equals(session.getAttribute(REGISTER_VERIFY_CODE))) {
+			validateResult.addAttribute("verifyCodeError", "验证码输入错误!");
+		}
 		if(validateResult.size() > 0) {
 			model.addAllAttributes(validateResult);
 			return "register";
@@ -99,19 +107,19 @@ public class IndexController {
 	}
 	
 	@RequestMapping("/register/verifyImage")
-	public void getVerifyImage(HttpServletRequest request, HttpServletResponse response) {
+	public void getVerifyImage(HttpSession session, HttpServletResponse response) {
 		response.setContentType("image/jpeg");
 		response.setHeader("Pragma", "No-cache");
 		response.setHeader("Cache-Control", "no-cache");
 		response.setDateHeader("Expires", 2000);
 
 		String verifyCode = this.getRandomString(4);
-		request.getSession().setAttribute("registerVerifyCode", verifyCode);
+		session.setAttribute(REGISTER_VERIFY_CODE, verifyCode);
 		ServletOutputStream outStream = null;
 		try {
 			outStream = response.getOutputStream();
-			JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(outStream);
-			encoder.encode(ImageUtil.generateTextImage(18, 25, verifyCode));
+			BufferedImage image = ImageUtil.generateTextImage(18, 25, verifyCode, new Font("Corbe", Font.BOLD, 25),  new Color(0, 153, 255), new Color(238, 238, 238));
+			ImageIO.write(image, "jpeg", outStream);
 			outStream.flush();
 		} catch (IOException e) {
 			e.printStackTrace();

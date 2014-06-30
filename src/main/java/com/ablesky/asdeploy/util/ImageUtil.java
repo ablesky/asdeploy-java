@@ -11,17 +11,17 @@ public class ImageUtil {
 
 	private ImageUtil() {}
 	
-	public static BufferedImage generateTextImage(int charWidth, int charHeight, String text) {
+	public static BufferedImage generateTextImage(int unitWidth, int height, String text, Font font, Color fontColor, Color backgroundColor) {
 		int charNum = text.length();
-		BufferedImage image = new BufferedImage(charWidth * charNum , charHeight, BufferedImage.TYPE_3BYTE_BGR);
+		BufferedImage image = new BufferedImage(unitWidth * charNum , height, BufferedImage.TYPE_3BYTE_BGR);
 		Graphics graphics = image.getGraphics();
-		graphics.setColor(new Color(255, 255, 255));
-		graphics.fillRect(0, 0, charWidth * charNum, charHeight);
-		graphics.setColor(new Color(0, 153, 255));
-		graphics.setFont(new Font("Corbe", Font.BOLD, 20));
+		graphics.setColor(backgroundColor);
+		graphics.fillRect(0, 0, unitWidth * charNum, height);
+		graphics.setColor(fontColor);
+		graphics.setFont(font);
 		for (int i = 0; i < charNum; i++) {
 			char c = text.charAt(i);
-			graphics.drawString(String.valueOf(c), charWidth * i, charHeight - 6);
+			graphics.drawString(String.valueOf(c), unitWidth * i + 2, height - 4);
 		}
 		graphics.dispose();
 		return new ShadowGimpy().getDistortedImage(image);
