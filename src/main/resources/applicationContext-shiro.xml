@@ -46,6 +46,7 @@
 		<property name="filterChainDefinitions">
 			<value>
 				/register** = anon
+				/register/** = anon
 				/login = authc
 				/login/** = anon
 				/logout = logout

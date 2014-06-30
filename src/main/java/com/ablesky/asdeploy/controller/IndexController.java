@@ -1,5 +1,14 @@
 package com.ablesky.asdeploy.controller;
 
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.UUID;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -12,6 +21,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.ablesky.asdeploy.service.IDeployService;
 import com.ablesky.asdeploy.service.IUserService;
 import com.ablesky.asdeploy.util.AuthUtil;
+import com.ablesky.asdeploy.util.ImageUtil;
+import com.sun.image.codec.jpeg.JPEGCodec;
+import com.sun.image.codec.jpeg.JPEGImageEncoder;
 
 @Controller
 public class IndexController {
@@ -84,6 +96,35 @@ public class IndexController {
 		userService.createNewUser(username, password);
 		AuthUtil.login(username, password, true);
 		return "redirect:/main";
+	}
+	
+	@RequestMapping("/register/verifyImage")
+	public void getVerifyImage(HttpServletRequest request, HttpServletResponse response) {
+		response.setContentType("image/jpeg");
+		response.setHeader("Pragma", "No-cache");
+		response.setHeader("Cache-Control", "no-cache");
+		response.setDateHeader("Expires", 2000);
+
+		String verifyCode = this.getRandomString(4);
+		request.getSession().setAttribute("registerVerifyCode", verifyCode);
+		ServletOutputStream outStream = null;
+		try {
+			outStream = response.getOutputStream();
+			JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(outStream);
+			encoder.encode(ImageUtil.generateTextImage(18, 25, verifyCode));
+			outStream.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			IOUtils.closeQuietly(outStream);
+		}
+	}
+	
+	private String getRandomString(int num) {
+		if(num < 1 || num > 32) {
+			throw new IllegalArgumentException("The lenght of random string should neither bigger than 32 nor less then 1!");
+		}
+		return UUID.randomUUID().toString().replaceAll("-", "").substring(0, num);
 	}
 	
 	@RequestMapping("/unauthorized")
