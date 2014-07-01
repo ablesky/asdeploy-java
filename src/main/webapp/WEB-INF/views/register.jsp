@@ -37,6 +37,9 @@ input[type="text"], input[type="password"] {
 	height: 20px;
 	cursor:pointer;
 }
+#J_verifyCode {
+	width: 111px;
+}
 </style>
 </head>
 <body>
@@ -113,7 +116,7 @@ input[type="text"], input[type="password"] {
 						</td>
 						<td>
 							<div class="input-append">
-								<input type="text" id="J_verifyCode" name="verifyCode" style="width: 110px;"/>
+								<input type="text" id="J_verifyCode" name="verifyCode"/>
 								<img class="add-on" id="J_verifyImage" title="换一张" src="${ctx_path}/register/verifyImage">
 							</div>
 						</td>
