@@ -70,6 +70,18 @@
 		</table>
 	</div>
 </div>
+<div id="J_alertModal" class="modal hide" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+		提示
+	</div>
+	<div class="modal-body">
+		<p></p>
+	</div>
+	<div class="modal-footer">
+		<button class="btn btn-primary" data-dismiss="modal" aria-hidden="true">确定</button>
+	</div>
+</div>
 </body>
 <%@ include file="../../include/includeJs.jsp" %>
 <script>
@@ -87,10 +99,11 @@ function initSaveBtn() {
 			url = CTX_PATH + '/admin/user/changePassword';
 		$.post(url, params, function(data){
 			if(data.success === true) {
-				alert('操作成功!');
-				window.close();
+				alertMsg('操作成功!').done(function(){
+					window.close();
+				});
 			} else {
-				alert(data.message);
+				alertMsg(data.message);
 			}
 		});
 	});

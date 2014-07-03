@@ -34,4 +34,16 @@
 		</div>
 	</div>
 </div>
+<div id="J_alertModal" class="modal hide" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+		提示
+	</div>
+	<div class="modal-body">
+		<p></p>
+	</div>
+	<div class="modal-footer">
+		<button class="btn btn-primary" data-dismiss="modal" aria-hidden="true">确定</button>
+	</div>
+</div>
 <div style="margin-bottom: 100px;"></div>

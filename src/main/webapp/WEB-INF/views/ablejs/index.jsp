@@ -61,7 +61,7 @@ form label {
 						</div>
 					</td>
 					<td style="padding-left: 20px; text-align: left;">	
-						<input id="queryValue" name="queryValue" type="text" value="" style="width: 300px;" />
+						<input id="queryValue" name="queryValue" type="text" value="" style="width: 400px;" />
 					</td>
 				</tr>
 				<tr>
@@ -127,7 +127,7 @@ function initQueryBtn() {
 			queryValue = processQueryValue(queryType, $('#queryValue').val()),
 			projectName = $('#projectName').attr('data-value') || 'as-web';
 		if(!queryValue) {
-			alert('请输入查询内容!');
+			alertMsg('请输入查询内容!');
 			return;
 		}
 		$('#queryValue').val(queryValue);

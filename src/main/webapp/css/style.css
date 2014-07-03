@@ -18,3 +18,19 @@
 span.badge {
 	font-size: 13px;
 }
+
+.modal-backdrop, .modal-backdrop.fade.in {
+	opacity: 0.5;
+	filter: alpha(opacity=50);
+}
+
+#J_alertModal .modal-header {
+	font-size: 16px;
+	font-weight: bold;
+}
+
+#J_alertModal .modal-body {
+	text-align: center;
+	font-size: 16px;
+	font-weight: bold;
+}

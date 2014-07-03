@@ -241,15 +241,15 @@ function initFileUploadWidget(){
 		validator: function() {
 			var deployItemName = $('#J_deployItemField').val();
 			if(!deployItemName){
-				alert('请先选择要上传的文件!');
+				alertMsg('请先选择要上传的文件!');
 				return false;
 			}
 			if(deployType == 'patch' && !(/.zip$/i).test(deployItemName)){
-				alert('请选择zip压缩格式的补丁文件!');
+				alertMsg('请选择zip压缩格式的补丁文件!');
 				return false;
 			}
 			if(deployType == 'war' && !(/.war$/i).test(deployItemName)){
-				alert('请选择war包进行上传!');
+				alertMsg('请选择war包进行上传!');
 				return false;
 			}
 			return true;
@@ -307,11 +307,11 @@ function initStaticFileUploadWidget(){
 		validator: function() {
 			var deployItemName = $('#J_staticTarFile').val();
 			if(!deployItemName){
-				alert('请先选择要上传的文件!');
+				alertMsg('请先选择要上传的文件!');
 				return false;
 			}
 			if(!(/.tar(.gz)?$/i).test(deployItemName)){
-				alert('请选择tar包进行上传!');
+				alertMsg('请选择tar包进行上传!');
 				return false;
 			}
 			return true;
@@ -369,13 +369,13 @@ function initDecompressBtn() {
 		}, function(data){
 			$this.html('解压补丁文件').attr({disabled:false});
 			if(data.success !== true) {
-				alert(data.message || '解压缩失败!');
+				alertMsg(data.message || '解压缩失败!');
 				return;
 			}
 			renderFilePathList(data.filePathList);
 			renderConflictInfoList(data.conflictInfoList);
 			renderReadme(data.readme);
-			alert('解压缩成功!');
+			alertMsg('解压缩成功!');
 			return;
 		});
 	});
@@ -454,7 +454,7 @@ function readDeployLogOnRealtime() {
 		deployRecordId: $('#J_deployRecordId').val()
 	}, function(data){
 		if(!data) {
-			alert('日志实时读取出错了!');
+			alertMsg('日志实时读取出错了!');
 			showDeployResultFailed();
 			return;
 		}
@@ -464,7 +464,7 @@ function readDeployLogOnRealtime() {
 			$logContent.scrollTop($logContent[0].scrollHeight - $logContent.height());
 		}
 		if(data.isFinished == true) {
-			alert('发布已完成!');
+			alertMsg('发布已完成!');
 			data.deployResult === true? showDeployResultSuccess(): showDeployResultFailed();
 			return;
 		}

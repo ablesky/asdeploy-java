@@ -128,10 +128,11 @@ function initDeleteProjectBtn() {
 	$('#J_tbody').on('click', 'a.delete-btn', function(){
 		var $this = $(this);
 		$.post(CTX_PATH + '/project/delete/' + $this.attr('data-id'), function(data){
-			alert(data.message);
-			if(data.success === true) {
-				location.reload();
-			}
+			alertMsg(data.message).done(function(){
+				if(data.success === true) {
+					location.reload();
+				}
+			});
 		});
 	});
 }

@@ -78,6 +78,18 @@
 		</table>
 	</div>
 </div>
+<div id="J_alertModal" class="modal hide" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+		提示
+	</div>
+	<div class="modal-body" style="text-align: center;">
+		<p></p>
+	</div>
+	<div class="modal-footer">
+		<button class="btn btn-primary" data-dismiss="modal" aria-hidden="true">确定</button>
+	</div>
+</div>
 </body>
 <%@ include file="../include/includeJs.jsp" %>
 <script>
@@ -92,7 +104,7 @@ function initSaveBtn() {
 			newPassword = $('#J_newPassword').val(),
 			confirmedNewPassword = $('#J_confirmedNewPassword').val();
 		if(newPassword != confirmedNewPassword) {
-			alert('两次输入的新密码不一致!');
+			alertMsg({message: '两次输入的新密码不一致!', width: 250});
 			return;
 		}
 		var params = {
@@ -102,10 +114,11 @@ function initSaveBtn() {
 			url = CTX_PATH + '/user/changePassword';
 		$.post(url, params, function(data){
 			if(data.success === true) {
-				alert('操作成功!');
-				window.close();
+				alertMsg({message: '操作成功!', width: 250}).done(function(){
+					window.close();
+				});
 			} else {
-				alert(data.message);
+				alertMsg({message: data.message, width: 250});
 			}
 		});
 	});

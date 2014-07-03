@@ -138,23 +138,23 @@ function buildPatchGroupSel(projectId){
 }
 function submitCheck(){
 	if(!$('#project').val()){
-		alert('请选择项目!');
+		alertMsg('请选择项目!');
 		return false;
 	}
 	var $deployType = $('#deployType');
 	if(!$deployType.val()){
-		alert('请选择发布类型!');
+		alertMsg('请选择发布类型!');
 		return false;
 	}
 	if(!/^\d+(\.\d+)+$/.test($('#version').val())){
-		alert('请输入正确的版本号!\n例如 "5.13"');
+		alertMsg('请输入正确的版本号!\n例如 "5.13"');
 		return false;
 	}
 	var $patchGroupSel = $('#patchGroupSel');
 	if($deployType.val() == 'patch' 
 			&& $patchGroupSel.children().size() 
 			&& !$patchGroupSel.val()){
-		alert('此工程发布需要选择补丁组!');
+		alertMsg('此工程发布需要选择补丁组!');
 		return false;
 	}
 	return true;

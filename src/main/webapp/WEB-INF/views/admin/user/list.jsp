@@ -82,7 +82,7 @@ function initSuperAdminSwitchCheckbox() {
 			isSuperAdmin: isSuperAdmin
 		}, function(data){
 			if(data.success !== true) {
-				alert(data.message);
+				alertMsg(data.message);
 				self.checked = !isSuperAdmin;	// 此处有些不稳
 			}
 		});
