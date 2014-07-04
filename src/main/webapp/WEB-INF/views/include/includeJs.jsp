@@ -50,4 +50,42 @@ function alertMsg(msg) {
 	});
 	return deferred.promise();
 }
+
+/**
+ * 调用bootstrap样式的确认框
+ */
+function confirmMsg(msg) {
+	var deferred = $.Deferred();
+	var width = 350;
+	if($.isPlainObject(msg)) {
+		width = msg.width || width;
+		msg = msg.message;
+	}
+	var $modal = $('#J_confirmModal');
+	if($modal.size() == 0) {
+		return deferred.resolve(confirm(msg)).promise();
+	}
+	msg = ('' + msg).replace(/\n/g, '<br/>');
+	$modal.find('.modal-body p').html(msg);
+	$modal.modal().css({
+		width: width,
+		'margin-left': function() {
+			return - $(this).width() / 2;
+		},
+		'margin-top': function() {
+			return ( $(window).height() - $(this).height() ) / 3;	 // 乱诌的一句，完全没有道理，太神奇了
+		}
+	});
+	$modal.on('click', '.modal-footer .confirm', function(){
+		$modal.off('click');
+		$modal.modal('hide');
+		deferred.resolve(true);
+	});
+	$modal.on('click', '.modal-footer .cancel, .modal-header .close', function(){
+		$modal.off('click');
+		$modal.modal('hide');
+		deferred.resolve(false);
+	});
+	return deferred.promise();
+}
 </script>

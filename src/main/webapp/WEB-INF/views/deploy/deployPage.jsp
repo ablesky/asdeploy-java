@@ -340,11 +340,13 @@ function initStaticFileUploadWidget(){
 
 function initUnlockAndLeaveBtn() {
 	$('#J_unlockAndLeave').on('click', function(){
-		if(!confirm('确认要解锁本次发布并离开?')){
-			return;
-		}
-		window.onbeforeunload = null;
-		location.href = CTX_PATH + '/deploy/unlockDeployRedirect';
+		confirmMsg('确认要解锁本次发布并离开?').done(function(result){
+			if(!result) {
+				return;
+			}
+			window.onbeforeunload = null;
+			location.href = CTX_PATH + '/deploy/unlockDeployRedirect';
+		});
 	});
 }
 function initOnBeforeUnload() {

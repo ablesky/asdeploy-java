@@ -24,12 +24,12 @@ span.badge {
 	filter: alpha(opacity=50);
 }
 
-#J_alertModal .modal-header {
+#J_alertModal .modal-header, #J_confirmModal .modal-header {
 	font-size: 16px;
 	font-weight: bold;
 }
 
-#J_alertModal .modal-body {
+#J_alertModal .modal-body, #J_confirmModal .modal-body {
 	text-align: center;
 	font-size: 16px;
 	font-weight: bold;
