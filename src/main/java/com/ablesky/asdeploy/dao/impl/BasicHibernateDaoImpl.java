@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -93,7 +92,7 @@ public class BasicHibernateDaoImpl {
 		if(hql.indexOf("group by") != -1) {
 			return list.size();
 		} else {
-			return Integer.valueOf(list.get(0).toString());
+			return ((Long) list.get(0)).intValue();
 		}
 	}
 	
