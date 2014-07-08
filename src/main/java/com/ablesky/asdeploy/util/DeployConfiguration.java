@@ -78,7 +78,7 @@ public class DeployConfiguration {
 		if(SystemUtils.IS_OS_WINDOWS 
 				|| StringUtils.isBlank(hostname) 
 				|| "unknown".equalsIgnoreCase(hostname)) {
-			return "DEVELOPMENT";
+			return "DEV";
 		}
 		if(hostname.contains(".at1.")) {
 			return "ALPHA";
@@ -95,7 +95,7 @@ public class DeployConfiguration {
 		if(hostname.contains(".st1.")) {
 			return "SIGMA";
 		}
-		return "DEVELOPMENT";
+		return "DEV";
 	}
 	
 }

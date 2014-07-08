@@ -466,6 +466,7 @@ function readDeployLogOnRealtime() {
 			$logContent.scrollTop($logContent[0].scrollHeight - $logContent.height());
 		}
 		if(data.isFinished == true) {
+			blurTitle('【发布已完成】');
 			alertMsg('发布已完成!');
 			data.deployResult === true? showDeployResultSuccess(): showDeployResultFailed();
 			return;
@@ -524,5 +525,16 @@ function highlightConflict(){
 	});
 }
 
+function blurTitle(msg, title) {
+	title || (title = document.title);
+	if(!document.hidden){
+		document.title = title;
+		return;
+	}
+	document.title = document.title == title? msg: title;
+	setTimeout(function(){
+		blurTitle(msg, title);
+	}, 500);
+}
 </script>
 </html>
