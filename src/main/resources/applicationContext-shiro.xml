@@ -21,6 +21,7 @@
 	
 	<bean id="rememberMeManager" class="org.apache.shiro.web.mgt.CookieRememberMeManager">
 		<property name="cookie" ref="rememberMeCookie" />
+		<property name="serializer" ref="fastjsonSerializer"/>
 	</bean>
 	
 	<!-- 仅仅是一个cookie模版，用单例即可 -->

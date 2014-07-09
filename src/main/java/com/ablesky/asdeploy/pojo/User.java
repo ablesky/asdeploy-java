@@ -9,9 +9,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.alibaba.fastjson.JSONObject;
+
 @Entity
 @Table(name="user")
-public class User extends AbstractModel implements Serializable {
+public class User extends AbstractFastjsonSerializableModel<User> implements Serializable {
 	// 注意，如果准备将user写入authenticationInfo的话，则user必须实现Serializable接口
 	// 否则无法使用rememberMe功能(生成rememberMe的cookie时，需要对authenticationInfo中的信息进行序列化)
 	private static final long serialVersionUID = 8647343192652652694L;
@@ -67,6 +69,16 @@ public class User extends AbstractModel implements Serializable {
 	}
 	public void setUpdateTime(Timestamp updateTime) {
 		this.updateTime = updateTime;
+	}
+
+	@Override
+	public User fromJSONObject(JSONObject jsonObj) {
+		this.setId(jsonObj.getLong("id"));
+		this.setUsername(jsonObj.getString("username"));
+		this.setPassword(jsonObj.getString("password"));
+		this.setCreateTime(new Timestamp(jsonObj.getLongValue("createTime")));
+		this.setUpdateTime(new Timestamp(jsonObj.getLongValue("updateTime")));
+		return this;
 	}
 	
 }
