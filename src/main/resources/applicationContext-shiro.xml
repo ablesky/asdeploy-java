@@ -22,6 +22,7 @@
 	<bean id="rememberMeManager" class="org.apache.shiro.web.mgt.CookieRememberMeManager">
 		<property name="cookie" ref="rememberMeCookie" />
 		<property name="serializer" ref="fastjsonSerializer"/>
+		<property name="cipherKey" value="#{T(org.apache.shiro.codec.Base64).decode('2itfW92XazYRi5ltW0M2yA==')}"/>
 	</bean>
 	
 	<!-- 仅仅是一个cookie模版，用单例即可 -->
