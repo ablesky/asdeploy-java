@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.shiro.io.DefaultSerializer;
 import org.apache.shiro.io.SerializationException;
 import org.apache.shiro.io.Serializer;
 import org.apache.shiro.subject.PrincipalCollection;
@@ -25,7 +24,7 @@ import com.alibaba.fastjson.JSONObject;
  * @author zyang
  */
 @Component("fastjsonSerializer")
-public class FastjsonSerializer extends DefaultSerializer<PrincipalCollection> implements Serializer<PrincipalCollection>{
+public class FastjsonSerializer implements Serializer<PrincipalCollection>{
 
 	@Override
 	public byte[] serialize(PrincipalCollection collection) throws SerializationException {
