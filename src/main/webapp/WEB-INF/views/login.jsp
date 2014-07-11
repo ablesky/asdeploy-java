@@ -40,7 +40,12 @@ input[type="text"], input[type="password"] {
 <body>
 <%@ include file="./include/header.jsp" %>
 <div>
-	<h2 class="title">用户登录</h2>
+	<shiro:guest>
+		<h2 class="title">用户登录</h2>
+	</shiro:guest>
+	<shiro:user>
+		<h2 class="title">确认身份</h2>
+	</shiro:user>
 	<div class="login-wrapper">
 		<c:if test="${not empty successMessage}">
 			<div class="alert alert-success">
@@ -64,7 +69,19 @@ input[type="text"], input[type="password"] {
 								<strong>用户名:&nbsp;&nbsp;</strong>
 							</label>
 						</td>
-						<td><input type="text" id="J_username" name="username"/></td>
+						<shiro:guest>
+						<td>
+							<input type="text" id="J_username" name="username"/>
+						</td>
+						</shiro:guest>
+						<shiro:user>
+						<td class="label-wrapper">
+							<input type="hidden" id="J_username" name="username" value="<shiro:principal />">
+							<label for="J_username" style="text-align: left; padding-left: 5px;">
+								<strong><shiro:principal /></strong>
+							</label>
+						</td>
+						</shiro:user>
 					</tr>
 					<tr>
 						<td class="label-wrapper">
@@ -76,9 +93,14 @@ input[type="text"], input[type="password"] {
 					</tr>
 					<tr>
 						<td colspan="2" class="btn-wrapper">
-							<button class="btn" type="submit">登&nbsp;&nbsp;录</button>
-							<div class="btn-sep">&nbsp;</div>
-							<a class="btn" href="${ctx_path}/register">注&nbsp;&nbsp;册</a>
+							<shiro:guest>
+								<button class="btn" type="submit">登&nbsp;&nbsp;录</button>
+								<div class="btn-sep">&nbsp;</div>
+								<a class="btn" href="${ctx_path}/register">注&nbsp;&nbsp;册</a>
+							</shiro:guest>
+							<shiro:user>
+								<button class="btn btn-primary" type="submit">确&nbsp;&nbsp;认</button>
+							</shiro:user>
 						</td>
 					</tr>
 				</tbody>

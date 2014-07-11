@@ -21,8 +21,8 @@ import com.ablesky.asdeploy.pojo.Project;
 import com.ablesky.asdeploy.service.IProjectService;
 
 @Controller
-@RequestMapping("/project")
-public class ProjectController {
+@RequestMapping("/admin/project")
+public class ProjectAdminController {
 	
 	@Autowired
 	private IProjectService projectService;
@@ -30,7 +30,7 @@ public class ProjectController {
 	@RequestMapping("/list")
 	public String list(Model model) {
 		model.addAttribute("list", projectService.getProjectListResult(0, 0, Collections.<String, Object>emptyMap()));
-		return "project/list";
+		return "admin/project/list";
 	}
 	
 	@RequestMapping(value="/edit/{id}", method=RequestMethod.GET)
@@ -38,7 +38,7 @@ public class ProjectController {
 		if(id != null && id > 0){
 			model.addAttribute("project", projectService.getProjectById(id));
 		}
-		return "project/edit";
+		return "admin/project/edit";
 	}
 	
 	@RequestMapping(value="/edit", method=RequestMethod.GET)

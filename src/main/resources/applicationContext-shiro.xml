@@ -53,8 +53,7 @@
 				/login/** = anon
 				/logout = logout
 				/static/** = anon
-				/project/** = roles[super_admin]
-				/admin/** = roles[super_admin]
+				/admin/** = authc, roles[super_admin]
 				/** = user
 			</value>
 		</property>

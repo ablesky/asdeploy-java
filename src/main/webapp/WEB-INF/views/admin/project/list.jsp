@@ -1,12 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ include file="../include/include.jsp" %>
+<%@ include file="../../include/include.jsp" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>AbleSky代码发布系统</title>
-<%@ include file="../include/includeCss.jsp" %>
+<%@ include file="../../include/includeCss.jsp" %>
 <link rel="stylesheet" href="${ctx_path}/css/bootstrapSwitch.css" />
 <style>
 .title {
@@ -35,7 +35,7 @@
 </style>
 </head>
 <body>
-<%@ include file="../include/header.jsp" %>
+<%@ include file="../../include/header.jsp" %>
 
 <div class="wrapper">
 	<h2 class="title">项目列表</h2>
@@ -74,7 +74,7 @@
 	</div>
 </div>
 </body>
-<%@ include file="../include/includeJs.jsp" %>
+<%@ include file="../../include/includeJs.jsp" %>
 <script type="text/javascript" src="${ctx_path}/js/bootstrap/bootstrapSwitch.js"></script>
 <script>
 $(function(){
@@ -89,7 +89,7 @@ function initCreateProjectBtn() {
 		openEditProjectWin({
 			width: 420, 
 			height: 240,
-			url: CTX_PATH + '/project/edit'
+			url: CTX_PATH + '/admin/project/edit'
 		});
 	});
 }
@@ -101,7 +101,7 @@ function initUpdateProjectBtn() {
 			openEditProjectWin({
 				width: 420, 
 				height: 280,
-				url: CTX_PATH + '/project/edit/' + id
+				url: CTX_PATH + '/admin/project/edit/' + id
 			});
 	});
 }
@@ -127,7 +127,7 @@ function openEditProjectWin(options) {
 function initDeleteProjectBtn() {
 	$('#J_tbody').on('click', 'a.delete-btn', function(){
 		var $this = $(this);
-		$.post(CTX_PATH + '/project/delete/' + $this.attr('data-id'), function(data){
+		$.post(CTX_PATH + '/admin/project/delete/' + $this.attr('data-id'), function(data){
 			alertMsg(data.message).done(function(){
 				if(data.success === true) {
 					location.reload();
@@ -149,7 +149,7 @@ function initDeployScriptTypeSwitch() {
 		states[projectId] = true;
 		var deployScriptType = data.value? 1: 0;	// 1 means the new script while 0 means the old one
 		$.ajax({
-			url: CTX_PATH + '/project/switch/' + projectId,
+			url: CTX_PATH + '/admin/project/switch/' + projectId,
 			type: 'POST',
 			data: {deployScriptType: deployScriptType}
 		}).done(function(){

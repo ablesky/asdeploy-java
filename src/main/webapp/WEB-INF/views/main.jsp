@@ -48,7 +48,7 @@
 		<a type="button" class="btn btn-large btn-block" href="${ctx_path}/deployRecord/list">查看发布历史</a>
 		<a type="button" class="btn btn-large btn-block" href="${ctx_path}/ablejs/index">查看静态文件构建依赖</a>
 		<shiro:hasRole name="super_admin">
-		<a type="button" class="btn btn-inverse btn-large btn-block" href="${ctx_path}/project/list">管理项目</a>
+		<a type="button" class="btn btn-inverse btn-large btn-block" href="${ctx_path}/admin/project/list">管理项目</a>
 		<a type="button" class="btn btn-inverse btn-large btn-block" href="${ctx_path}/admin/user/list">管理用户</a>
 		</shiro:hasRole>
 	</div>
