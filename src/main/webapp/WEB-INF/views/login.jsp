@@ -24,7 +24,7 @@
 	font-size: 18px;
 }
 input[type="text"], input[type="password"] {
-	font-size: 16px; width: 180px;
+	font-size: 16px; width: 140px;
 }
 .btn-wrapper {
 	text-align: center; padding-top: 30px;

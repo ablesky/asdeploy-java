@@ -24,11 +24,20 @@ public class AuthUtil {
 		return SecurityUtils.getSubject();
 	}
 	
-	/**
-	 * 判断是否已登录
-	 */
 	public static boolean isAuthenticated() {
 		return getCurrentSubject().isAuthenticated();
+	}
+	
+	public static boolean isRemembered() {
+		return getCurrentSubject().isRemembered();
+	}
+	
+	public static boolean isUser() {
+		return isAuthenticated() || isRemembered();
+	}
+	
+	public static boolean isGuest() {
+		return !isUser();
 	}
 	
 	public static String getCurrentUsername() {

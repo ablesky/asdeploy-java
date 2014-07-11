@@ -70,7 +70,11 @@ public class IndexController {
 	 */
 	@RequestMapping(value="/login", method=RequestMethod.POST)
 	public String loginFailed(String username, String password, Model model) {
-		model.addAttribute("errorMessage", "用户名或密码错误，请重试!");
+		if(AuthUtil.isUser()) {
+			model.addAttribute("errorMessage", "密码错误，请重试!");
+		} else {
+			model.addAttribute("errorMessage", "用户名或密码错误，请重试!");
+		}
 		return "login";
 	}
 	
