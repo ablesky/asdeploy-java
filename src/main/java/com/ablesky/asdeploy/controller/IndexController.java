@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.ablesky.asdeploy.security.jcaptcha.JCaptcha;
 import com.ablesky.asdeploy.service.IDeployService;
 import com.ablesky.asdeploy.service.IUserService;
 import com.ablesky.asdeploy.util.AuthUtil;
@@ -98,7 +99,10 @@ public class IndexController {
 		}
 		if(StringUtils.isBlank(verifyCode)) {
 			validateResult.addAttribute("verifyCodeError", "验证码不能为空!");
-		} else if(!verifyCode.toLowerCase().equals(session.getAttribute(REGISTER_VERIFY_CODE))) {
+//		} else if(!verifyCode.toLowerCase().equals(session.getAttribute(REGISTER_VERIFY_CODE))) {
+//			validateResult.addAttribute("verifyCodeError", "验证码输入错误!");
+//		}
+		} else if(!JCaptcha.validateResponse(session, verifyCode)) {
 			validateResult.addAttribute("verifyCodeError", "验证码输入错误!");
 		}
 		if(validateResult.size() > 0) {

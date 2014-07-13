@@ -117,7 +117,7 @@ input[type="text"], input[type="password"] {
 						<td>
 							<div class="input-append">
 								<input type="text" id="J_verifyCode" name="verifyCode"/>
-								<img class="add-on" id="J_verifyImage" title="换一张" src="${ctx_path}/register/verifyImage">
+								<img class="add-on" id="J_verifyImage" title="换一张" src="${ctx_path}/jcaptcha.jpg">
 							</div>
 						</td>
 					</tr>
@@ -142,7 +142,7 @@ $(function(){
 
 function initVerifyImage() {
 	$('#J_verifyImage').on('click', function(){
-		$(this).attr('src', CTX_PATH + '/register/verifyImage?_=' + $.now());
+		$(this).attr('src', CTX_PATH + '/jcaptcha.jpg?_=' + $.now());
 	});
 }
 </script>
