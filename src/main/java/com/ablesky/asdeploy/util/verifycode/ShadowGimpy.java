@@ -11,6 +11,7 @@ import com.jhlabs.image.TransformFilter;
 /**
  * adds shadow to the text on the image and two noises.
  */
+@Deprecated
 public class ShadowGimpy implements GimpyEngine
 {
 	/**

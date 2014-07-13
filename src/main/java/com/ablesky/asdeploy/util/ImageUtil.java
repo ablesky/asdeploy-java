@@ -11,6 +11,7 @@ public class ImageUtil {
 
 	private ImageUtil() {}
 	
+	@Deprecated
 	public static BufferedImage generateTextImage(int unitWidth, int height, String text, Font font, Color fontColor, Color backgroundColor) {
 		int charNum = text.length();
 		BufferedImage image = new BufferedImage(unitWidth * charNum , height, BufferedImage.TYPE_3BYTE_BGR);

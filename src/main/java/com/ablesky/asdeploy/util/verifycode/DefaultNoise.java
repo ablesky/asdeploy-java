@@ -14,6 +14,7 @@ import java.util.Random;
  * The default implementation of {@link NoiseProducer}, adds a noise on an
  * image.
  */
+@Deprecated
 public class DefaultNoise implements NoiseProducer
 {
 	/**

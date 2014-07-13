@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 /**
  * {@link NoiseProducer} is responsible for adding noise to an image.
  */
+@Deprecated
 public interface NoiseProducer
 {
 	/**

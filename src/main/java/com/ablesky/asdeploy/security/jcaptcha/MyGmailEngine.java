@@ -27,6 +27,7 @@ import com.octo.captcha.component.image.wordtoimage.WordToImage;
 import com.octo.captcha.component.word.wordgenerator.RandomWordGenerator;
 import com.octo.captcha.component.word.wordgenerator.WordGenerator;
 import com.octo.captcha.engine.image.ListImageCaptchaEngine;
+import com.octo.captcha.image.gimpy.GimpyFactory;
 
 /**
  * <p>本类用于生成验证码图片</p>
@@ -83,13 +84,13 @@ public class MyGmailEngine extends ListImageCaptchaEngine {
 		textDef.add(new ImageDeformationByBufferedImageOp(pinch2));
 		textDef.add(new ImageDeformationByBufferedImageOp(pinch3));
 
-		// word2image 1
-		WordToImage word2image = new DeformedComposedWordToImage(false, shearedFont, back,
-				randomPaster, new ArrayList<ImageDeformation>(),
+		// word2image
+		WordToImage word2image = new DeformedComposedWordToImage(
+				false, shearedFont, back, randomPaster, 
+				new ArrayList<ImageDeformation>(),
 				new ArrayList<ImageDeformation>(), textDef
 		);
 
-		this.addFactory(new com.octo.captcha.image.gimpy.GimpyFactory(
-				words, word2image, false));
+		this.addFactory(new GimpyFactory(words, word2image, false));
 	}
 }

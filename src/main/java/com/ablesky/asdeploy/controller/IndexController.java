@@ -115,6 +115,7 @@ public class IndexController {
 	}
 	
 	@RequestMapping("/register/verifyImage")
+	@Deprecated
 	public void getVerifyImage(HttpSession session, HttpServletResponse response) {
 		response.setContentType("image/jpeg");
 		response.setHeader("Pragma", "No-cache");
