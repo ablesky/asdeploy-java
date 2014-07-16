@@ -15,6 +15,7 @@
 	<context:component-scan base-package="com.ablesky.asdeploy">
 		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
 		<context:exclude-filter type="assignable" expression="com.ablesky.asdeploy.security.ShiroDbRealm"/>
+		<context:exclude-filter type="regex" expression="com.ablesky.asdeploy.security.jcaptcha.*"/>
 	</context:component-scan>
 
 	<!-- bean id="dataSource"

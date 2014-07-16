@@ -37,7 +37,7 @@
 
  &ensp;&ensp;**1.下载工程**  `git clone https://github.com/yangziwen/asdeploy-java.git`
 
- &ensp;&ensp;**2.初始化数据库**  `mvn compile antrun:run -PinitDb`
+ &ensp;&ensp;**2.初始化数据库**  `mvn compile exec:exec -Pinit-db`
 
  &ensp;&ensp;**3.运行工程**  `mvn tomcat7:run`
 

@@ -369,10 +369,31 @@
 			</properties>
 		</profile>
 		<profile>
-			<id>initDb</id>	<!-- 开发环境初始化数据库 -->
+			<!-- @deprecated -->
+			<id>initDb</id>	<!-- 开发环境初始化数据库，不过用ant的方式已经out了，应该用exec-maven-plugin -->
 			<properties>
 				<antbuild.target>initDb</antbuild.target>
 			</properties>
+		</profile>
+		<profile>
+			<id>init-db</id> <!-- 开发环境初始化数据库 -->
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>exec-maven-plugin</artifactId>
+						<version>1.3.1</version>
+						<configuration>
+							<executable>java</executable>
+							<arguments>
+								<argument>-classpath</argument>
+								<classpath />
+								<argument>com.ablesky.asdeploy.util.DbUtil</argument>
+							</arguments>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
 		</profile>
 	</profiles>
 
