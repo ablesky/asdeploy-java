@@ -12,11 +12,8 @@
     	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
     	http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.2.xsd">
 
-	<context:component-scan base-package="com.ablesky.asdeploy">
-		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
-		<context:exclude-filter type="assignable" expression="com.ablesky.asdeploy.security.ShiroDbRealm"/>
-		<context:exclude-filter type="regex" expression="com.ablesky.asdeploy.security.jcaptcha.*"/>
-	</context:component-scan>
+	<context:component-scan base-package="com.ablesky.asdeploy.dao"></context:component-scan>
+	<context:component-scan base-package="com.ablesky.asdeploy.service"></context:component-scan>
 
 	<!-- bean id="dataSource"
 		class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
