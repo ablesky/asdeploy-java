@@ -15,6 +15,7 @@ import org.apache.shiro.util.SimpleByteSource;
 
 import com.ablesky.asdeploy.pojo.Role;
 import com.ablesky.asdeploy.pojo.User;
+import com.ablesky.asdeploy.security.ShiroDbRealm;
 
 public class AuthUtil {
 	
@@ -45,11 +46,13 @@ public class AuthUtil {
 	}
 	
 	public static User getCurrentUser() {
-		Collection<User> users = getCurrentSubject().getPrincipals().byType(User.class);
-		if(CollectionUtils.isEmpty(users)) {
-			return null;
+		Collection<?> shiroDbPrincipals = getCurrentSubject().getPrincipals().fromRealm(ShiroDbRealm.DB_REALM_NAME);
+		for(Object obj: shiroDbPrincipals) {
+			if(obj instanceof User) {
+				return (User) obj;
+			}
 		}
-		return users.iterator().next();
+		return null;
 	}
 	
 	public static void login(String username, String password) {

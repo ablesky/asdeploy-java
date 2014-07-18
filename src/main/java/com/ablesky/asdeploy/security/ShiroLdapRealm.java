@@ -18,11 +18,18 @@ import com.ablesky.asdeploy.service.IAuthorityService;
 import com.ablesky.asdeploy.service.IUserService;
 
 public class ShiroLdapRealm extends JndiLdapRealm {
+	
+	public static final String LDAP_REALM_NAME = "shiro_ldap_realm";
 
 	@Autowired
 	private IUserService userService;
 	@Autowired
 	private IAuthorityService authorityService;
+	
+	public ShiroLdapRealm() {
+		super();
+		setName(LDAP_REALM_NAME);
+	}
 
 	@Override
 	protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {

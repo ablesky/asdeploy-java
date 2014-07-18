@@ -26,6 +26,8 @@ import com.ablesky.asdeploy.service.IUserService;
 @Component("shiroDbRealm")
 public class ShiroDbRealm extends AuthorizingRealm {
 	
+	public static final String DB_REALM_NAME = "shiro_db_realm";
+	
 	@Autowired
 	@Override
 	public void  setCredentialsMatcher(CredentialsMatcher credentialsMatcher) {
@@ -36,7 +38,12 @@ public class ShiroDbRealm extends AuthorizingRealm {
 	private IUserService userService;
 	@Autowired
 	private IAuthorityService authorityService;
-
+	
+	public ShiroDbRealm() {
+		super();
+		setName(DB_REALM_NAME);
+	}
+	
 	/**
 	 * 认证回调函数,登录时调用.
 	 */

@@ -16,7 +16,13 @@
 	<!-- shiroDbRealm为项目自定义的realm，通过注解声明 -->
 	<bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
 		<!-- <property name="realm" ref="shiroDbRealm" /> -->
-		<property name="realm" ref="ldapRealm" />
+		<!-- <property name="realm" ref="ldapRealm" /> -->
+		<property name="realms">
+			<list>
+				<ref bean="shiroLdapRealm"/>
+				<ref bean="shiroDbRealm"/>
+			</list>
+		</property>
 		<property name="rememberMeManager" ref="rememberMeManager" />
 	</bean>
 	
@@ -40,15 +46,15 @@
 		<property name="hashIterations" value="3" />	<!-- 注意与AuthUtil.hashPassword中的迭代次数保持一致 -->
 	</bean>
 
-	<bean id="ldapRealm" class="com.ablesky.asdeploy.security.ShiroLdapRealm">
+	<bean id="shiroLdapRealm" class="com.ablesky.asdeploy.security.ShiroLdapRealm">
 		<property name="userDnTemplate" value="uid={0},ou=People,dc=ablesky,dc=com" />
 		<property name="contextFactory" ref="ldapContextFactory" />
 	</bean>
 
 	<bean id="ldapContextFactory" class="org.apache.shiro.realm.ldap.JndiLdapContextFactory">
 		<property name="url" value="ldap://192.168.3.7:389" />
-		<property name="systemUsername" value="Manager" />
-		<property name="systemPassword" value="ASdiyi" />
+<!-- 		<property name="systemUsername" value="Manager" />
+		<property name="systemPassword" value="ASdiyi" /> -->
 	</bean>
 	
 	<!-- Shiro Filter -->
