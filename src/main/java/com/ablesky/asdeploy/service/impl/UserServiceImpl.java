@@ -62,11 +62,12 @@ public class UserServiceImpl implements IUserService {
 	 * 系统的第一个注册用户会自动成为超级管理员
 	 */
 	@Override
-	public void createNewUser(String username, String rawPassword) {
+	public User createNewUser(String username, String rawPassword) {
 		Timestamp ts = new Timestamp(System.currentTimeMillis());
 		User user = new User(username, AuthUtil.hashPassword(username, rawPassword), ts, ts);
 		saveOrUpdateUser(user);
 		assignSuperAdminRoleToTheFirstUser(user);
+		return user;
 	}
 	
 	private void assignSuperAdminRoleToTheFirstUser(User user) {

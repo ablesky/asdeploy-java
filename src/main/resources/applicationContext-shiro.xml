@@ -10,12 +10,14 @@
 
 	<description>Shiro安全配置</description>
 	
-	<context:component-scan base-package="com.ablesky.asdeploy.security" />
-
-	<!-- Shiro's main business-tier object for web-enabled applications -->
 	<!-- shiroDbRealm为项目自定义的realm，通过注解声明 -->
 	<bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
-		<property name="realm" ref="shiroDbRealm" />
+		<property name="realms">
+			<list>
+				<ref bean="shiroLdapRealm"/>	<!-- 基于目前的机制，ldapRealm一定要声明在dbRealm的前面 -->
+				<ref bean="shiroDbRealm"/>
+			</list>
+		</property>
 		<property name="rememberMeManager" ref="rememberMeManager" />
 	</bean>
 	
@@ -32,11 +34,24 @@
 		<property name="maxAge" value="604800" /><!-- 默认一年太长了，此处设为1周 -->
 	</bean>
 	
+	<bean id="fastjsonSerializer" class="com.ablesky.asdeploy.security.FastjsonSerializer" />
+	
 	<!-- 自定义的credentialsMatcher会通过注解注入到shiroDbRealm中 -->
-	<bean id="credentialsMatcher" class="org.apache.shiro.authc.credential.HashedCredentialsMatcher" >
+	<bean id="credentialsMatcher" class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
 		<property name="hashAlgorithmName" value="MD5" />
 		<property name="hashSalted" value="true" />
 		<property name="hashIterations" value="3" />	<!-- 注意与AuthUtil.hashPassword中的迭代次数保持一致 -->
+	</bean>
+	
+	<bean id="shiroDbRealm" class="com.ablesky.asdeploy.security.ShiroDbRealm" />
+
+	<bean id="shiroLdapRealm" class="com.ablesky.asdeploy.security.ShiroLdapRealm">
+		<property name="userDnTemplate" value="uid={0},ou=People,dc=ablesky,dc=com" />
+		<property name="contextFactory" ref="ldapContextFactory" />
+	</bean>
+
+	<bean id="ldapContextFactory" class="org.apache.shiro.realm.ldap.JndiLdapContextFactory">
+		<property name="url" value="ldap://192.168.3.7:389" />
 	</bean>
 	
 	<!-- Shiro Filter -->
