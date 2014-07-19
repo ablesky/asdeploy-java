@@ -3,8 +3,6 @@ package com.ablesky.asdeploy.pojo;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 public abstract class AbstractModel {
 
 	public abstract Long getId();

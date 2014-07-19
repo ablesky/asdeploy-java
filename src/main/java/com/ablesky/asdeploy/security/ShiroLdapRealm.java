@@ -39,12 +39,10 @@ public class ShiroLdapRealm extends JndiLdapRealm {
 		}
 		SimplePrincipalCollection principals = (SimplePrincipalCollection) info.getPrincipals();
 		String username = (String) principals.getPrimaryPrincipal();
-		User user = userService.getUserByUsername(username);
-		if (user == null) {
+		if (userService.getUserByUsername(username) == null) {
 			// 如果用户是第一次通过ldap登录，则根据用户名在数据库中生成一条用户记录，相当于注册
-			user = userService.createNewUser(username, new String((char[])info.getCredentials()));
+			userService.createNewUser(username, new String((char[])info.getCredentials()));
 		}
-		principals.add(user, getName());
 		return info;
 	}
 

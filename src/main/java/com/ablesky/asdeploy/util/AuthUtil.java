@@ -10,7 +10,6 @@ import org.apache.shiro.crypto.hash.HashRequest;
 import org.apache.shiro.crypto.hash.HashService;
 import org.apache.shiro.crypto.hash.SimpleHashRequest;
 import org.apache.shiro.subject.Subject;
-import org.apache.shiro.util.CollectionUtils;
 import org.apache.shiro.util.SimpleByteSource;
 
 import com.ablesky.asdeploy.pojo.Role;

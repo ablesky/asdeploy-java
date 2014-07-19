@@ -22,7 +22,7 @@ public class ShadowGimpy implements GimpyEngine
 	 */
 	public BufferedImage getDistortedImage(BufferedImage baseImage)
 	{
-		NoiseProducer noiseProducer = new DefaultNoise();
+//		NoiseProducer noiseProducer = new DefaultNoise();
 //		BufferedImage distortedImage = new BufferedImage(baseImage.getWidth(),
 //				baseImage.getHeight(), BufferedImage.TYPE_INT_ARGB);
 		

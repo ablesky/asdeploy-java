@@ -16,14 +16,12 @@ import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.SimplePrincipalCollection;
 import org.apache.shiro.util.SimpleByteSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import com.ablesky.asdeploy.pojo.Role;
 import com.ablesky.asdeploy.pojo.User;
 import com.ablesky.asdeploy.service.IAuthorityService;
 import com.ablesky.asdeploy.service.IUserService;
 
-@Component("shiroDbRealm")
 public class ShiroDbRealm extends AuthorizingRealm {
 	
 	public static final String DB_REALM_NAME = "shiro_db_realm";
