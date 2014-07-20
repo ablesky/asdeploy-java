@@ -39,7 +39,9 @@
 
  &ensp;&ensp;**2.初始化数据库**  `mvn compile exec:exec -Pinit-db`
 
- &ensp;&ensp;**3.运行工程**  `mvn tomcat7:run`
+ &ensp;&ensp;**3.运行工程**  `mvn tomcat7:run`，如需开启ldap验证，则可在系统变量中设置ldap服务器的url
+
+ &ensp;&ensp;&ensp;&ensp;如`mvn tomcat7:run -Dasdeploy.ldap.url=ldap://localhost:10389`
 
  &ensp;&ensp;**4.访问工程** [http://localhost:8099](http://localhost:8099)
 

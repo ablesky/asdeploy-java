@@ -1,7 +1,5 @@
 package com.ablesky.asdeploy.util;
 
-import java.util.Collection;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
@@ -14,7 +12,6 @@ import org.apache.shiro.util.SimpleByteSource;
 
 import com.ablesky.asdeploy.pojo.Role;
 import com.ablesky.asdeploy.pojo.User;
-import com.ablesky.asdeploy.security.ShiroDbRealm;
 
 public class AuthUtil {
 	
@@ -45,13 +42,7 @@ public class AuthUtil {
 	}
 	
 	public static User getCurrentUser() {
-		Collection<?> shiroDbPrincipals = getCurrentSubject().getPrincipals().fromRealm(ShiroDbRealm.DB_REALM_NAME);
-		for(Object obj: shiroDbPrincipals) {
-			if(obj instanceof User) {
-				return (User) obj;
-			}
-		}
-		return null;
+		return getCurrentSubject().getPrincipals().oneByType(User.class);
 	}
 	
 	public static void login(String username, String password) {

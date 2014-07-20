@@ -51,7 +51,7 @@
 	</bean>
 
 	<bean id="ldapContextFactory" class="org.apache.shiro.realm.ldap.JndiLdapContextFactory">
-		<property name="url" value="ldap://192.168.3.7:389" />
+		<property name="url" value="#{systemProperties[T(com.ablesky.asdeploy.security.ShiroLdapRealm).LDAP_URL]}" />
 	</bean>
 	
 	<!-- Shiro Filter -->

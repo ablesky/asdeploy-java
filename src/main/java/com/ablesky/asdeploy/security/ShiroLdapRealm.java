@@ -2,6 +2,7 @@ package com.ablesky.asdeploy.security;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -19,30 +20,31 @@ import com.ablesky.asdeploy.service.IUserService;
 
 public class ShiroLdapRealm extends JndiLdapRealm {
 	
-	public static final String LDAP_REALM_NAME = "shiro_ldap_realm";
-
+	public static final String LDAP_URL = "asdeploy.ldap.url";
+	
 	@Autowired
 	private IUserService userService;
 	@Autowired
 	private IAuthorityService authorityService;
 	
-	public ShiroLdapRealm() {
-		super();
-		setName(LDAP_REALM_NAME);
-	}
-
 	@Override
 	protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
+		// 如果系统变量中未配置ldap的url，则自动跳过此realm
+		if(StringUtils.isBlank(System.getProperty(LDAP_URL))) {
+			return null;
+		}
 		AuthenticationInfo info = super.doGetAuthenticationInfo(token);
 		if (info == null || org.apache.shiro.util.CollectionUtils.isEmpty(info.getPrincipals())) {
 			return info;
 		}
 		SimplePrincipalCollection principals = (SimplePrincipalCollection) info.getPrincipals();
 		String username = (String) principals.getPrimaryPrincipal();
-		if (userService.getUserByUsername(username) == null) {
+		User user = userService.getUserByUsername(username);
+		if (user == null) {
 			// 如果用户是第一次通过ldap登录，则根据用户名在数据库中生成一条用户记录，相当于注册
-			userService.createNewUser(username, new String((char[])info.getCredentials()));
+			user = userService.createNewUser(username, new String((char[])token.getCredentials()));
 		}
+		principals.add(user, getName());
 		return info;
 	}
 
