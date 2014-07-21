@@ -8,6 +8,7 @@ import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
+import org.apache.shiro.realm.ldap.JndiLdapContextFactory;
 import org.apache.shiro.realm.ldap.JndiLdapRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.SimplePrincipalCollection;
@@ -20,7 +21,7 @@ import com.ablesky.asdeploy.service.IUserService;
 
 public class ShiroLdapRealm extends JndiLdapRealm {
 	
-	public static final String LDAP_URL = "asdeploy.ldap.url";
+	public static final String LDAP_URL = "asdeploy.ldap.url";	// 目前仅在applicationContext-shiro.xml中用到了
 	
 	@Autowired
 	private IUserService userService;
@@ -29,8 +30,9 @@ public class ShiroLdapRealm extends JndiLdapRealm {
 	
 	@Override
 	protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
-		// 如果系统变量中未配置ldap的url，则自动跳过此realm
-		if(StringUtils.isBlank(System.getProperty(LDAP_URL))) {
+		// 如果系统变量中未配置ldap的url，则自动跳过此realm，详见applicationContext-shiro.xml
+		String ldapUrl = ((JndiLdapContextFactory)getContextFactory()).getUrl();
+		if(StringUtils.isBlank(ldapUrl) || !ldapUrl.startsWith("ldap://")) {
 			return null;
 		}
 		AuthenticationInfo info = super.doGetAuthenticationInfo(token);
