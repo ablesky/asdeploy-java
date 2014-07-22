@@ -82,7 +82,11 @@ function initSuperAdminSwitchCheckbox() {
 			isSuperAdmin: isSuperAdmin
 		}, function(data){
 			if(data.success !== true) {
-				alertMsg(data.message);
+				alertMsg(data.message).done(function(){
+					if(data.needLogin === true) {
+						location.reload();
+					}
+				});
 				self.checked = !isSuperAdmin;	// 此处有些不稳
 			}
 		});

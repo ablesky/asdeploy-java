@@ -4,14 +4,18 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -26,6 +30,7 @@ import com.ablesky.asdeploy.service.IDeployService;
 import com.ablesky.asdeploy.service.IUserService;
 import com.ablesky.asdeploy.util.AuthUtil;
 import com.ablesky.asdeploy.util.ImageUtil;
+import com.alibaba.fastjson.JSON;
 
 @Controller
 public class IndexController {
@@ -50,8 +55,17 @@ public class IndexController {
 	 * 登录页面
 	 */
 	@RequestMapping(value="/login", method=RequestMethod.GET)
-	public String login() {
-		return "login";
+	public String login(HttpServletRequest request, HttpServletResponse response) {
+		if(isAjax(request)) {
+			writeAjaxResponse(new ModelMap()
+					.addAttribute("success", false)
+					.addAttribute("needLogin", true)
+					.addAttribute("message", "需要登录或重新确认身份!")
+				, response);
+			return null;
+		} else {
+			return "login";
+		}
 	}
 	
 	/**
@@ -145,8 +159,31 @@ public class IndexController {
 	}
 	
 	@RequestMapping("/unauthorized")
-	public String unauthorized() {
-		return "unauthorized";
+	public String unauthorized(HttpServletRequest request, HttpServletResponse response) throws IOException { 
+		if(isAjax(request)) {
+			writeAjaxResponse(new ModelMap().addAttribute("success", false).addAttribute("message", "没有权限!"), response);
+			return null;
+		} else {
+			return "unauthorized";
+		}
+	}
+	
+	private boolean isAjax(HttpServletRequest request) {
+		return BooleanUtils.toBoolean(request.getHeader("isAjax"));
+	}
+	
+	private void writeAjaxResponse(Map<String, Object> result, HttpServletResponse response) {
+		response.setContentType("application/json;charset=UTF-8");
+		PrintWriter writer = null;
+		try {
+			writer = response.getWriter();
+			writer.write(JSON.toJSONString(result));
+			writer.flush();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			IOUtils.closeQuietly(writer);
+		}
 	}
 	
 }

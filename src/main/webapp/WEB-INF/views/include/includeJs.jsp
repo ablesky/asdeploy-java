@@ -5,6 +5,12 @@
 <%-- <script type="text/javascript" src="${ctx_path}/js/seajs/sea.js"></script> --%>
 <script type="text/javascript">
 var CTX_PATH = '${ctx_path}';
+$.ajaxSetup({
+	beforeSend: function(xhr) {
+		xhr.setRequestHeader('isAjax', 'true');
+	}
+});
+
 $(function(){
 	intEnvLogoBtn();
 });
