@@ -35,6 +35,7 @@ import com.alibaba.fastjson.JSON;
 @Controller
 public class IndexController {
 	
+	@Deprecated
 	public static final String REGISTER_VERIFY_CODE = "registerVerifyCode";
 	
 	@Autowired
@@ -57,7 +58,7 @@ public class IndexController {
 	@RequestMapping(value="/login", method=RequestMethod.GET)
 	public String login(HttpServletRequest request, HttpServletResponse response) {
 		if(isAjax(request)) {
-			writeAjaxResponse(new ModelMap()
+			writeJsonResponse(new ModelMap()
 					.addAttribute("success", false)
 					.addAttribute("needLogin", true)
 					.addAttribute("message", "需要登录或重新确认身份!")
@@ -161,7 +162,7 @@ public class IndexController {
 	@RequestMapping("/unauthorized")
 	public String unauthorized(HttpServletRequest request, HttpServletResponse response) throws IOException { 
 		if(isAjax(request)) {
-			writeAjaxResponse(new ModelMap().addAttribute("success", false).addAttribute("message", "没有权限!"), response);
+			writeJsonResponse(new ModelMap().addAttribute("success", false).addAttribute("message", "没有权限!"), response);
 			return null;
 		} else {
 			return "unauthorized";
@@ -172,7 +173,7 @@ public class IndexController {
 		return BooleanUtils.toBoolean(request.getHeader("isAjax"));
 	}
 	
-	private void writeAjaxResponse(Map<String, Object> result, HttpServletResponse response) {
+	private void writeJsonResponse(Map<String, Object> result, HttpServletResponse response) {
 		response.setContentType("application/json;charset=UTF-8");
 		PrintWriter writer = null;
 		try {

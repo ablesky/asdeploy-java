@@ -12,12 +12,10 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.log4j.Logger;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.springframework.orm.hibernate4.SessionFactoryUtils;
 
 import com.ablesky.asdeploy.pojo.DeployItem;
 import com.ablesky.asdeploy.pojo.DeployRecord;
+import com.ablesky.asdeploy.service.IDeployService;
 import com.ablesky.asdeploy.util.cmd.ShellCmd;
 
 public class Deployer implements Callable<Boolean> {
@@ -69,17 +67,8 @@ public class Deployer implements Callable<Boolean> {
 		} else {
 			return;
 		}
-		Session session = null;
-		try {
-			session = SpringUtil.getBean(SessionFactory.class).openSession();
-			deployRecord.setStatus(status);
-			session.saveOrUpdate(deployRecord);
-			session.flush();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			SessionFactoryUtils.closeSession(session);
-		}
+		deployRecord.setStatus(status);
+		SpringUtil.getBean(IDeployService.class).saveOrUpdateDeployRecord(deployRecord);
 	}
 	
 	private static boolean deploy(DeployRecord deployRecord, String deployManner, String serverGroupParam) {
