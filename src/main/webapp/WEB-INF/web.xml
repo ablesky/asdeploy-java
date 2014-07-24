@@ -9,8 +9,7 @@
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>
-			classpath*:/applicationContext*.xml,
-			/WEB-INF/dispatcher-servlet.xml
+			classpath*:/applicationContext*.xml
 		</param-value>
 	</context-param>
 	<context-param>
@@ -29,10 +28,6 @@
 	<servlet>
 		<servlet-name>dispatcher</servlet-name>
 		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-		<init-param>
-			<param-name>contextConfigLocation</param-name>
-			<param-value></param-value>	<!-- 将dispatcher-servlet.xml配在此处，有些update的sql就发不出来。以前也曾遇到过类似的诡异情形，这个问题待解决 -->
-		</init-param>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	<servlet-mapping>
@@ -45,7 +40,7 @@
 		<filter-name>JCaptchaFilter</filter-name>  
 		<filter-class>com.ablesky.asdeploy.security.jcaptcha.JCaptchaFilter</filter-class>  
 	</filter>  
-	<filter-mapping>  
+	<filter-mapping>
 		<filter-name>JCaptchaFilter</filter-name>
 		<url-pattern>/jcaptcha.jpg</url-pattern> 
 	</filter-mapping>
