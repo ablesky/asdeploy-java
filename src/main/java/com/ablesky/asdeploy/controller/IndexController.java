@@ -35,6 +35,8 @@ import com.alibaba.fastjson.JSON;
 @Controller
 public class IndexController {
 	
+	public static final String DEFAULT_SUCCESS_URL = "/main";
+	
 	@Deprecated
 	public static final String REGISTER_VERIFY_CODE = "registerVerifyCode";
 	
@@ -54,9 +56,11 @@ public class IndexController {
 	
 	/**
 	 * 登录页面
+	 * 需要重新确认身份时，也会跳转此接口
+	 * @throws IOException 
 	 */
 	@RequestMapping(value="/login", method=RequestMethod.GET)
-	public String login(HttpServletRequest request, HttpServletResponse response) {
+	public String login(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		if(isAjax(request)) {
 			writeJsonResponse(new ModelMap()
 					.addAttribute("success", false)
@@ -64,9 +68,12 @@ public class IndexController {
 					.addAttribute("message", "需要登录或重新确认身份!")
 				, response);
 			return null;
-		} else {
-			return "login";
+		} 
+		if(AuthUtil.isAuthenticated()) {
+			org.apache.shiro.web.util.WebUtils.redirectToSavedRequest(request, response, DEFAULT_SUCCESS_URL);
+			return null;
 		}
+		return "login";
 	}
 	
 	/**
@@ -82,12 +89,22 @@ public class IndexController {
 	}
 	
 	/**
-	 * 登录操作(实际的登录操作在FormAuthenticationFilter中进行)
-	 * 只有登录失败后，才会进入到此方法中
+	 * <p>登录操作(实际的登录操作在FormAuthenticationFilter中进行)</p>
+	 * <p>登录失败后，会进入到此方法中</p>
+	 * <p>如果已经是isAuthenticated的状态，也会进入此方法</p>
+	 * <p>见{@link org.apache.shiro.web.filter.AccessControlFilter}的onPreHandle方法</p>
+	 * @throws IOException 
 	 */
 	@RequestMapping(value="/login", method=RequestMethod.POST)
-	public String loginFailed(String username, String password, Model model) {
-		if(AuthUtil.isUser()) {
+	public String afterLoginSubmission(String username, String password, Model model, 
+			HttpServletRequest request, HttpServletResponse response) throws IOException {
+		
+		if(AuthUtil.isAuthenticated()) {
+			org.apache.shiro.web.util.WebUtils.redirectToSavedRequest(request, response, DEFAULT_SUCCESS_URL);
+			return null;
+		} 
+		
+		if(AuthUtil.isRemembered()) {
 			model.addAttribute("errorMessage", "密码错误，请重试!");
 		} else {
 			model.addAttribute("errorMessage", "用户名或密码错误，请重试!");
@@ -101,7 +118,8 @@ public class IndexController {
 	}
 	
 	@RequestMapping(value="/register", method=RequestMethod.POST)
-	public String register(String username, String password, String confirmedPassword, String verifyCode, HttpSession session, Model model) {
+	public String register(String username, String password, String confirmedPassword, String verifyCode, HttpSession session, 
+			Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		ModelMap validateResult = new ModelMap();
 		if(StringUtils.isBlank(username)) {
 			validateResult.addAttribute("usernameError", "用户名不能为空!");
@@ -127,7 +145,7 @@ public class IndexController {
 		}
 		userService.createNewUser(username, password);
 		AuthUtil.login(username, password, true);
-		return "redirect:/main";
+		return "redirect:" + DEFAULT_SUCCESS_URL;
 	}
 	
 	@RequestMapping("/register/verifyImage")

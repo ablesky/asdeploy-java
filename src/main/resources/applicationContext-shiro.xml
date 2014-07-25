@@ -63,7 +63,7 @@
 	<bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
 		<property name="securityManager" ref="securityManager" />
 		<property name="loginUrl" value="/login" />
-		<property name="successUrl" value="/main" />
+		<property name="successUrl" value="#{T(com.ablesky.asdeploy.controller.IndexController).DEFAULT_SUCCESS_URL}" />
 		<property name="unauthorizedUrl" value="/unauthorized"/>
 		<property name="filterChainDefinitions">
 			<value>
