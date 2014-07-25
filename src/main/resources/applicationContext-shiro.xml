@@ -14,11 +14,12 @@
 	<bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
 		<property name="realms">
 			<list>
-				<ref bean="shiroLdapRealm"/>	<!-- 基于目前的机制，ldapRealm一定要声明在dbRealm的前面 -->
+				<ref bean="shiroLdapRealm"/>
 				<ref bean="shiroDbRealm"/>
 			</list>
 		</property>
 		<property name="rememberMeManager" ref="rememberMeManager" />
+		<property name="cacheManager" ref="shiroEhcacheManager" />
 	</bean>
 	
 	<bean id="rememberMeManager" class="org.apache.shiro.web.mgt.CookieRememberMeManager">
@@ -52,6 +53,10 @@
 
 	<bean id="ldapContextFactory" class="org.apache.shiro.realm.ldap.JndiLdapContextFactory">
 		<property name="url" value="#{systemProperties[T(com.ablesky.asdeploy.security.ShiroLdapRealm).LDAP_URL]}" />
+	</bean>
+	
+	<bean id="shiroEhcacheManager" class="org.apache.shiro.cache.ehcache.EhCacheManager">
+		<property name="cacheManagerConfigFile" value="classpath:ehcache-shiro.xml"/>
 	</bean>
 	
 	<!-- Shiro Filter -->

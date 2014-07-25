@@ -72,6 +72,7 @@ public class IndexController {
 	/**
 	 * 注册成功后，重定向到登录页面
 	 */
+	@Deprecated
 	@RequestMapping(value="/login/{msg}", method=RequestMethod.GET)
 	public String login(@PathVariable("msg") String msg, Model model) {
 		if("registerSuccess".equals(msg)) {
