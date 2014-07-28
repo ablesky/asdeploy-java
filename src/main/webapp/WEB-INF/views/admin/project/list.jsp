@@ -152,11 +152,22 @@ function initDeployScriptTypeSwitch() {
 			url: CTX_PATH + '/admin/project/switch/' + projectId,
 			type: 'POST',
 			data: {deployScriptType: deployScriptType}
-		}).done(function(){
+		}).done(function(data){
+			data = data || {};
+			if(!data.success) {
+				$this.bootstrapSwitch('setState', prevValue);
+				alertMsg(data.message || '操作失败!').done(function(){
+					if(data.needLogin === true) {
+						location.reload();
+					}
+				});
+				return;
+			}
 			if(data.deployScriptType !== deployScriptType) {
 				$this.bootstrapSwitch('setState', data.deployScriptType); 
 			}
 		}).fail(function(){
+			alertMsg('操作失败!')
 			$this.bootstrapSwitch('setState', prevValue); 
 		}).always(function(){
 			states[projectId] = false;
