@@ -70,22 +70,9 @@
 	</bean>
 	<tx:advice id="txAdvice" transaction-manager="txManager">
 		<tx:attributes>
-			<tx:method name="save*" propagation="REQUIRED" />
-			<tx:method name="add*" propagation="REQUIRED" />
-			<tx:method name="create*" propagation="REQUIRED" />
-			<tx:method name="insert*" propagation="REQUIRED" />
-			<tx:method name="update*" propagation="REQUIRED" />
-			<tx:method name="renew*" propagation="REQUIRED" />
-			<tx:method name="delete*" propagation="REQUIRED" />
-			<tx:method name="remove*" propagation="REQUIRED" />
-			<tx:method name="unlock*" propagation="REQUIRED" />
-			<tx:method name="check*" propagation="REQUIRED" />
-			<tx:method name="persist*" propagation="REQUIRED" />
-			<tx:method name="generate*" propagation="REQUIRED" />
-			<tx:method name="assign*" propagation="REQUIRED" />
-			<tx:method name="batch*" propagation="REQUIRED" />
-			<!-- tx:method name="*" read-only="true"/> --> 
-			<!-- 配上read-only="true"后，sqlite的jdbc驱动会报错，虽然报错貌似也不影响正常使用 -->
+			<!-- 配上read-only="true"后，sqlite的jdbc驱动会报错，虽然报错貌似也不影响正常使用，可能是应用与sqlite之间只产生了一个连接的缘故 -->
+			<!-- <tx:method name="get*" read-only="true" /> -->
+			<tx:method name="*" />
 		</tx:attributes>
 	</tx:advice>
 
