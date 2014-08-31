@@ -1,16 +1,15 @@
 package com.ablesky.asdeploy.dao;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Collections;
 
-import static org.junit.Assert.*;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.ui.ModelMap;
 
 import com.ablesky.asdeploy.test.SpringTransactionalTestCase;
 
-@ContextConfiguration(locations = {"/applicationContext.xml"})
 public class ProjectDaoTest extends SpringTransactionalTestCase {
 	
 	@Autowired

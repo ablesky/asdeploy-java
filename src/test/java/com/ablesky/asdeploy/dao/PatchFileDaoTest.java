@@ -1,17 +1,14 @@
 package com.ablesky.asdeploy.dao;
 
-import org.junit.Assert;
-
 import org.apache.shiro.util.CollectionUtils;
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.ui.ModelMap;
 
 import com.ablesky.asdeploy.pojo.PatchFile;
 import com.ablesky.asdeploy.test.SpringTransactionalTestCase;
 
-@ContextConfiguration("/applicationContext.xml")
 public class PatchFileDaoTest extends SpringTransactionalTestCase {
 	
 	@Autowired

@@ -1,19 +1,20 @@
 package com.ablesky.asdeploy.dao;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import java.sql.Timestamp;
 import java.util.Collections;
 
-import static org.junit.Assert.*;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.ui.ModelMap;
 
 import com.ablesky.asdeploy.pojo.User;
 import com.ablesky.asdeploy.test.SpringTransactionalTestCase;
 import com.ablesky.asdeploy.util.AuthUtil;
 
-@ContextConfiguration(locations = {"/applicationContext.xml"})
 public class UserDaoTest extends SpringTransactionalTestCase {
 
 	@Autowired

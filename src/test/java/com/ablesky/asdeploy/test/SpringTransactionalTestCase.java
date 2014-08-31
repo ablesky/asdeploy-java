@@ -1,10 +1,8 @@
 package com.ablesky.asdeploy.test;
 
-import javax.sql.DataSource;
-
 import org.junit.Ignore;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
 import com.ablesky.asdeploy.util.Profiles;
@@ -18,16 +16,9 @@ import com.ablesky.asdeploy.util.Profiles;
  * 
  * @author calvin
  */
-@ActiveProfiles(Profiles.UNIT_TEST)
 @Ignore
+@ActiveProfiles(Profiles.UNIT_TEST)
+@ContextConfiguration(locations = {"/applicationContext.xml", "/applicationContext-test.xml"})
 public class SpringTransactionalTestCase extends AbstractTransactionalJUnit4SpringContextTests {
-	
-	protected DataSource dataSource;
 
-	@Override
-	@Autowired
-	public void setDataSource(DataSource dataSource) {
-		super.setDataSource(dataSource);
-		this.dataSource = dataSource;
-	}
 }

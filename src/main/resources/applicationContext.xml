@@ -112,21 +112,7 @@
 		
 		<jdbc:initialize-database data-source="dataSource" ignore-failures="ALL">
 			<jdbc:script location="classpath:sql/sqlite/schema.sql" />
-		</jdbc:initialize-database>
-	</beans>
-	
-	<beans profile="test">
-		<bean id="dataSource"
-			class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
-			<property name="driverClass" value="org.h2.Driver" />
-			<property name="url" value="jdbc:h2:mem:quickstart;DB_CLOSE_DELAY=-1" />
-			<property name="username" value="sa" />
-			<property name="password" value="" />
-		</bean>
-		<!-- 初始化数据表结构 与默认数据-->
-		<jdbc:initialize-database data-source="dataSource" ignore-failures="ALL">
-			<jdbc:script location="classpath:sql/h2/schema.sql" />
-			<jdbc:script location="classpath:sql/h2/import-data.sql" encoding="UTF-8"/>
+			<jdbc:script location="classpath:sql/sqlite/data.sql" encoding="UTF-8" />
 		</jdbc:initialize-database>
 	</beans>
 
