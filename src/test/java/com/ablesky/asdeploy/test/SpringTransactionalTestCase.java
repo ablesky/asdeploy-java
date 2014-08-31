@@ -1,24 +1,30 @@
 package com.ablesky.asdeploy.test;
 
+import javax.sql.DataSource;
+
 import org.junit.Ignore;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.transaction.TransactionConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.ablesky.asdeploy.util.Profiles;
 
 /**
- * Spring的支持依赖注入的JUnit4 集成测试基类, 相比Spring原基类名字更短.
- * 
- * 子类需要定义applicationContext文件的位置,如:
- * 
- * @ContextConfiguration(locations = { "/applicationContext-test.xml" })
- * 
- * @author calvin
+ * 用注解替换掉对AbstractTransactionalJUnit4SpringContextTests的继承
  */
 @Ignore
 @ActiveProfiles(Profiles.UNIT_TEST)
+@RunWith(SpringJUnit4ClassRunner.class)
+@Transactional
+@TransactionConfiguration(transactionManager = "txManager")
 @ContextConfiguration(locations = {"/applicationContext.xml", "/applicationContext-test.xml"})
-public class SpringTransactionalTestCase extends AbstractTransactionalJUnit4SpringContextTests {
+public class SpringTransactionalTestCase {
 
+	@Autowired
+	protected DataSource dataSource;
+	
 }
