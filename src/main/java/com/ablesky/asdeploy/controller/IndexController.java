@@ -24,6 +24,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ablesky.asdeploy.security.jcaptcha.JCaptcha;
 import com.ablesky.asdeploy.service.IDeployService;
@@ -61,14 +62,6 @@ public class IndexController {
 	 */
 	@RequestMapping(value="/login", method=RequestMethod.GET)
 	public String login(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		if(isAjax(request)) {
-			writeJsonResponse(new ModelMap()
-					.addAttribute("success", false)
-					.addAttribute("needLogin", true)
-					.addAttribute("message", "需要登录或重新确认身份!")
-				, response);
-			return null;
-		} 
 		if(AuthUtil.isAuthenticated()) {
 			org.apache.shiro.web.util.WebUtils.redirectToSavedRequest(request, response, DEFAULT_SUCCESS_URL);
 			return null;
@@ -77,7 +70,21 @@ public class IndexController {
 	}
 	
 	/**
+	 * admin操作在发送ajax请求时，需要重新确认身份的情形。
+	 * 比如停留在admin的某个页面时，工程重启了，
+	 * 此后再进行发ajax请求的操作时，就需要重新验证一次身份
+	 */
+	@ResponseBody
+	@RequestMapping(value="/login", method=RequestMethod.GET, headers="isAjax=true")
+	public Map<String, Object> login() {
+		return new ModelMap("success", false)
+			.addAttribute("needLogin", true)
+			.addAttribute("message", "需要登录或重新确认身份!");
+	}
+ 	
+	/**
 	 * 注册成功后，重定向到登录页面
+	 * @deprecated
 	 */
 	@Deprecated
 	@RequestMapping(value="/login/{msg}", method=RequestMethod.GET)
