@@ -11,13 +11,18 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.shiro.util.CollectionUtils;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -39,7 +44,10 @@ import com.ablesky.asdeploy.pojo.User;
 import com.ablesky.asdeploy.service.impl.DeployServiceImpl;
 import com.ablesky.asdeploy.test.ShiroTestUtils;
 import com.ablesky.asdeploy.util.CommonConstant;
+import com.ablesky.asdeploy.util.DeployUtil;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({DeployUtil.class})
 public class DeployServiceTest {
 
 	@InjectMocks
@@ -67,6 +75,7 @@ public class DeployServiceTest {
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
+		PowerMockito.mockStatic(DeployUtil.class);
 	}
 	
 	@Test
@@ -140,7 +149,9 @@ public class DeployServiceTest {
 	// 还有，测试用例总比被测试的代码本身要长，这个是正常现象么?
 	@Test
 	public void persistDeployItemWhichExisted() throws IllegalStateException, IOException {
-		String patchFolderPath = "/d/content/web-app-bak/ableskyapps/as-web-6.1/";
+		// patchFolderPath改写到java.io.tmpdir下
+		// 如果直接使用实际路径，在linux上持续集成测试时，有可能遇到文件写权限的问题
+		String patchFolderPath = SystemUtils.JAVA_IO_TMPDIR + "/d/content/web-app-bak/ableskyapps/as-web-6.1/";
 		String patchFilename = "20140317-website-patch-zyang-upgrade-todo.zip";
 		File patchDest = new File(patchFolderPath + patchFilename);
 		
@@ -174,6 +185,9 @@ public class DeployServiceTest {
 				.addAttribute("version__eq", version)
 		)).thenReturn(deployItem);
 		
+		Mockito.when(DeployUtil.getDeployItemUploadFolder(project.getName(), version))
+			.thenReturn(patchFolderPath);
+		
 		assertEquals(deployItem, deployService.persistDeployItem(deployItemFile, project, patchGroup, deployRecord, DeployItem.DEPLOY_TYPE_PATCH, version));
 		assertTrue(new File(patchFolderPath).isDirectory());
 		Mockito.verify(deployItemFile, Mockito.times(1)).transferTo(patchDest);
@@ -185,7 +199,9 @@ public class DeployServiceTest {
 	
 	@Test
 	public void persistDeployItemWhichNotExisted() throws IllegalStateException, IOException {
-		String patchFolderPath = "/d/content/web-app-bak/ableskyapps/as-web-6.1/";
+		// patchFolderPath改写到java.io.tmpdir下
+		// 如果直接使用实际路径，在linux上持续集成测试时，有可能遇到文件写权限的问题
+		String patchFolderPath = SystemUtils.JAVA_IO_TMPDIR + "/d/content/web-app-bak/ableskyapps/as-web-6.1/";
 		String patchFilename = "20140317-website-patch-zyang-upgrade-todo.zip";
 		File patchDest = new File(patchFolderPath + patchFilename);
 		
@@ -214,6 +230,9 @@ public class DeployServiceTest {
 				.addAttribute("project_id__eq", project.getId())
 				.addAttribute("version__eq", version)
 		)).thenReturn(null);
+		
+		Mockito.when(DeployUtil.getDeployItemUploadFolder(project.getName(), version))
+			.thenReturn(patchFolderPath);
 		
 		DeployItem deployItem = deployService.persistDeployItem(deployItemFile, project, patchGroup, deployRecord, DeployItem.DEPLOY_TYPE_PATCH, version);
 		assertTrue(new File(patchFolderPath).isDirectory());

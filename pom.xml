@@ -15,6 +15,7 @@
 		<shiro.version>1.2.1</shiro.version>
 		<jcaptcha.version>2.0-alpha-1</jcaptcha.version>
 		<mockito.version>1.9.5</mockito.version>
+		<powermock.version>1.5.6</powermock.version>
 		<spring.profiles.active>development</spring.profiles.active>
 		<antbuild.target>nothing</antbuild.target>
 	</properties>
@@ -256,10 +257,24 @@
 		<!-- mockito -->
 		<dependency>
 			<groupId>org.mockito</groupId>
-			<artifactId>mockito-core</artifactId>
+			<artifactId>mockito-all</artifactId>
 			<version>${mockito.version}</version>
 			<scope>test</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-api-mockito</artifactId>
+			<version>${powermock.version}</version>
+			<scope>test</scope>
+		</dependency>
+	
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-module-junit4</artifactId>
+			<version>${powermock.version}</version>
+			<scope>test</scope>
+		</dependency> 
 
 		<!-- jcaptcha 验证码 -->
 		<dependency>
@@ -288,11 +303,11 @@
 
 	<repositories>
 
-		<repository>
+		<!-- <repository>
 			<id>oschina Releases</id>
 			<name>oschina Releases</name>
 			<url>http://maven.oschina.net/content/groups/public</url>
-		</repository>
+		</repository> -->
 
 		<repository>
 			<id>apache-repo</id>
