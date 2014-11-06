@@ -70,10 +70,12 @@ public abstract class AbstractCmd <O extends AbstractCmd.Operation<T>, T extends
 		
 		public Process exec(){
 			String cmd = this.toString();
-			Runtime runtime = Runtime.getRuntime();
+			ProcessBuilder builder = new ProcessBuilder(cmd.split(" "));
+			builder.directory(this.dir);
+			builder.redirectErrorStream(true);
 			Process process = null;
 			try {
-				process = runtime.exec(cmd, null, this.dir);
+				process = builder.start();
 			} catch (IOException e) {
 				e.printStackTrace();
 				return null;
