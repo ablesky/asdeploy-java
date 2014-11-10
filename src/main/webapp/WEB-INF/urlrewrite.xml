@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlrewrite>
-	<rule>
-		<!-- 此处对静态文件进行重定向处理 -->
-		<from>^(/.*\.(?:js|css|jpg|gif|png|jpeg|ico|html))$</from>
-		<to>/static$1</to>
-	</rule>
-</urlrewrite>

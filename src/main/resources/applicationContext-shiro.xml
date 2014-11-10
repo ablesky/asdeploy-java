@@ -67,12 +67,14 @@
 		<property name="unauthorizedUrl" value="/unauthorized"/>
 		<property name="filterChainDefinitions">
 			<value>
+				/js/** = anon
+				/css/** = anon
+				/img/** = anon
 				/register** = anon
 				/register/** = anon
 				/login = authc
 				/login/** = anon
 				/logout = logout
-				/static/** = anon
 				/admin/** = authc, roles[super_admin]
 				/** = user
 			</value>
