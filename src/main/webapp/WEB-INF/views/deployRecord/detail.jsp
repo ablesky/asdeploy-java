@@ -65,7 +65,7 @@ h3.title {
 	
 	<div style="width: 800px; margin: 10px auto 10px;">
 		<h3 class="title">README</h3>
-		<pre style="height: 300px; overflow: auto; font-size:15px;">${readme}</pre>
+		<pre style="height: 300px; overflow: auto; font-size:15px;">${fn:escapeXml(readme)}</pre>
 		
 		<h3 class="title">发布文件列表</h3>
 		<table id="J_fileListTbl" class="table table-bordered table-condensed table-hover table-striped" style="width: 100%;">

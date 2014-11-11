@@ -5,6 +5,21 @@
 <%-- <script type="text/javascript" src="${ctx_path}/js/seajs/sea.js"></script> --%>
 <script type="text/javascript">
 var CTX_PATH = '${ctx_path}';
+
+<%-- 先简单的丢在这里，以后找时间全部用sea.js做模块化 --%>
+String.prototype.encodeUnicode = function() {
+	if(!this) return this;
+	var chars = [];
+	for(var i=0, l=this.length; i<l; i++) chars[i] = this.charCodeAt(i);
+	return "&#" + chars.join(";&#") + ";";  
+};
+String.prototype.decodeUnicode = function() {
+	if(!this) return this;
+	return this.replace(/&#(x)?([^&;]{1,5});?/g, function (a, b, c) {    
+        return String.fromCharCode(parseInt(c, b ? 16 : 10));    
+    });
+};
+
 $.ajaxSetup({
 	beforeSend: function(xhr) {
 		xhr.setRequestHeader('isAjax', 'true');
