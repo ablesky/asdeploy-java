@@ -5,7 +5,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>编辑项目</title>
+<title>编辑用户</title>
 <%@ include file="../../include/includeCss.jsp" %>
 <style>
 .edit-wrapper {
@@ -70,49 +70,12 @@
 		</table>
 	</div>
 </div>
-<div id="J_alertModal" class="modal hide" tabindex="-1" role="dialog" aria-hidden="true">
-	<div class="modal-header">
-		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-		提示
-	</div>
-	<div class="modal-body">
-		<p></p>
-	</div>
-	<div class="modal-footer">
-		<button class="btn btn-primary" data-dismiss="modal" aria-hidden="true">确定</button>
-	</div>
-</div>
+<%@include file="../../include/msg/alertModal.jsp" %>
 </body>
 <%@ include file="../../include/includeJs.jsp" %>
 <script>
-$(function(){
-	initSaveBtn();
-	initCloseBtn();
+seajs.use('app/admin/user/changePassword', function(changePassword){
+	changePassword.init();
 });
-
-function initSaveBtn() {
-	$('#J_saveBtn').on('click', function(){
-		var params = {
-				userId: $('#J_userId').val(),
-				newPassword: $('#J_newPassword').val()
-			},
-			url = CTX_PATH + '/admin/user/changePassword';
-		$.post(url, params, function(data){
-			if(data.success === true) {
-				alertMsg('操作成功!').done(function(){
-					window.close();
-				});
-			} else {
-				alertMsg(data.message);
-			}
-		});
-	});
-}
-
-function initCloseBtn() {
-	$('#J_closeBtn').on('click', function(){
-		window.close();
-	});
-}
 </script>
 </html>

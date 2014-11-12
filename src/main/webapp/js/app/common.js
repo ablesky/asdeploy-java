@@ -103,13 +103,50 @@ define(function(require, exports, module){
 		});
 	};
 	
+	function collectParams(selector) {
+		var params = {};
+		if(!selector) {
+			return params;
+		}
+		$(selector).each(function(i, input){
+			var $input = $(input);
+			var key = $input.attr('name'),
+				value = $input.val();
+			key && (params[key] = value);
+		});
+		return params;
+	}
+	
+	function openWin(options) {
+		options = options || {};
+		var width = options.width || 420,
+			height = options.height || 300;
+		var screenWidth = window.screen.availWidth,
+			screenHeight = window.screen.availHeight,
+			left = (screenWidth - width) / 2,
+			top = (screenHeight - height) / 2;
+		var winConfig = [
+			'width=' + width,
+			'height=' + height,
+			'left=' + left,
+			'top=' + top
+		].join(',');
+		var url = options.url;
+		window.open(url, '_blank', winConfig);
+	}
+	
 	function init() {
-		initEnvLogo();
+		$(function(){
+			initEnvLogo();
+		});
+		return module.exports;
 	}
 	
 	module.exports = {
 		alertMsg: alertMsg,
 		confirmMsg: confirmMsg,
+		collectParams: collectParams,
+		openWin: openWin,
 		init: init
 	};
 });

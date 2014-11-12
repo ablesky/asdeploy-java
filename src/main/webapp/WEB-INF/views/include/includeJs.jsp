@@ -18,7 +18,7 @@ seajs.config({
 		'bootstrap': 'bootstrap/bootstrap.js',
 		'bootstrap.fileUploadBtn': 'bootstrap/bootstrapFileUploadBtn.js',
 		'bootstrap.pageBar': 'bootstrap/bootstrapPageBar.js',
-		'bootstrap.switch': 'bootstrapSwitch.js'
+		'bootstrap.switch': 'bootstrap/bootstrapSwitch.js'
 	}
 });
 </script>

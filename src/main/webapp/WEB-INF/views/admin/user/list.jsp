@@ -69,60 +69,8 @@
 </body>
 <%@ include file="../../include/includeJs.jsp" %>
 <script>
-$(function(){
-	initSuperAdminSwitchCheckbox();
-	initEditUserBtn();
+seajs.use('app/admin/user/list', function(list){
+	list.init();
 });
-function initSuperAdminSwitchCheckbox() {
-	$('input.superadmin-switch-cbx').on('change', function(){
-		var self = this,
-			isSuperAdmin = self.checked;
-		$.post(CTX_PATH + '/admin/user/switchSuperAdmin', {
-			userId: $(self).attr('data-id'),
-			isSuperAdmin: isSuperAdmin
-		}, function(data){
-			if(data.success !== true) {
-				alertMsg(data.message).done(function(){
-					if(data.needLogin === true) {
-						location.reload();
-					}
-				});
-				self.checked = !isSuperAdmin;	// 此处有些不稳
-			}
-		});
-	});
-}
-
-function initEditUserBtn() {
-	$('.edit-btn').on('click', function(){
-		var $this = $(this);
-		openEditUserWin({
-			url: CTX_PATH + '/admin/user/changePassword/' + $this.attr('data-id'),
-			height: 260
-		});
-	});
-}
-
-function openEditUserWin(options) {
-	options = options || {};
-	var width = options.width || 420,
-		height = options.height || 300;
-	var screenWidth = window.screen.availWidth,
-		screenHeight = window.screen.availHeight,
-		left = (screenWidth - width) / 2,
-		top = (screenHeight - height) / 2;
-	var winConfig = [
-		'width=' + width,
-		'height=' + height,
-		'left=' + left,
-		'top=' + top
-	].join(',');
-	var url = options.url;
-	window.open(url, '_blank', winConfig);
-}
-
-function reloadPage() {
-	location.reload();
-}
 </script>
 </html>
