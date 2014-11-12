@@ -135,17 +135,9 @@ input[type="text"], input[type="password"] {
 </div>
 </body>
 <%@ include file="./include/includeJs.jsp" %>
-<script>
-$(function(){
-	initVerifyImage();
-});
-
-function initVerifyImage() {
-	$('#J_verifyImage').on('click', function(){
-		$(this).attr('src', CTX_PATH + '/jcaptcha.jpg?_=' + $.now());
-	});
-}
-</script>
 <script type="text/javascript">
+seajs.use('app/register', function(register){
+	register.init();
+});
 </script>
 </html>

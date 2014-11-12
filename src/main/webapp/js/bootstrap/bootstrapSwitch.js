@@ -5,10 +5,11 @@
  * Licensed under the Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  * ============================================================ */
-
+define(function(require){
+	var jQuery = require('jquery');
+	
 !function ($) {
   "use strict";
-
   $.fn['bootstrapSwitch'] = function (method) {
     var methods = {
       init: function () {
@@ -248,4 +249,6 @@
 
 $(function () {
   $('.switch')['bootstrapSwitch']();
+});
+
 });

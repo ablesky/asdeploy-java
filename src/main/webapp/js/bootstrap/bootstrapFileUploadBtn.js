@@ -11,7 +11,9 @@ $('#J_uploadStaticBtn').bootstrapFileUploadBtn({
 	error: function(status, ev){alert('上传失败');}
 });
  */
-
+define(function(require){
+	var jQuery = require('jquery');
+	
 (function($){
 	'use strict';
 	$.fn.extend({
@@ -20,7 +22,7 @@ $('#J_uploadStaticBtn').bootstrapFileUploadBtn({
 				$uploadBtn = $(this),
 				$progressBar = $(opts.progressBar),
 				data = opts.data || {},
-				validator = $.isFunction(opts.validator) && opts.validator || function(){return true},
+				validator = $.isFunction(opts.validator) && opts.validator || function(){return true;},
 				uploadUrl = opts.url,
 				success = opts.success || $.noop,
 				error = opts.error || $.noop;
@@ -68,3 +70,5 @@ $('#J_uploadStaticBtn').bootstrapFileUploadBtn({
 	});
 	
 })(jQuery);
+
+});

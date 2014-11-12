@@ -111,5 +111,8 @@ input[type="text"], input[type="password"] {
 </body>
 <%@ include file="./include/includeJs.jsp" %>
 <script type="text/javascript">
+seajs.use('app/common', function(common){
+	common.init();
+});
 </script>
 </html>

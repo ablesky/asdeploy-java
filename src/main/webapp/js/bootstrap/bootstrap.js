@@ -17,11 +17,13 @@
  * limitations under the License.
  * ========================================================== */
 
+define(['jquery'], function(require){
+	$ =  require('jquery');
 
 !function ($) {
 
   "use strict"; // jshint ;_;
-
+  
 
   /* CSS TRANSITION SUPPORT (http://www.modernizr.com/)
    * ======================================================= */
@@ -2278,3 +2280,5 @@
 
 
 }(window.jQuery);
+
+});

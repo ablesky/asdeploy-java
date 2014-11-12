@@ -56,20 +56,8 @@
 </body>
 <%@ include file="./include/includeJs.jsp" %>
 <script>
-$(function(){
-	initUnlockDeployBtn();
+seajs.use('app/main', function(main){
+	main.init();
 });
-
-function initUnlockDeployBtn() {
-	$('#J_unlockDeployBtn').on('click', function(){
-		$.post(CTX_PATH + '/deploy/unlockDeploy', function(data){
-			if(data.success !== true) {
-				alertMsg(data.message || '解锁失败!');
-			} else {
-				location.reload();
-			}
-		});
-	});
-}
 </script>
 </html>

@@ -1,3 +1,6 @@
+define(function(require){
+	var jQuery = require('jquery');
+
 (function($){
 	'use strict';
 	$.fn.extend({
@@ -116,3 +119,5 @@
 		return pageNumArr;
 	}
 })(jQuery);
+
+});
