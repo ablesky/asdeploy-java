@@ -16,6 +16,7 @@ seajs.config({
 		'jquery': 'jquery/jquery.js',
 		'jquery.tmpl': 'jquery/jquery.tmpl.js',
 		'bootstrap': 'bootstrap/bootstrap.js',
+		'bootstrap.fileInput': 'bootstrap/bootstrapFileInput.js',
 		'bootstrap.fileUploadBtn': 'bootstrap/bootstrapFileUploadBtn.js',
 		'bootstrap.pageBar': 'bootstrap/bootstrapPageBar.js',
 		'bootstrap.switch': 'bootstrap/bootstrapSwitch.js'

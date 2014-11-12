@@ -75,7 +75,6 @@
 </div>
 </body>
 <%@ include file="../../include/includeJs.jsp" %>
-<script type="text/javascript" src="${ctx_path}/js/bootstrap/bootstrapSwitch.js"></script>
 <script>
 seajs.use('app/admin/project/list', function(list){
 	list.init();

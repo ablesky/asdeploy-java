@@ -12,6 +12,9 @@ $(function(){
  * 
  * @author: zyang
  */
+define(function(require){
+	var jQuery = require('jquery');
+
 (function($){
 	'use strict';
 	$.fn.extend({
@@ -109,3 +112,5 @@ $(function(){
 	};
 	
 })(jQuery);
+
+});

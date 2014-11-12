@@ -19,7 +19,7 @@
 
 ### 技术选型
 
-- **前端框架:**&ensp;&ensp;jQuery, Bootstrap
+- **前端框架:**&ensp;&ensp;jQuery, Bootstrap, Sea.js
 
 - **后端框架:**&ensp;&ensp;Spring-MVC, Spring, Hibernate, Shiro
 

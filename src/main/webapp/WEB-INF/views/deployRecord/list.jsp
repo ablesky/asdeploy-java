@@ -175,7 +175,6 @@
 <input type="hidden" id="J_pageCount" value="${page.count}"/>
 </body>
 <%@ include file="../include/includeJs.jsp" %>
-<script type="text/javascript" src="${ctx_path}/js/bootstrap/bootstrapPageBar.js"></script>
 <script>
 seajs.use('app/deployRecord/list', function(list){
 	list.init();

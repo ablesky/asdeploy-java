@@ -129,7 +129,7 @@ h3.title {
 </div>
 
 <%@ include file="../include/includeJs.jsp" %>
-<script type="text/javascript">
+<script>
 seajs.use('app/deployRecord/detail', function(detail){
 	detail.init();
 });

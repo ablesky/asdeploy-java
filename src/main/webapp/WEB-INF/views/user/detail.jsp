@@ -19,34 +19,8 @@
 </body>
 <%@ include file="../include/includeJs.jsp" %>
 <script>
-$(function(){
-	initChangePasswordBtn();
+seajs.use('app/user/detail', function(detail){
+	detail.init();
 });
-function initChangePasswordBtn() {
-	$('#J_changePasswordBtn').on('click', function(){
-		openChangePasswordWin({
-			url: CTX_PATH + '/user/changePassword',
-			height: 300
-		});
-	});
-}
-
-function openChangePasswordWin(options) {
-	options = options || {};
-	var width = options.width || 420,
-		height = options.height || 300;
-	var screenWidth = window.screen.availWidth,
-		screenHeight = window.screen.availHeight,
-		left = (screenWidth - width) / 2,
-		top = (screenHeight - height) / 2;
-	var winConfig = [
-		'width=' + width,
-		'height=' + height,
-		'left=' + left,
-		'top=' + top
-	].join(',');
-	var url = options.url;
-	window.open(url, '_blank', winConfig);
-}
 </script>
 </html>
