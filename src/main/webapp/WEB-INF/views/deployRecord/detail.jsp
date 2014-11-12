@@ -130,20 +130,8 @@ h3.title {
 
 <%@ include file="../include/includeJs.jsp" %>
 <script type="text/javascript">
-$(function(){
-	highlightConflict();
+seajs.use('app/deployRecord/detail', function(detail){
+	detail.init();
 });
-
-function highlightConflict(){
-	var conflictDict = {}
-	$('#J_conflictTbl').children('tbody').find('tr td:nth-child(1)').each(function(i, v){
-		conflictDict[v.innerHTML] = true;
-	});
-	$('#J_fileListTbl').children('tbody').find('tr td:nth-child(1)').each(function(i, v){
-		if(conflictDict[v.innerHTML]){
-			$(v).parent().addClass('error');
-		}
-	});
-}
 </script>
 </html>

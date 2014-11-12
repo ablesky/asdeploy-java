@@ -1,9 +1,9 @@
 define(function(require, exports, module){
-	'use strict';
+	
 	require('app/common').init();
 	var $ = require('jquery');
 	
-	exports.initUnlockDeployBtn = function () {
+	function initUnlockDeployBtn () {
 		$('#J_unlockDeployBtn').on('click', function(){
 			$.post(CTX_PATH + '/deploy/unlockDeploy', function(data){
 				if(data.success !== true) {
@@ -14,9 +14,13 @@ define(function(require, exports, module){
 			});
 		});
 	};
-	exports.init = function() {
+	
+	function init () {
 		$(function(){
-			this.initUnlockDeployBtn();
+			initUnlockDeployBtn();
 		});
 	};
+	
+	module.exports = {init: init};
+	
 });

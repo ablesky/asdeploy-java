@@ -170,58 +170,15 @@
 		</table>
 	</div>
 </div>
+<input type="hidden" id="J_pageStart" value="${page.start}"/>
+<input type="hidden" id="J_pageLimit" value="${page.limit}"/>
+<input type="hidden" id="J_pageCount" value="${page.count}"/>
 </body>
 <%@ include file="../include/includeJs.jsp" %>
 <script type="text/javascript" src="${ctx_path}/js/bootstrap/bootstrapPageBar.js"></script>
 <script>
-$(function(){
-	initQueryBtn();
-	initClearBtn();
-	initPageBar();
+seajs.use('app/deployRecord/list', function(list){
+	list.init();
 });
-
-function initQueryBtn() {
-	$('#J_queryBtn').on('click', function(){
-		$('#J_deployRecordQueryForm').submit();
-	});
-}
-
-function initClearBtn() {
-	$('#J_clearBtn').on('click', function(){
-		$('#J_deployRecordQueryForm input, #J_deployRecordQueryForm select').val('');
-		$('#J_deployRecordQueryForm').submit();
-	});
-}
-
-function initPageBar() {
-	var start = parseInt('${page.start}'),
-		limit = parseInt('${page.limit}'),
-		totalCount = parseInt('${page.count}');
-	buildPageBar('#J_pageBar', start, limit, totalCount);
-}
-
-function buildPageBar(pageBarEl, start, limit, totalCount){
-	pageBarEl = $(pageBarEl);
-	if(pageBarEl.size() == 0) {
-		return;
-	}
-	var curPage = Math.floor(start / limit) + 1;
-	var totalPage = Math.floor(totalCount / limit) + (totalCount % limit > 0? 1: 0);
-	pageBarEl.empty();
-	pageBarEl.bootstrapPageBar({
-		curPageNum: curPage,
-		totalPageNum: totalPage,
-		maxBtnNum: 10,
-		pageSize: limit,
-		siblingBtnNum: 2,
-		paginationCls: 'pagination-right',
-		click: function(i, pageNum){
-			start = (pageNum - 1) * limit;
-			$('#J_start').val(start);
-			$('#J_limit').val(limit);
-			$('#J_deployRecordQueryForm').submit();
-		}
-	});
-}
 </script>
 </html>

@@ -118,54 +118,8 @@ h3.title {
 </body>
 <%@ include file="../include/includeJs.jsp" %>
 <script>
-$(function(){
-	initUpdatePatchGroupBtn();
-	highlightConflict();
+seajs.use('app/patchGroup/detail', function(detail){
+	detail.init();
 });
-function initUpdatePatchGroupBtn() {
-	$('#J_editBtn').on('click', function(){
-		var $this = $(this),
-			id = $this.attr('data-id');
-			openEditPatchGroupWin(id, {
-				width: 450, 
-				height: 320,
-				url: CTX_PATH + '/patchGroup/edit/' + id
-			});
-	});
-}
-
-function openEditPatchGroupWin(projectId, options) {
-	options = options || {};
-	var width = options.width || 420,
-		height = options.height || 300;
-	var screenWidth = window.screen.availWidth,
-		screenHeight = window.screen.availHeight,
-		left = (screenWidth - width) / 2,
-		top = (screenHeight - height) / 2;
-	var winConfig = [
-		'width=' + width,
-		'height=' + height,
-		'left=' + left,
-		'top=' + top
-	].join(',');
-	var url = options.url;
-	window.open(url, '_blank', winConfig);
-}
-
-function highlightConflict(){
-	var conflictDict = {}
-	$('#J_conflictTbl').children('tbody').find('tr td:nth-child(1)').each(function(i, v){
-		conflictDict[v.innerHTML] = true;
-	});
-	$('#J_fileListTbl').children('tbody').find('tr td:nth-child(1)').each(function(i, v){
-		if(conflictDict[v.innerHTML]){
-			$(v).parent().addClass('error');
-		}
-	});
-}
-
-function reloadPage() {
-	location.reload();
-}
 </script>
 </html>

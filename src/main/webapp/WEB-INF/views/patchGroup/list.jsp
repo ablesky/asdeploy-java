@@ -177,128 +177,15 @@
 		</table>
 	</div>
 </div>
+<input type="hidden" id="J_pageStart" value="${page.start}"/>
+<input type="hidden" id="J_pageLimit" value="${page.limit}"/>
+<input type="hidden" id="J_pageCount" value="${page.count}"/>
 </body>
 <%@ include file="../include/includeJs.jsp" %>
 <script type="text/javascript" src="${ctx_path}/js/bootstrap/bootstrapPageBar.js"></script>
 <script>
-$(function(){
-	initCreatePatchGroupBtn();
-	initUpdatePatchGroupBtn();
-	initQueryBtn();
-	initClearBtn();
-	initPageBar();
+seajs.use('app/patchGroup/list', function(list){
+	list.init();
 });
-
-function initQueryBtn() {
-	$('#J_queryBtn').on('click', function(){
-		$('#J_patchGroupQueryForm').submit();
-		/*var params = collectParams('#J_patchGroupQueryForm input, #J_patchGroupQueryForm select');
-		var paramArr = [];
-		for(var key in params) {
-			if(!params[key]) {
-				continue;
-			}
-			paramArr.push(key + '=' + encodeURIComponent(params[key]));
-		}
-		location.href = CTX_PATH + '/patchGroup/list' + (paramArr.length > 0? '?' + paramArr.join('&'): '');
-		*/
-	});
-}
-
-function initClearBtn() {
-	$('#J_clearBtn').on('click', function(){
-		$('#J_patchGroupQueryForm input, #J_patchGroupQueryForm select').val('');
-		$('#J_patchGroupQueryForm').submit();
-	});
-}
-
-function initCreatePatchGroupBtn() {
-	$('#J_createBtn').on('click', function(){
-		openEditPatchGroupWin({
-			width: 450, 
-			height: 290,
-			url: CTX_PATH + '/patchGroup/edit'
-		});
-	});
-}
-
-function initUpdatePatchGroupBtn() {
-	$('#J_tbody').on('click', 'a.edit-btn', function(){
-		var $this = $(this),
-			id = $this.attr('data-id');
-			openEditPatchGroupWin({
-				width: 450, 
-				height: 320,
-				url: CTX_PATH + '/patchGroup/edit/' + id
-			});
-	});
-}
-
-function openEditPatchGroupWin(options) {
-	options = options || {};
-	var width = options.width || 420,
-		height = options.height || 300;
-	var screenWidth = window.screen.availWidth,
-		screenHeight = window.screen.availHeight,
-		left = (screenWidth - width) / 2,
-		top = (screenHeight - height) / 2;
-	var winConfig = [
-		'width=' + width,
-		'height=' + height,
-		'left=' + left,
-		'top=' + top
-	].join(',');
-	var url = options.url;
-	window.open(url, '_blank', winConfig);
-}
-
-function initPageBar() {
-	var start = parseInt('${page.start}'),
-		limit = parseInt('${page.limit}'),
-		totalCount = parseInt('${page.count}');
-	buildPageBar('#J_pageBar', start, limit, totalCount);
-}
-
-function buildPageBar(pageBarEl, start, limit, totalCount){
-	pageBarEl = $(pageBarEl);
-	if(pageBarEl.size() == 0) {
-		return;
-	}
-	var curPage = Math.floor(start / limit) + 1;
-	var totalPage = Math.floor(totalCount / limit) + (totalCount % limit > 0? 1: 0);
-	pageBarEl.empty();
-	pageBarEl.bootstrapPageBar({
-		curPageNum: curPage,
-		totalPageNum: totalPage,
-		maxBtnNum: 10,
-		pageSize: limit,
-		siblingBtnNum: 2,
-		paginationCls: 'pagination-right',
-		click: function(i, pageNum){
-			start = (pageNum - 1) * limit;
-			$('#J_start').val(start);
-			$('#J_limit').val(limit);
-			$('#J_patchGroupQueryForm').submit();
-		}
-	});
-}
-
-function reloadPage() {
-	location.reload();
-}
-
-function collectParams(selector) {
-	var params = {};
-	if(!selector) {
-		return params;
-	}
-	$(selector).each(function(i, input){
-		var $input = $(input);
-		var key = $input.attr('name'),
-			value = $input.val();
-		key && (params[key] = value);
-	});
-	return params;
-}
 </script>
 </html>

@@ -1,7 +1,7 @@
 define(function(require, exports, module){
 	
-	require('bootstrap');
 	var $ = require('jquery');
+	require('bootstrap');
 	
 	String.prototype.encodeUnicode = function() {
 		if(!this) return this;
@@ -9,6 +9,7 @@ define(function(require, exports, module){
 		for(var i=0, l=this.length; i<l; i++) chars[i] = this.charCodeAt(i);
 		return "&#" + chars.join(";&#") + ";";  
 	};
+	
 	String.prototype.decodeUnicode = function() {
 		if(!this) return this;
 		return this.replace(/&#(x)?([^&;]{1,5});?/g, function (a, b, c) {    
@@ -135,6 +136,25 @@ define(function(require, exports, module){
 		window.open(url, '_blank', winConfig);
 	}
 	
+	function buildPageBar(pageBarEl, start, limit, totalCount, clickFn){
+		pageBarEl = $(pageBarEl);
+		if(pageBarEl.size() == 0) {
+			return;
+		}
+		var curPage = Math.floor(start / limit) + 1;
+		var totalPage = Math.floor(totalCount / limit) + (totalCount % limit > 0? 1: 0);
+		pageBarEl.empty();
+		pageBarEl.bootstrapPageBar({
+			curPageNum: curPage,
+			totalPageNum: totalPage,
+			maxBtnNum: 10,
+			pageSize: limit,
+			siblingBtnNum: 2,
+			paginationCls: 'pagination-right',
+			click: clickFn || $.noop
+		});
+	}
+	
 	function init() {
 		$(function(){
 			initEnvLogo();
@@ -147,6 +167,7 @@ define(function(require, exports, module){
 		confirmMsg: confirmMsg,
 		collectParams: collectParams,
 		openWin: openWin,
+		buildPageBar: buildPageBar,
 		init: init
 	};
 });
