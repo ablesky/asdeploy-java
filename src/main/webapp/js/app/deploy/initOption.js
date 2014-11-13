@@ -8,7 +8,6 @@ define(function(require, exports, module){
 		$tdArr.click(function(){
 			$tdArr.removeClass('active');
 			var $this = $(this).addClass('active');
-			//var projectId = $this.children('input:first').val();
 			var projectId = $this.attr('data-project-id');
 			$('#project').val(projectId);
 			// 查看是否有补丁组

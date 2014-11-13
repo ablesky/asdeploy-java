@@ -45,7 +45,7 @@ public class AblejsController {
 				in = ablejs.fingerprint().param(queryValue).exec().getInputStream();
 				result = new String(FileUtil.readAsByteArray(in), "UTF8");
 			}
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			result = "{}";
 		} finally {

@@ -5,15 +5,16 @@ define(function(require, exports, module){
 		$ = require('jquery');
 	
 	function initQueryBtn() {
-		$('#J_queryBtn').on('click', function(){
-			$('#J_patchGroupQueryForm').submit();
+		$('#J_queryBtn').on('click', function(ev){
+			common.submitForm('#J_patchGroupQueryForm', true);
+			ev.preventDefault();
 		});
 	}
 
 	function initClearBtn() {
-		$('#J_clearBtn').on('click', function(){
-			$('#J_patchGroupQueryForm input, #J_patchGroupQueryForm select').val('');
-			$('#J_patchGroupQueryForm').submit();
+		$('#J_clearBtn').on('click', function(ev){
+			common.clearForm('#J_patchGroupQueryForm', true);
+			ev.preventDefault();
 		});
 	}
 
@@ -47,7 +48,7 @@ define(function(require, exports, module){
 			start = (pageNum - 1) * limit;
 			$('#J_start').val(start);
 			$('#J_limit').val(limit);
-			$('#J_patchGroupQueryForm').submit();
+			common.submitForm('#J_patchGroupQueryForm', true);
 		});
 	}
 	

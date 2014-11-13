@@ -131,7 +131,7 @@
 				<button id="J_createBtn" class="btn btn-primary pull-left">新&nbsp;&nbsp;增</button>
 			</div>
 			<div class="span10">
-				<div id="J_pageBar"></div>
+				<div id="J_pageBar" style="height: 30px;" class="pagination"></div>
 			</div>
 		</div>
 		<table class="table table-bordered table-condensed table-hover">

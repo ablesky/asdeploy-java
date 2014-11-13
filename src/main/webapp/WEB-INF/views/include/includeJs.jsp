@@ -1,10 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <script type="text/javascript" src="${ctx_path}/js/sea-modules/sea.js"></script>
-<script type="text/javascript">
-var CTX_PATH = '${ctx_path}';
-</script>
 <script>
+var CTX_PATH = '${ctx_path}';
 seajs.config({
 	base: '/js/',
 	paths: {

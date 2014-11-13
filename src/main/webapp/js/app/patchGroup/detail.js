@@ -7,7 +7,7 @@ define(function(require, exports, module){
 		$('#J_editBtn').on('click', function(){
 			var $this = $(this),
 				id = $this.attr('data-id');
-			common.openWin (id, {
+			common.openWin ({
 				width: 450, 
 				height: 320,
 				url: CTX_PATH + '/patchGroup/edit/' + id

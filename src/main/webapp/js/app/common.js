@@ -118,6 +118,48 @@ define(function(require, exports, module){
 		return params;
 	}
 	
+	function buildUrlByParams(prefix, params, ignoreEmptyParams) {
+		ignoreEmptyParams = !!ignoreEmptyParams;
+		var arr = [];
+		for(var key in params) {
+			var value = params[key];
+			if(ignoreEmptyParams && !value && value !== 0) {
+				continue;
+			}
+			arr.push(key + "=" + encodeURIComponent(value));
+		}
+		if(arr.length == 0) {
+			return prefix;
+		} else {
+			return prefix + (prefix.indexOf('?') >= 0? '&': '?') + arr.join('&');
+		}
+	}
+	
+	function discardEmptyParams(url) {
+		url = url.replace(/(?:\?|&)([^\/\?&]+?=)(?=&|$)/g, '');
+		if(url.indexOf('&') >= 0 && url.indexOf('?') == -1) {
+			url = url.replace('&', '?');
+		}
+		return url;
+	}
+	
+	function submitForm(form, ignoreEmptyParams) {
+		if(!form) {
+			return;
+		}
+		var params = collectParams($(form).find('input[type!=button][type!=submit], select'));
+		var url = buildUrlByParams($(form).attr('action'), params, ignoreEmptyParams);
+		location.href = url;
+	}
+	
+	function clearForm(form, ignoreEmptyParams) {
+		if(!form) {
+			return;
+		}
+		$(form).find('input[type!=button][type!=submit], select').val('');
+		submitForm(form, ignoreEmptyParams);
+	}
+	
 	function openWin(options) {
 		options = options || {};
 		var width = options.width || 420,
@@ -166,8 +208,12 @@ define(function(require, exports, module){
 		alertMsg: alertMsg,
 		confirmMsg: confirmMsg,
 		collectParams: collectParams,
-		openWin: openWin,
+		buildUrlByParams: buildUrlByParams,
+		discardEmptyParams: discardEmptyParams,
+		submitForm: submitForm,
+		clearForm: clearForm,
 		buildPageBar: buildPageBar,
+		openWin: openWin,
 		init: init
 	};
 });

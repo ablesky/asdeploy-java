@@ -5,15 +5,16 @@ define(function(require, exports, module){
 		$ = require('jquery');
 	
 	function initQueryBtn() {
-		$('#J_queryBtn').on('click', function(){
-			$('#J_deployRecordQueryForm').submit();
+		$('#J_queryBtn').on('click', function(ev){
+			common.submitForm('#J_deployRecordQueryForm', true);
+			ev.preventDefault();
 		});
 	}
 
 	function initClearBtn() {
-		$('#J_clearBtn').on('click', function(){
-			$('#J_deployRecordQueryForm input, #J_deployRecordQueryForm select').val('');
-			$('#J_deployRecordQueryForm').submit();
+		$('#J_clearBtn').on('click', function(ev){
+			common.clearForm('#J_deployRecordQueryForm', true);
+			ev.preventDefault();
 		});
 	}
 
@@ -25,7 +26,7 @@ define(function(require, exports, module){
 			start = (pageNum - 1) * limit;
 			$('#J_start').val(start);
 			$('#J_limit').val(limit);
-			$('#J_deployRecordQueryForm').submit();
+			common.submitForm('#J_deployRecordQueryForm', true);
 		});
 	}
 	
