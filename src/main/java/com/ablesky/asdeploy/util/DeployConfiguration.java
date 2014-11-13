@@ -1,7 +1,10 @@
 package com.ablesky.asdeploy.util;
 
+import java.io.IOException;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
+import org.springframework.core.io.ClassPathResource;
 
 
 
@@ -27,6 +30,8 @@ public class DeployConfiguration {
 	private String itemRootPath = rootPath + "ableskyapps/";
 	// 脚本根路径
 	private String scriptRootPath = rootPath + "deployment/";
+	// 开发时使用的测试脚本的路径
+	private String scriptPathForDevTest;
 	// ablejs的filemap的根路径，后续还要按工程去拼接具体目录
 	private String ablejsFilemapRootPath = rootPath + "ableskyapps/optimize-src/";
 	// 服务器的hostname
@@ -40,6 +45,11 @@ public class DeployConfiguration {
 		hostname = DeployUtil.getHostname();
 		environment = parseEnvironment(hostname);
 		needSendEmail = NEED_SEND_EMAIL_NO;
+		try {
+			scriptPathForDevTest = new ClassPathResource("script/dev_test.sh").getFile().getAbsolutePath();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public String getVersion() {
@@ -56,6 +66,10 @@ public class DeployConfiguration {
 
 	public String getScriptRootPath() {
 		return scriptRootPath;
+	}
+
+	public String getScriptPathForDevTest() {
+		return scriptPathForDevTest;
 	}
 
 	public String getAblejsFilemapRootPath() {

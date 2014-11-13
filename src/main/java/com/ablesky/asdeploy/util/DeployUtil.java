@@ -55,17 +55,20 @@ public class DeployUtil {
 	 * 获取发布补丁的脚本目录
 	 */
 	public static String getDeployPatchScriptPath() {
-		String scriptPath = FilenameUtils.concat(CONFIG.getScriptRootPath(), "patch-shell/start_patch_main.sh");
-		if(SystemUtils.IS_OS_WINDOWS) { // for develop
-			scriptPath = FilenameUtils.getPrefix(SystemUtils.USER_DIR) + scriptPath;
+		if(SystemUtils.IS_OS_WINDOWS) { // 返回假的发布脚本，供开发环境使用
+//			scriptPath = FilenameUtils.getPrefix(SystemUtils.USER_DIR) + scriptPath;
+			return CONFIG.getScriptPathForDevTest();
 		}
-		return scriptPath;
+		return FilenameUtils.concat(CONFIG.getScriptRootPath(), "patch-shell/start_patch_main.sh");
 	}
 	
 	/**
 	 * 获取发布版本的脚本目录
 	 */
 	public static String getDeployWarScriptPath(Project project) {
+		if(SystemUtils.IS_OS_WINDOWS) { // 返回假的发布脚本，供开发环境使用
+			return CONFIG.getScriptPathForDevTest();
+		}
 		Integer deployScriptType = project.getDeployScriptType();
 		String projectName = project.getName();
 		String scriptPath = null;
@@ -74,9 +77,6 @@ public class DeployUtil {
 			scriptPath = FilenameUtils.concat(CONFIG.getScriptRootPath(), projectName + "-deploy/" + projectName + "-deploy.sh");
 		} else {
 			scriptPath = FilenameUtils.concat(CONFIG.getScriptRootPath(),  "deploy-as/deploy.sh");
-		}
-		if(SystemUtils.IS_OS_WINDOWS) { // for develop
-			scriptPath = FilenameUtils.getPrefix(SystemUtils.USER_DIR) + scriptPath;
 		}
 		return scriptPath;
 	}
