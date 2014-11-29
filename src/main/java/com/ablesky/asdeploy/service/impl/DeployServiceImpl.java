@@ -12,7 +12,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Transformer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ablesky.asdeploy.dao.IConflictDetailDao;
@@ -24,7 +23,7 @@ import com.ablesky.asdeploy.dao.IPatchFileDao;
 import com.ablesky.asdeploy.dao.IPatchFileRelGroupDao;
 import com.ablesky.asdeploy.dao.IPatchGroupDao;
 import com.ablesky.asdeploy.dao.IProjectDao;
-import com.ablesky.asdeploy.dao.base.DaoConstant;
+import com.ablesky.asdeploy.dao.base.QueryParamMap;
 import com.ablesky.asdeploy.pojo.ConflictDetail;
 import com.ablesky.asdeploy.pojo.ConflictInfo;
 import com.ablesky.asdeploy.pojo.DeployItem;
@@ -71,9 +70,9 @@ public class DeployServiceImpl implements IDeployService {
 	 */
 	@Override
 	public DeployLock checkCurrentLock() {
-		List<DeployLock> lockList = deployLockDao.list(new ModelMap()
-				.addAttribute("isLocked", Boolean.TRUE)
-				.addAttribute(DaoConstant.ORDER_BY, "id desc")
+		List<DeployLock> lockList = deployLockDao.list(new QueryParamMap()
+				.addParam("isLocked", Boolean.TRUE)
+				.orderByDesc("id")
 		);
 		long ts = System.currentTimeMillis();
 		for(DeployLock lock: lockList) {
@@ -92,8 +91,8 @@ public class DeployServiceImpl implements IDeployService {
 	
 	@Override
 	public void unlockDeploy() {
-		List<DeployLock> lockList = deployLockDao.list(new ModelMap()
-				.addAttribute("isLocked", Boolean.TRUE)
+		List<DeployLock> lockList = deployLockDao.list(new QueryParamMap()
+				.addParam("isLocked", Boolean.TRUE)
 		);
 		boolean isSuperAdmin = AuthUtil.isSuperAdmin();
 		for(DeployLock lock: lockList) {
@@ -172,10 +171,10 @@ public class DeployServiceImpl implements IDeployService {
 	
 	@Override
 	public DeployItem getDeployItemByFileNameAndProjectIdAndVersion(String fileName, Long projectId, String version) {
-		return deployItemDao.first(new ModelMap()
-				.addAttribute("fileName__eq", fileName)
-				.addAttribute("project_id__eq", projectId)
-				.addAttribute("version__eq", version)
+		return deployItemDao.first(new QueryParamMap()
+				.addParam("fileName__eq", fileName)
+				.addParam("project_id__eq", projectId)
+				.addParam("version__eq", version)
 		);
 	}
 	
@@ -230,17 +229,17 @@ public class DeployServiceImpl implements IDeployService {
 			return;
 		}
 		final Project project = patchGroup.getProject();
-		List<PatchFile> patchFileList = patchFileDao.list(new ModelMap()
-				.addAttribute("projectId", project.getId())
-				.addAttribute("filePath__in", filePathList)
+		List<PatchFile> patchFileList = patchFileDao.list(new QueryParamMap()
+				.addParam("projectId", project.getId())
+				.addParam("filePath__in", filePathList)
 		);
 		Map<String, PatchFile> patchFileMap = new HashMap<String, PatchFile>();
 		for(PatchFile patchFile: patchFileList) {
 			patchFileMap.put(patchFile.getFilePath(), patchFile);
 		}
 		
-		List<PatchFileRelGroup> existedRelList = patchFileRelGroupDao.list(new ModelMap()
-				.addAttribute("patchGroupId", patchGroup.getId())
+		List<PatchFileRelGroup> existedRelList = patchFileRelGroupDao.list(new QueryParamMap()
+				.addParam("patchGroupId", patchGroup.getId())
 		);
 		for(PatchFileRelGroup existedRel: existedRelList) {
 			patchFileMap.remove(existedRel.getPatchFile().getFilePath());
@@ -261,10 +260,10 @@ public class DeployServiceImpl implements IDeployService {
 		for(PatchFileRelGroup conflictRel: conflictRelList) {	// key的形式相当于relatedPathGroupId_filePath
 			conflictRelMap.put(conflictRel.getPatchGroupId() + "_" + conflictRel.getPatchFile().getFilePath(), conflictRel);
 		}
-		List<PatchGroup> underTestingPatchGroupList = patchGroupDao.list(new ModelMap()
-				.addAttribute("project_id", patchGroup.getProject().getId())
-				.addAttribute("status", PatchGroup.STATUS_TESTING)
-				.addAttribute("id__ne", patchGroup.getId())
+		List<PatchGroup> underTestingPatchGroupList = patchGroupDao.list(new QueryParamMap()
+				.addParam("project_id", patchGroup.getProject().getId())
+				.addParam("status", PatchGroup.STATUS_TESTING)
+				.addParam("id__ne", patchGroup.getId())
 		);
 		List<Long> underTestingPatchGroupIdList = new ArrayList<Long>(CollectionUtils.collect(underTestingPatchGroupList, new Transformer<PatchGroup, Long>() {
 			@Override
@@ -273,9 +272,9 @@ public class DeployServiceImpl implements IDeployService {
 			}
 		}));
 		underTestingPatchGroupIdList.add(0L);
-		List<ConflictInfo> existedConflictInfoList = conflictInfoDao.list(new ModelMap()
-				.addAttribute("patchGroupId", patchGroup.getId())
-				.addAttribute("relatedPatchGroupId__in", underTestingPatchGroupIdList)
+		List<ConflictInfo> existedConflictInfoList = conflictInfoDao.list(new QueryParamMap()
+				.addParam("patchGroupId", patchGroup.getId())
+				.addParam("relatedPatchGroupId__in", underTestingPatchGroupIdList)
 		);
 		List<ConflictInfo> currentExistedConflictInfoList = new ArrayList<ConflictInfo>();
 		for(ConflictInfo existedConflictInfo: existedConflictInfoList) {
@@ -305,9 +304,9 @@ public class DeployServiceImpl implements IDeployService {
 			conflictInfoMap.put(conflictInfo.getId(), conflictInfo);
 			conflictInfoIdList.add(conflictInfo.getId());
 		}
-		List<ConflictDetail> existedConflictDetailList = conflictDetailDao.list(new ModelMap()
-				.addAttribute("deployRecordId", deployRecord.getId())
-				.addAttribute("conflictInfoId__in", conflictInfoIdList)
+		List<ConflictDetail> existedConflictDetailList = conflictDetailDao.list(new QueryParamMap()
+				.addParam("deployRecordId", deployRecord.getId())
+				.addParam("conflictInfoId__in", conflictInfoIdList)
 		);
 		for(ConflictDetail existedConflictDetail: existedConflictDetailList) {
 			conflictInfoMap.remove(existedConflictDetail.getConflictInfoId());
@@ -330,8 +329,8 @@ public class DeployServiceImpl implements IDeployService {
 		if(CollectionUtils.isEmpty(filePathList)) {
 			return;
 		}
-		List<PatchFile> existedPatchFileList = patchFileDao.list(new ModelMap()
-				.addAttribute("filePath__in", filePathList)
+		List<PatchFile> existedPatchFileList = patchFileDao.list(new QueryParamMap()
+				.addParam("filePath__in", filePathList)
 		);
 		List<String> existedFilePathList = new ArrayList<String>(CollectionUtils.collect(existedPatchFileList, new Transformer<PatchFile, String>() {
 			@Override
@@ -364,7 +363,7 @@ public class DeployServiceImpl implements IDeployService {
 				return conflictDetail.getConflictInfoId();
 			}
 		}));
-		List<ConflictInfo> conflictInfoList = patchGroupService.getConflictInfoListResultByParam(0, 0, new ModelMap().addAttribute("id__in", conflictInfoIdList));
+		List<ConflictInfo> conflictInfoList = patchGroupService.getConflictInfoListResultByParam(0, 0, new QueryParamMap().addParam("id__in", conflictInfoIdList));
 		Map<Long, ConflictInfo> conflictInfoMap = new HashMap<Long, ConflictInfo>();
 		for(ConflictInfo conflictInfo: conflictInfoList) {
 			conflictInfoMap.put(conflictInfo.getId(), conflictInfo);

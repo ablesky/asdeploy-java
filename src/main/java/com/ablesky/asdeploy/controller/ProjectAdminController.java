@@ -1,6 +1,5 @@
 package com.ablesky.asdeploy.controller;
 
-import java.util.Collections;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import com.ablesky.asdeploy.dao.base.QueryParamMap;
 import com.ablesky.asdeploy.pojo.Project;
 import com.ablesky.asdeploy.service.IProjectService;
 
@@ -29,7 +29,7 @@ public class ProjectAdminController {
 
 	@RequestMapping("/list")
 	public String list(Model model) {
-		model.addAttribute("list", projectService.getProjectListResult(0, 0, Collections.<String, Object>emptyMap()));
+		model.addAttribute("list", projectService.getProjectListResult(0, 0, QueryParamMap.EMPTY_MAP));
 		return "admin/project/list";
 	}
 	

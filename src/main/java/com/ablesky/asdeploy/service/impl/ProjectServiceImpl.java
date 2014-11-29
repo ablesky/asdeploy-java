@@ -1,6 +1,5 @@
 package com.ablesky.asdeploy.service.impl;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -8,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ablesky.asdeploy.dao.IProjectDao;
+import com.ablesky.asdeploy.dao.base.QueryParamMap;
 import com.ablesky.asdeploy.pojo.Project;
 import com.ablesky.asdeploy.service.IProjectService;
 
@@ -39,7 +39,7 @@ public class ProjectServiceImpl implements IProjectService {
 	
 	@Override
 	public List<Project> getProjectListResult() {
-		return projectDao.list(Collections.<String, Object>emptyMap());
+		return projectDao.list(QueryParamMap.EMPTY_MAP);
 	}
 	
 }

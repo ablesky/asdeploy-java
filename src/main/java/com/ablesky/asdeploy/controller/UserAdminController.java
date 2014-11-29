@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ablesky.asdeploy.dao.base.QueryParamMap;
 import com.ablesky.asdeploy.pojo.Role;
 import com.ablesky.asdeploy.pojo.User;
 import com.ablesky.asdeploy.pojo.UserRelRole;
@@ -31,8 +32,8 @@ public class UserAdminController {
 
 	@RequestMapping("/list")
 	public String list(Model model) {
-		List<UserRelRole> superAdminRelList = authorityService.getUserRelRoleListResultByParam(0, 0, new ModelMap()
-				.addAttribute("role_name", Role.NAME_SUPER_ADMIN)
+		List<UserRelRole> superAdminRelList = authorityService.getUserRelRoleListResultByParam(0, 0, new QueryParamMap()
+				.addParam("role_name", Role.NAME_SUPER_ADMIN)
 		);
 		ModelMap superAdminMap = new ModelMap();
 		for(UserRelRole rel: superAdminRelList) {

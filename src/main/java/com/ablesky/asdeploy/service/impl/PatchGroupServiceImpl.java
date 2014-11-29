@@ -11,12 +11,12 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Transformer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.ModelMap;
 
 import com.ablesky.asdeploy.dao.IConflictInfoDao;
 import com.ablesky.asdeploy.dao.IPatchFileDao;
 import com.ablesky.asdeploy.dao.IPatchFileRelGroupDao;
 import com.ablesky.asdeploy.dao.IPatchGroupDao;
+import com.ablesky.asdeploy.dao.base.QueryParamMap;
 import com.ablesky.asdeploy.pojo.ConflictInfo;
 import com.ablesky.asdeploy.pojo.PatchFile;
 import com.ablesky.asdeploy.pojo.PatchFileRelGroup;
@@ -76,10 +76,10 @@ public class PatchGroupServiceImpl implements IPatchGroupService {
 			return Collections.emptyList();
 		}
 		Project project = patchGroup.getProject();
-		List<PatchGroup> otherPatchGroupList = patchGroupDao.list(new ModelMap()
-				.addAttribute("status", PatchGroup.STATUS_TESTING)
-				.addAttribute("id__ne", patchGroup.getId())
-				.addAttribute("project_id", project.getId())
+		List<PatchGroup> otherPatchGroupList = patchGroupDao.list(new QueryParamMap()
+				.addParam("status", PatchGroup.STATUS_TESTING)
+				.addParam("id__ne", patchGroup.getId())
+				.addParam("project_id", project.getId())
 		);
 		if(CollectionUtils.isEmpty(otherPatchGroupList)) {
 			return Collections.emptyList();
@@ -90,9 +90,9 @@ public class PatchGroupServiceImpl implements IPatchGroupService {
 				return patchGroup.getId();
 			}
 		});
-		List<PatchFileRelGroup> conflictRelList = patchFileRelGroupDao.list(new ModelMap()
-				.addAttribute("patchGroupId__in", otherPatchGroupIdList)
-				.addAttribute("patchFile_filePath__in", filePathList)
+		List<PatchFileRelGroup> conflictRelList = patchFileRelGroupDao.list(new QueryParamMap()
+				.addParam("patchGroupId__in", otherPatchGroupIdList)
+				.addParam("patchFile_filePath__in", filePathList)
 		);
 		Map<Long, PatchGroup> otherPatchGroupMap = new HashMap<Long, PatchGroup>();
 		for(PatchGroup otherPatchGroup: otherPatchGroupList) {
@@ -121,7 +121,7 @@ public class PatchGroupServiceImpl implements IPatchGroupService {
 				return conflictInfo.getRelatedPatchGroupId();
 			}
 		}));
-		List<PatchGroup> relatedPatchGroupList = patchGroupDao.list(new ModelMap().addAttribute("id__in", relatedPatchGroupIdList));
+		List<PatchGroup> relatedPatchGroupList = patchGroupDao.list(new QueryParamMap().addParam("id__in", relatedPatchGroupIdList));
 		Map<Long, PatchGroup> relatedPatchGroupMap = new HashMap<Long, PatchGroup>();
 		for(PatchGroup relatedPatchGroup: relatedPatchGroupList) {
 			relatedPatchGroupMap.put(relatedPatchGroup.getId(), relatedPatchGroup);

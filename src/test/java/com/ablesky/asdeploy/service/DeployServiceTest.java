@@ -23,7 +23,6 @@ import org.mockito.MockitoAnnotations;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ablesky.asdeploy.dao.IConflictDetailDao;
@@ -35,7 +34,7 @@ import com.ablesky.asdeploy.dao.IPatchFileDao;
 import com.ablesky.asdeploy.dao.IPatchFileRelGroupDao;
 import com.ablesky.asdeploy.dao.IPatchGroupDao;
 import com.ablesky.asdeploy.dao.IProjectDao;
-import com.ablesky.asdeploy.dao.base.DaoConstant;
+import com.ablesky.asdeploy.dao.base.QueryParamMap;
 import com.ablesky.asdeploy.pojo.DeployItem;
 import com.ablesky.asdeploy.pojo.DeployLock;
 import com.ablesky.asdeploy.pojo.DeployRecord;
@@ -102,9 +101,9 @@ public class DeployServiceTest {
 		lock3.setId(3L);
 		lock3.setIsLocked(Boolean.TRUE);
 		lock3.setLockedTime(new Timestamp(ts - DeployLock.LOCK_EXPIRY_TIME - 1000));
-		when(deployLockDao.list(new ModelMap()
-			.addAttribute("isLocked", Boolean.TRUE)
-			.addAttribute(DaoConstant.ORDER_BY, "id desc")
+		when(deployLockDao.list(new QueryParamMap()
+			.addParam("isLocked", Boolean.TRUE)
+			.orderByDesc("id")
 		)).thenReturn(CollectionUtils.asList(lock3, lock2, lock1));	// 倒序返回
 	
 		DeployLock lock = deployService.checkCurrentLock();
@@ -125,7 +124,7 @@ public class DeployServiceTest {
 		DeployLock lock2 = new DeployLock();
 		lock2.setUser(hdu);
 		
-		when(deployLockDao.list(new ModelMap().addAttribute("isLocked", Boolean.TRUE)))
+		when(deployLockDao.list(new QueryParamMap().addParam("isLocked", Boolean.TRUE)))
 			.thenReturn(CollectionUtils.asList(lock1, lock2));
 		
 		// 普通用户只能解锁自己的锁
@@ -179,10 +178,10 @@ public class DeployServiceTest {
 		deployItem.setPatchGroup(patchGroup);
 		deployItem.setProject(project);
 		
-		Mockito.when(deployItemDao.first(new ModelMap()
-				.addAttribute("fileName__eq", patchFilename)
-				.addAttribute("project_id__eq", project.getId())
-				.addAttribute("version__eq", version)
+		Mockito.when(deployItemDao.first(new QueryParamMap()
+				.addParam("fileName__eq", patchFilename)
+				.addParam("project_id__eq", project.getId())
+				.addParam("version__eq", version)
 		)).thenReturn(deployItem);
 		
 		Mockito.when(DeployUtil.getDeployItemUploadFolder(project.getName(), version))
@@ -225,10 +224,10 @@ public class DeployServiceTest {
 		
 		String version = "6.1";
 		
-		Mockito.when(deployItemDao.first(new ModelMap()
-				.addAttribute("fileName__eq", patchFilename)
-				.addAttribute("project_id__eq", project.getId())
-				.addAttribute("version__eq", version)
+		Mockito.when(deployItemDao.first(new QueryParamMap()
+				.addParam("fileName__eq", patchFilename)
+				.addParam("project_id__eq", project.getId())
+				.addParam("version__eq", version)
 		)).thenReturn(null);
 		
 		Mockito.when(DeployUtil.getDeployItemUploadFolder(project.getName(), version))

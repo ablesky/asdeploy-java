@@ -14,10 +14,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.ui.ModelMap;
 
 import com.ablesky.asdeploy.dao.IPatchFileRelGroupDao;
 import com.ablesky.asdeploy.dao.IPatchGroupDao;
+import com.ablesky.asdeploy.dao.base.QueryParamMap;
 import com.ablesky.asdeploy.pojo.PatchFile;
 import com.ablesky.asdeploy.pojo.PatchFileRelGroup;
 import com.ablesky.asdeploy.pojo.PatchGroup;
@@ -72,10 +72,10 @@ public class PatchGroupServiceTest {
 			otherPatchGroupList.add(pg);
 			otherPatchGroupIdList.add(id);
 		}
-		Mockito.when(patchGroupDao.list(new ModelMap()
-			.addAttribute("status", PatchGroup.STATUS_TESTING)
-			.addAttribute("id__ne", patchGroup.getId())
-			.addAttribute("project_id", project.getId())
+		Mockito.when(patchGroupDao.list(new QueryParamMap()
+			.addParam("status", PatchGroup.STATUS_TESTING)
+			.addParam("id__ne", patchGroup.getId())
+			.addParam("project_id", project.getId())
 		)).thenReturn(otherPatchGroupList);
 		
 		Map<String, PatchFile> patchFileMap = new HashMap<String, PatchFile>();
@@ -94,9 +94,9 @@ public class PatchGroupServiceTest {
 				conflictRelList.add(pfrg);
 			}
 		}
-		Mockito.when(patchFileRelGroupDao.list(new ModelMap()
-				.addAttribute("patchGroupId__in", otherPatchGroupIdList)
-				.addAttribute("patchFile_filePath__in", filePathList)
+		Mockito.when(patchFileRelGroupDao.list(new QueryParamMap()
+				.addParam("patchGroupId__in", otherPatchGroupIdList)
+				.addParam("patchFile_filePath__in", filePathList)
 		)).thenReturn(conflictRelList);
 	}
 	

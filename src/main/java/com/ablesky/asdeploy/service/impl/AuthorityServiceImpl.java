@@ -8,11 +8,11 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Transformer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.ModelMap;
 
 import com.ablesky.asdeploy.dao.IRoleDao;
 import com.ablesky.asdeploy.dao.IUserDao;
 import com.ablesky.asdeploy.dao.IUserRelRoleDao;
+import com.ablesky.asdeploy.dao.base.QueryParamMap;
 import com.ablesky.asdeploy.pojo.Role;
 import com.ablesky.asdeploy.pojo.User;
 import com.ablesky.asdeploy.pojo.UserRelRole;
@@ -34,7 +34,7 @@ public class AuthorityServiceImpl implements IAuthorityService {
 	
 	@Override
 	public List<Role> getRoleListResultByUserId(Long userId) {
-		List<UserRelRole> relList = userRelRoleDao.list(new ModelMap().addAttribute("user_id", userId));
+		List<UserRelRole> relList = userRelRoleDao.list(new QueryParamMap().addParam("user_id", userId));
 		return new ArrayList<Role>(CollectionUtils.collect(relList, new Transformer<UserRelRole, Role>() {
 			@Override
 			public Role transform(UserRelRole rel) {
@@ -55,7 +55,7 @@ public class AuthorityServiceImpl implements IAuthorityService {
 	
 	@Override
 	public Role getRoleByName(String name) {
-		return roleDao.first(new ModelMap().addAttribute("name", name));
+		return roleDao.first(new QueryParamMap().addParam("name", name));
 	}
 	
 	@Override
@@ -70,9 +70,9 @@ public class AuthorityServiceImpl implements IAuthorityService {
 	
 	@Override
 	public void deleteUserRelRoleByUserIdAndRoleName(Long userId, String roleName) {
-		List<UserRelRole> relList = userRelRoleDao.list(new ModelMap()
-				.addAttribute("user_id", userId)
-				.addAttribute("role_name", roleName));
+		List<UserRelRole> relList = userRelRoleDao.list(new QueryParamMap()
+				.addParam("user_id", userId)
+				.addParam("role_name", roleName));
 		for(UserRelRole rel: relList) {
 			userRelRoleDao.delete(rel);
 		}
@@ -86,9 +86,9 @@ public class AuthorityServiceImpl implements IAuthorityService {
 		if(user == null || role == null) {
 			return null;
 		}
-		UserRelRole rel = getUserRelRoleByParam(new ModelMap()
-			.addAttribute("user_id", user.getId())
-			.addAttribute("role_id", role.getId()));
+		UserRelRole rel = getUserRelRoleByParam(new QueryParamMap()
+			.addParam("user_id", user.getId())
+			.addParam("role_id", role.getId()));
 		if(rel != null) {
 			return rel;
 		}

@@ -4,8 +4,8 @@ import org.apache.shiro.util.CollectionUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.ModelMap;
 
+import com.ablesky.asdeploy.dao.base.QueryParamMap;
 import com.ablesky.asdeploy.pojo.PatchFile;
 import com.ablesky.asdeploy.test.SpringTransactionalTestCase;
 
@@ -27,11 +27,11 @@ public class PatchFileDaoTest extends SpringTransactionalTestCase {
 		patchFileDao.batchSave(CollectionUtils.asList(patchFile1, patchFile2));
 		Assert.assertEquals(
 				patchFile1.getProjectId().longValue(), 
-				patchFileDao.first(new ModelMap().addAttribute("projectId", 1L)).getProjectId().longValue()
+				patchFileDao.first(new QueryParamMap().addParam("projectId", 1L)).getProjectId().longValue()
 		);
 		Assert.assertEquals(
 				patchFile2.getFilePath(), 
-				patchFileDao.first(new ModelMap().addAttribute("projectId", 2L)).getFilePath()
+				patchFileDao.first(new QueryParamMap().addParam("projectId", 2L)).getFilePath()
 		);
 	}
 }

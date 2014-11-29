@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.ablesky.asdeploy.dao.base.QueryParamMap;
 import com.ablesky.asdeploy.dto.ConflictInfoDto;
 import com.ablesky.asdeploy.pojo.DeployItem;
 import com.ablesky.asdeploy.pojo.DeployLock;
@@ -58,7 +59,7 @@ public class DeployController {
 	
 	@RequestMapping("/initOption")
 	public String initOption(Model model) {
-		List<Project> projectList = projectService.getProjectListResult(0, 0, Collections.<String, Object>emptyMap());
+		List<Project> projectList = projectService.getProjectListResult(0, 0, QueryParamMap.EMPTY_MAP);
 		model.addAttribute("projectList", projectList);
 		return "deploy/initOption";
 	}

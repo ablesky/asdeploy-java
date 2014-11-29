@@ -9,8 +9,8 @@ import java.util.Collections;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.ModelMap;
 
+import com.ablesky.asdeploy.dao.base.QueryParamMap;
 import com.ablesky.asdeploy.pojo.User;
 import com.ablesky.asdeploy.test.SpringTransactionalTestCase;
 import com.ablesky.asdeploy.util.AuthUtil;
@@ -54,18 +54,18 @@ public class UserDaoTest extends SpringTransactionalTestCase {
 	
 	@Test
 	public void first() {
-		Long userId = userDao.first(new ModelMap().addAttribute("id__ge", 2L)).getId();
+		Long userId = userDao.first(new QueryParamMap().addParam("id__ge", 2L)).getId();
 		assertEquals(2L, userId.longValue());
 	}
 	
 	@Test
 	public void unique() {
-		assertEquals(1L, userDao.unique(new ModelMap().addAttribute("id__lt", 2L)).getId().longValue());
+		assertEquals(1L, userDao.unique(new QueryParamMap().addParam("id__lt", 2L)).getId().longValue());
 	}
 	
 	@Test(expected=IllegalStateException.class)
 	public void uniqueFailed() {
-		userDao.unique(Collections.<String, Object>emptyMap());
+		userDao.unique(QueryParamMap.EMPTY_MAP);
 	}
 	
 }

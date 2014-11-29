@@ -4,7 +4,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.ablesky.asdeploy.dao.base.DaoConstant;
+import com.ablesky.asdeploy.dao.base.QueryParamMap;
 import com.ablesky.asdeploy.pojo.ConflictInfo;
 import com.ablesky.asdeploy.pojo.PatchFile;
 import com.ablesky.asdeploy.pojo.PatchFileRelGroup;
@@ -66,22 +65,15 @@ public class PatchGroupController {
 		if(limit == null) {
 			limit = CommonConstant.DEFAULT_LIMIT;
 		}
-		Map<String, Object> param = new HashMap<String, Object>();
-		if(StringUtils.isNotBlank(creatorName)) {
-			param.put("creator_username__contain", creatorName);
-		}
-		if(StringUtils.isNotBlank(patchGroupName)) {
-			param.put("name__contain", patchGroupName);
-		}
-		if(projectId != null && projectId > 0) {
-			param.put("project_id", projectId);
-		}
-		if(StringUtils.isNotBlank(status)) {
-			param.put("status", status);
-		}
-		param.put(DaoConstant.ORDER_BY, "id desc");
-		model.addAttribute("projectList", projectService.getProjectListResult(0, 0, Collections.<String, Object>emptyMap()))
-				.addAttribute("page", patchGroupService.getPatchGroupPaginateResult(start, limit, param))
+		QueryParamMap paramMap = new QueryParamMap()
+				.addParam(StringUtils.isNotBlank(creatorName), "creator_username__contain", creatorName)
+				.addParam(StringUtils.isNotBlank(patchGroupName), "name__contain", patchGroupName)
+				.addParam(projectId != null && projectId > 0, "project_id", projectId)
+				.addParam(StringUtils.isNotBlank(status), "status", status)
+				.orderByDesc("id");
+		
+		model.addAttribute("projectList", projectService.getProjectListResult(0, 0, QueryParamMap.EMPTY_MAP))
+				.addAttribute("page", patchGroupService.getPatchGroupPaginateResult(start, limit, paramMap))
 				.addAttribute("isSuperAdmin", AuthUtil.isSuperAdmin())
 				.addAttribute("currentUser", AuthUtil.getCurrentUser());
 		return "patchGroup/list";
@@ -90,8 +82,8 @@ public class PatchGroupController {
 	@RequestMapping("/detail/{id}")
 	public String detail(@PathVariable("id") Long id, Model model) {
 		PatchGroup patchGroup = patchGroupService.getPatchGroupById(id);
-		List<PatchFileRelGroup> relList = patchGroupService.getPatchFileRelGroupListResult(0, 0, new ModelMap()
-				.addAttribute("patchGroupId", id)
+		List<PatchFileRelGroup> relList = patchGroupService.getPatchFileRelGroupListResult(0, 0, new QueryParamMap()
+				.addParam("patchGroupId", id)
 		);
 		List<PatchFile> patchFileList = new ArrayList<PatchFile>(CollectionUtils.collect(relList, new Transformer<PatchFileRelGroup, PatchFile>() {
 			@Override
@@ -101,7 +93,7 @@ public class PatchGroupController {
 		}));
 		Collections.sort(patchFileList);
 		
-		List<ConflictInfo> conflictInfoList = patchGroupService.getConflictInfoListResultByParam(new ModelMap().addAttribute("patchGroupId", id));
+		List<ConflictInfo> conflictInfoList = patchGroupService.getConflictInfoListResultByParam(new QueryParamMap().addParam("patchGroupId", id));
 		Collections.sort(conflictInfoList, new Comparator<ConflictInfo>() {
 			@Override
 			public int compare(ConflictInfo info1, ConflictInfo info2) {
@@ -116,10 +108,10 @@ public class PatchGroupController {
 			}
 		});
 		model.addAttribute("patchGroup", patchGroup)
-			.addAttribute("patchFileList", patchFileList)
-			.addAttribute("conflictInfoList", conflictInfoList)
-			.addAttribute("isSuperAdmin", AuthUtil.isSuperAdmin())
-			.addAttribute("currentUser", AuthUtil.getCurrentUser());
+				.addAttribute("patchFileList", patchFileList)
+				.addAttribute("conflictInfoList", conflictInfoList)
+				.addAttribute("isSuperAdmin", AuthUtil.isSuperAdmin())
+				.addAttribute("currentUser", AuthUtil.getCurrentUser());
 		return "patchGroup/detail";
 	}
 	
@@ -128,7 +120,7 @@ public class PatchGroupController {
 		if(id != null && id > 0) {
 			model.addAttribute("patchGroup", patchGroupService.getPatchGroupById(id));
 		}
-		model.addAttribute("projectList", projectService.getProjectListResult(0, 0, Collections.<String, Object>emptyMap()));
+		model.addAttribute("projectList", projectService.getProjectListResult(0, 0, QueryParamMap.EMPTY_MAP));
 		return "patchGroup/edit";
 	}
 	
@@ -187,17 +179,14 @@ public class PatchGroupController {
 			@RequestParam(defaultValue="") String status,
 			@RequestParam(defaultValue=CommonConstant.DEFAUTL_START_STR) int start,
 			@RequestParam(defaultValue=CommonConstant.DEFAULT_LIMIT_STR) int limit) {
-		ModelMap param = new ModelMap();
-		if(projectId > 0){
-			param.put("project_id", projectId);
-		}
-		if(StringUtils.isNotBlank(status)) {
-			param.put("status", status);
-		}
-		param.put(DaoConstant.ORDER_BY, " id desc ");
-		Map<String, Object> resultMap = new HashMap<String, Object>();
-		resultMap.put("list", patchGroupService.getPatchGroupListResult(start, limit, param));
-		resultMap.put("success", true);
-		return resultMap;
+		
+		QueryParamMap paramMap = new QueryParamMap()
+				.addParam(projectId > 0, "project_id", projectId)
+				.addParam(StringUtils.isNotBlank(status), "status", status)
+				.orderByDesc("id");
+		
+		return new ModelMap()
+				.addAttribute("list", patchGroupService.getPatchGroupListResult(start, limit, paramMap))
+				.addAttribute("success", true);
 	}
 }

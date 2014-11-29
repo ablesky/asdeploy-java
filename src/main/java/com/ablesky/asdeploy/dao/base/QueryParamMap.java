@@ -8,9 +8,25 @@ import java.util.Map;
 @SuppressWarnings("serial")
 public class QueryParamMap extends HashMap<String, Object> {
 	
-	public QueryParamMap addParam(String key, Object param) {
-		put(key, param);
+	public static final QueryParamMap EMPTY_MAP = new QueryParamMap(0);
+	
+	public QueryParamMap() {
+		super();
+	}
+	
+	public QueryParamMap(int initialCapacity) {
+		super(initialCapacity);
+	}
+	
+	public QueryParamMap addParam(boolean isValid, String key, Object value) {
+		if(isValid) {
+			put(key, value);
+		}
 		return this;
+	}
+	
+	public QueryParamMap addParam(String key, Object value) {
+		return addParam(true, key, value);
 	}
 	
 	public QueryParamMap addParam(String key) {
@@ -34,6 +50,14 @@ public class QueryParamMap extends HashMap<String, Object> {
 	public QueryParamMap orderBy(String key, String sort) {
 		ensureOrderByMap().put(key, sort);
 		return this;
+	}
+	
+	public QueryParamMap orderByAsc(String key) {
+		return orderBy(key, DaoConstant.ORDER_ASC);
+	}
+	
+	public QueryParamMap orderByDesc(String key) {
+		return orderBy(key, DaoConstant.ORDER_DESC);
 	}
 	
 	public QueryParamMap groupBy(String value) {

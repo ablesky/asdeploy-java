@@ -3,21 +3,18 @@ package com.ablesky.asdeploy.controller;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.ablesky.asdeploy.dao.base.DaoConstant;
+import com.ablesky.asdeploy.dao.base.QueryParamMap;
 import com.ablesky.asdeploy.pojo.ConflictDetail;
 import com.ablesky.asdeploy.pojo.DeployItem;
 import com.ablesky.asdeploy.pojo.DeployRecord;
@@ -56,22 +53,17 @@ public class DeployRecordController {
 		if(limit == null) {
 			limit = CommonConstant.DEFAULT_LIMIT;
 		}
-		Map<String, Object> param = new HashMap<String, Object>();
-		if(StringUtils.isNotBlank(username)) {
-			param.put("user_username__contain", username);
-		}
-		if(projectId != null && projectId > 0) {
-			param.put("project_id", projectId);
-		}
-		if(StringUtils.isNotBlank(deployType)) {
-			param.put("deployItem_deployType", deployType);
-		}
-		if(StringUtils.isNotBlank(version)) {
-			param.put("deployItem_version", version);
-		}
-		param.put(DaoConstant.ORDER_BY, "id desc");
-		model.addAttribute("projectList", projectService.getProjectListResult(0, 0, Collections.<String, Object>emptyMap()));
-		model.addAttribute("page", deployService.getDeployRecordPaginateResult(start, limit, param));
+		
+		QueryParamMap paramMap = new QueryParamMap()
+				.addParam(StringUtils.isNotBlank(username), "user_username__contain", username)
+				.addParam(projectId != null && projectId > 0, "project_id", projectId)
+				.addParam(StringUtils.isNotBlank(deployType), "deployItem_deployType", deployType)
+				.addParam(StringUtils.isNotBlank(version), "deployItem_version", version)
+				.orderByDesc("id");
+		
+		model.addAttribute("projectList", projectService.getProjectListResult(0, 0, QueryParamMap.EMPTY_MAP));
+		model.addAttribute("page", deployService.getDeployRecordPaginateResult(start, limit, paramMap));
+		
 		return "deployRecord/list";
 	}
 	
@@ -87,7 +79,7 @@ public class DeployRecordController {
 			readme = DeployUtil.loadReadmeContent(targetFolderPath);
 		}
 		List<ConflictDetail> conflictDetailList = deployRecord.getIsConflictWithOthers()
-				? deployService.getConflictDetailListResultByParam(new ModelMap().addAttribute("deployRecordId", id))
+				? deployService.getConflictDetailListResultByParam(new QueryParamMap().addParam("deployRecordId", id))
 				: Collections.<ConflictDetail>emptyList();
 		
 		Collections.sort(conflictDetailList, new Comparator<ConflictDetail>() {

@@ -1,7 +1,6 @@
 package com.ablesky.asdeploy.service.impl;
 
 import java.sql.Timestamp;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -9,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ablesky.asdeploy.dao.IUserDao;
+import com.ablesky.asdeploy.dao.base.QueryParamMap;
 import com.ablesky.asdeploy.pojo.Role;
 import com.ablesky.asdeploy.pojo.User;
 import com.ablesky.asdeploy.service.IAuthorityService;
@@ -43,9 +43,7 @@ public class UserServiceImpl implements IUserService {
 	
 	@Override
 	public User getUserByUsername(String username) {
-		Map<String, Object> param = new HashMap<String, Object>();
-		param.put("username", username);
-		return userDao.unique(param);
+		return userDao.unique(new QueryParamMap().addParam("username", username));
 	}
 	
 	@Override
