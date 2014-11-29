@@ -17,7 +17,7 @@ import com.ablesky.asdeploy.pojo.AbstractModel;
 import com.ablesky.asdeploy.util.ClassUtil;
 import com.ablesky.asdeploy.util.Page;
 
-public abstract class AbstractDaoImpl<E extends AbstractModel> implements IAbstractDao<E> {
+public abstract class AbstractHibernateDaoImpl<E extends AbstractModel> implements IAbstractDao<E> {
 
 	protected BaseHibernateDao baseHibernateDao = BaseHibernateDao.singletonInstance();
 	

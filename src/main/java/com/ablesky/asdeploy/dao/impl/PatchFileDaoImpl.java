@@ -7,11 +7,11 @@ import org.apache.shiro.util.CollectionUtils;
 import org.springframework.stereotype.Repository;
 
 import com.ablesky.asdeploy.dao.IPatchFileDao;
-import com.ablesky.asdeploy.dao.base.AbstractDaoImpl;
+import com.ablesky.asdeploy.dao.base.AbstractHibernateDaoImpl;
 import com.ablesky.asdeploy.pojo.PatchFile;
 
 @Repository
-public class PatchFileDaoImpl extends AbstractDaoImpl<PatchFile> implements IPatchFileDao {
+public class PatchFileDaoImpl extends AbstractHibernateDaoImpl<PatchFile> implements IPatchFileDao {
 
 	@Override
 	public void batchSave(List<PatchFile> list) {

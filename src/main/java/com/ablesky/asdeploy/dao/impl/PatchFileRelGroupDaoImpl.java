@@ -6,11 +6,11 @@ import org.apache.shiro.util.CollectionUtils;
 import org.springframework.stereotype.Repository;
 
 import com.ablesky.asdeploy.dao.IPatchFileRelGroupDao;
-import com.ablesky.asdeploy.dao.base.AbstractDaoImpl;
+import com.ablesky.asdeploy.dao.base.AbstractHibernateDaoImpl;
 import com.ablesky.asdeploy.pojo.PatchFileRelGroup;
 
 @Repository
-public class PatchFileRelGroupDaoImpl extends AbstractDaoImpl<PatchFileRelGroup> implements IPatchFileRelGroupDao {
+public class PatchFileRelGroupDaoImpl extends AbstractHibernateDaoImpl<PatchFileRelGroup> implements IPatchFileRelGroupDao {
 
 	@Override
 	public void batchSave(List<PatchFileRelGroup> list) {

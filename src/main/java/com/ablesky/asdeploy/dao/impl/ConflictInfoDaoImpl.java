@@ -6,11 +6,11 @@ import org.apache.shiro.util.CollectionUtils;
 import org.springframework.stereotype.Repository;
 
 import com.ablesky.asdeploy.dao.IConflictInfoDao;
-import com.ablesky.asdeploy.dao.base.AbstractDaoImpl;
+import com.ablesky.asdeploy.dao.base.AbstractHibernateDaoImpl;
 import com.ablesky.asdeploy.pojo.ConflictInfo;
 
 @Repository
-public class ConflictInfoDaoImpl extends AbstractDaoImpl<ConflictInfo> implements IConflictInfoDao {
+public class ConflictInfoDaoImpl extends AbstractHibernateDaoImpl<ConflictInfo> implements IConflictInfoDao {
 
 	@Override
 	public void batchSave(List<ConflictInfo> list) {
