@@ -269,52 +269,11 @@ public abstract class AbstractHibernateDaoImpl<E extends AbstractModel> implemen
 		int index = keyWithOper.lastIndexOf("__");
 		if (index == -1) {
 			String key = keyWithOper;
-			return new OperationParsedResult(key.replaceAll("_", "."), " = ", ":" + key, keyWithOper);
+			return QueryOperator.eq.buildResult(key.replaceAll("_", "."), keyWithOper);
 		}
 		String key = keyWithOper.substring(0, index);
 		String operName = keyWithOper.substring(index + 2);
-		String oper = " = ", placeholder = ":" + keyWithOper;
-		if (StringUtils.isBlank(operName) || "eq".equalsIgnoreCase(operName)) {
-			oper = " = ";
-		} else if ("ne".equalsIgnoreCase(operName)) {
-			oper = " != ";
-		} else if ("gt".equalsIgnoreCase(operName)) {
-			oper = " > ";
-		} else if ("ge".equalsIgnoreCase(operName)) {
-			oper = " >= ";
-		} else if ("lt".equalsIgnoreCase(operName)) {
-			oper = " < ";
-		} else if ("le".equalsIgnoreCase(operName)) {
-			oper = " <= ";
-		} else if ("contain".equalsIgnoreCase(operName)) {
-			oper = " like ";
-			placeholder = "concat('%', " + placeholder + ", '%')";
-		} else if ("not_contain".equalsIgnoreCase(operName)) {
-			oper = " not like ";
-			placeholder = "concat('%', " + placeholder + ", '%')";
-		} else if ("start_with".equalsIgnoreCase(operName)) {
-			oper = " like ";
-			placeholder = "concat(" + placeholder + ", '%')";
-		} else if ("not_start_with".equalsIgnoreCase(operName)) {
-			oper = " not like ";
-			placeholder = "concat(" + placeholder + ", '%')";
-		} else if ("end_with".equalsIgnoreCase(operName)) {
-			oper = " like ";
-			placeholder = " concat('%', " + placeholder + ")";
-		} else if ("not_end_with".equalsIgnoreCase(operName)) {
-			oper = " not like ";
-			placeholder = " concat('%', " + placeholder + ")";
-		} else if("in".equalsIgnoreCase(operName)) {
-			oper = " in ";
-			placeholder = " ( " + placeholder + " ) ";
-		} else if("not_in".equalsIgnoreCase(operName)) {
-			oper = " not in ";
-			placeholder = " ( " + placeholder + " ) ";
-		} else if("is_null".equalsIgnoreCase(operName)) {
-			oper = " is null ";
-			placeholder = "";
-		}
-		return new OperationParsedResult(key.replaceAll("_", "."), oper, placeholder, keyWithOper);
+		return QueryOperator.valueOf(operName).buildResult(key.replaceAll("_", "."), keyWithOper);
 	}
 	
 }
