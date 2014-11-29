@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.ablesky.asdeploy.dao.base.DaoConstant;
 import com.ablesky.asdeploy.pojo.ConflictDetail;
 import com.ablesky.asdeploy.pojo.DeployItem;
 import com.ablesky.asdeploy.pojo.DeployRecord;
@@ -68,7 +69,7 @@ public class DeployRecordController {
 		if(StringUtils.isNotBlank(version)) {
 			param.put("deployItem_version", version);
 		}
-		param.put(CommonConstant.ORDER_BY, "id desc");
+		param.put(DaoConstant.ORDER_BY, "id desc");
 		model.addAttribute("projectList", projectService.getProjectListResult(0, 0, Collections.<String, Object>emptyMap()));
 		model.addAttribute("page", deployService.getDeployRecordPaginateResult(start, limit, param));
 		return "deployRecord/list";

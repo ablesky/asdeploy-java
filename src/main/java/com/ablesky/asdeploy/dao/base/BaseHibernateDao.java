@@ -1,4 +1,4 @@
-package com.ablesky.asdeploy.dao.impl;
+package com.ablesky.asdeploy.dao.base;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -9,44 +9,40 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 
 import com.ablesky.asdeploy.util.Page;
 
-@Repository
-public class BasicHibernateDaoImpl {
+public class BaseHibernateDao {
+	
+	private BaseHibernateDao() {}
+	
+	private static final BaseHibernateDao SINGLETON_INSTANCE = new BaseHibernateDao();
+	
+	public static final BaseHibernateDao singletonInstance() {
+		return SINGLETON_INSTANCE;
+	}
 
-	@Autowired
-	private SessionFactory sessionFactory;
-
-	public Session getCurrentSession() {
-		return sessionFactory.getCurrentSession();
+	public <T> void saveOrUpdate(Session session, T entity) {
+		session.saveOrUpdate(entity);
 	}
 	
-	public <T> void saveOrUpdate(T entity){
-		getCurrentSession().saveOrUpdate(entity);
+	public <T> void delete(Session session, T entity) {
+		session.delete(entity);
 	}
 	
-	public <T> void delete(T entity) {
-		getCurrentSession().delete(entity);
-	}
-	
-	public <T> void deleteById(Class<T> clazz, Long id) {
+	public <T> void deleteById(Session session, Class<T> clazz, Long id) {
 		String hql = "delete from " + clazz.getSimpleName() + " where id = :id ";
-		Query query = getCurrentSession().createQuery(hql);
+		Query query = session.createQuery(hql);
 		fillParameter(query, "id", id);
 		query.executeUpdate();
 	}
 	
-	public <T> T getById(Class<T> clazz, Long id) {
-		return clazz.cast(getCurrentSession().get(clazz, id));
+	public <T> T getById(Session session, Class<T> clazz, Long id) {
+		return clazz.cast(session.get(clazz, id));
 	}
 	
 	@SuppressWarnings("unchecked")
-	public <T> List<T> list(int start, int limit, String hql, Map<String, Object> param) {
-		Session session = getCurrentSession();
+	public <T> List<T> list(Session session, int start, int limit, String hql, Map<String, Object> param) {
 		Query query = session.createQuery(hql);
 		for(String key: getPlaceHolderList(hql)) {
 			fillParameter(query, key, param);
@@ -58,8 +54,8 @@ public class BasicHibernateDaoImpl {
 		return query.list();
 	}
 	
-	public int count(String hql, Map<String, Object> param) {
-		return count(hql, param, true);
+	public int count(Session session, String hql, Map<String, Object> param) {
+		return count(session, hql, param, true);
 	}
 	
 	/**
@@ -68,11 +64,10 @@ public class BasicHibernateDaoImpl {
 	 * @param needConvert: true表明hql本身不是一个取count的hql，不需要做select count(*)的替换
 	 * @return
 	 */
-	public int count(String hql, Map<String, Object> param, boolean needConvert) {
+	public int count(Session session, String hql, Map<String, Object> param, boolean needConvert) {
 		if(param == null) {
 			param = Collections.<String,Object>emptyMap();
 		}
-		Session session = getCurrentSession();
 		if(needConvert) {
 			int beginPos = hql.indexOf("from");
 			int endPos = hql.indexOf("order by");
@@ -92,25 +87,24 @@ public class BasicHibernateDaoImpl {
 		if(hql.indexOf("group by") != -1) {
 			return list.size();
 		} else {
-			return ((Long) list.get(0)).intValue();
+			return Integer.valueOf(list.get(0).toString());
 		}
 	}
 	
-	public <T> Page<T> paginate(int start, int limit, String hql, Map<String, Object> param) {
-		return new Page<T>(start, limit, count(hql, param), this.<T>list(start, limit, hql, param));
+	public <T> Page<T> paginate(Session session, int start, int limit, String hql, Map<String, Object> param) {
+		return new Page<T>(start, limit, count(session, hql, param), this.<T>list(session, start, limit, hql, param));
 	}
 	
-	public void executeSql(String sql) {
-		executeSql(sql, Collections.<String, Object>emptyMap());
+	public int executeSql(Session session, String sql) {
+		return executeSql(session, sql, Collections.<String, Object>emptyMap());
 	}
 	
-	public void executeSql(String sql, Map<String, Object> param) {
-		Session session = getCurrentSession();
+	public int executeSql(Session session, String sql, Map<String, Object> param) {
 		Query query = session.createSQLQuery(sql);
 		for (String key : getPlaceHolderList(sql)) {
 			fillParameter(query, key, param);
 		}
-		query.executeUpdate();
+		return query.executeUpdate();
 	}
 	
 	private void fillParameter(Query query, String key, Object value) {
@@ -156,7 +150,6 @@ public class BasicHibernateDaoImpl {
 	
 	/**
 	 * 获取sql/hql中的所有占位符(形如":XXX")
-	 * @author zyang
 	 */
 	private List<String> getPlaceHolderList(String sql){
 		if(sql.indexOf(":") == -1){

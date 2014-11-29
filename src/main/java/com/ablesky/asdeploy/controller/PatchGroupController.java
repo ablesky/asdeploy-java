@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ablesky.asdeploy.dao.base.DaoConstant;
 import com.ablesky.asdeploy.pojo.ConflictInfo;
 import com.ablesky.asdeploy.pojo.PatchFile;
 import com.ablesky.asdeploy.pojo.PatchFileRelGroup;
@@ -78,7 +79,7 @@ public class PatchGroupController {
 		if(StringUtils.isNotBlank(status)) {
 			param.put("status", status);
 		}
-		param.put(CommonConstant.ORDER_BY, "id desc");
+		param.put(DaoConstant.ORDER_BY, "id desc");
 		model.addAttribute("projectList", projectService.getProjectListResult(0, 0, Collections.<String, Object>emptyMap()))
 				.addAttribute("page", patchGroupService.getPatchGroupPaginateResult(start, limit, param))
 				.addAttribute("isSuperAdmin", AuthUtil.isSuperAdmin())
@@ -193,7 +194,7 @@ public class PatchGroupController {
 		if(StringUtils.isNotBlank(status)) {
 			param.put("status", status);
 		}
-		param.put(CommonConstant.ORDER_BY, " id desc ");
+		param.put(DaoConstant.ORDER_BY, " id desc ");
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		resultMap.put("list", patchGroupService.getPatchGroupListResult(start, limit, param));
 		resultMap.put("success", true);

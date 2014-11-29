@@ -9,8 +9,4 @@ public class CommonConstant {
 	public static final String DEFAUTL_START_STR = DEFAUTL_START + "";
 	public static final String DEFAULT_LIMIT_STR = DEFAULT_LIMIT + "";
 	
-	public static final String ORDER_ASC = "asc";
-	public static final String ORDER_DESC = "desc";
-	public static final String ORDER_BY = "orderBy";
-	
 }

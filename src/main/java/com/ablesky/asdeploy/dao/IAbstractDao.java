@@ -28,4 +28,12 @@ public interface IAbstractDao<E extends AbstractModel> {
 
 	E unique(Map<String, Object> param);
 
+	int executeSql(String sql);
+
+	int executeSql(String sql, Map<String, Object> param);
+
+	void flush();
+
+	void refresh(E entity);
+
 }

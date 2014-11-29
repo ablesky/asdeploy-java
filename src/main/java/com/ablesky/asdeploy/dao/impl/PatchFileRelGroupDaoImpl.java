@@ -6,6 +6,7 @@ import org.apache.shiro.util.CollectionUtils;
 import org.springframework.stereotype.Repository;
 
 import com.ablesky.asdeploy.dao.IPatchFileRelGroupDao;
+import com.ablesky.asdeploy.dao.base.AbstractDaoImpl;
 import com.ablesky.asdeploy.pojo.PatchFileRelGroup;
 
 @Repository

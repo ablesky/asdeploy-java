@@ -24,6 +24,7 @@ import com.ablesky.asdeploy.dao.IPatchFileDao;
 import com.ablesky.asdeploy.dao.IPatchFileRelGroupDao;
 import com.ablesky.asdeploy.dao.IPatchGroupDao;
 import com.ablesky.asdeploy.dao.IProjectDao;
+import com.ablesky.asdeploy.dao.base.DaoConstant;
 import com.ablesky.asdeploy.pojo.ConflictDetail;
 import com.ablesky.asdeploy.pojo.ConflictInfo;
 import com.ablesky.asdeploy.pojo.DeployItem;
@@ -36,7 +37,6 @@ import com.ablesky.asdeploy.pojo.Project;
 import com.ablesky.asdeploy.service.IDeployService;
 import com.ablesky.asdeploy.service.IPatchGroupService;
 import com.ablesky.asdeploy.util.AuthUtil;
-import com.ablesky.asdeploy.util.CommonConstant;
 import com.ablesky.asdeploy.util.DeployUtil;
 import com.ablesky.asdeploy.util.Deployer;
 import com.ablesky.asdeploy.util.Page;
@@ -73,7 +73,7 @@ public class DeployServiceImpl implements IDeployService {
 	public DeployLock checkCurrentLock() {
 		List<DeployLock> lockList = deployLockDao.list(new ModelMap()
 				.addAttribute("isLocked", Boolean.TRUE)
-				.addAttribute(CommonConstant.ORDER_BY, "id desc")
+				.addAttribute(DaoConstant.ORDER_BY, "id desc")
 		);
 		long ts = System.currentTimeMillis();
 		for(DeployLock lock: lockList) {

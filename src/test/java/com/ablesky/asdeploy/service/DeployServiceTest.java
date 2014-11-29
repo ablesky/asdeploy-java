@@ -35,6 +35,7 @@ import com.ablesky.asdeploy.dao.IPatchFileDao;
 import com.ablesky.asdeploy.dao.IPatchFileRelGroupDao;
 import com.ablesky.asdeploy.dao.IPatchGroupDao;
 import com.ablesky.asdeploy.dao.IProjectDao;
+import com.ablesky.asdeploy.dao.base.DaoConstant;
 import com.ablesky.asdeploy.pojo.DeployItem;
 import com.ablesky.asdeploy.pojo.DeployLock;
 import com.ablesky.asdeploy.pojo.DeployRecord;
@@ -43,7 +44,6 @@ import com.ablesky.asdeploy.pojo.Project;
 import com.ablesky.asdeploy.pojo.User;
 import com.ablesky.asdeploy.service.impl.DeployServiceImpl;
 import com.ablesky.asdeploy.test.ShiroTestUtils;
-import com.ablesky.asdeploy.util.CommonConstant;
 import com.ablesky.asdeploy.util.DeployUtil;
 
 @RunWith(PowerMockRunner.class)
@@ -104,7 +104,7 @@ public class DeployServiceTest {
 		lock3.setLockedTime(new Timestamp(ts - DeployLock.LOCK_EXPIRY_TIME - 1000));
 		when(deployLockDao.list(new ModelMap()
 			.addAttribute("isLocked", Boolean.TRUE)
-			.addAttribute(CommonConstant.ORDER_BY, "id desc")
+			.addAttribute(DaoConstant.ORDER_BY, "id desc")
 		)).thenReturn(CollectionUtils.asList(lock3, lock2, lock1));	// 倒序返回
 	
 		DeployLock lock = deployService.checkCurrentLock();
