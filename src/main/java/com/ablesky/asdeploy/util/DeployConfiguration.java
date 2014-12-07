@@ -46,7 +46,8 @@ public class DeployConfiguration {
 		environment = parseEnvironment(hostname);
 		needSendEmail = NEED_SEND_EMAIL_NO;
 		try {
-			scriptPathForDevTest = new ClassPathResource("script/dev_test.sh").getFile().getAbsolutePath();
+			String scriptNameForDevTest = SystemUtils.IS_OS_WINDOWS ? "dev_test.cmd" : "dev_test.sh";
+			scriptPathForDevTest = new ClassPathResource("script/" + scriptNameForDevTest).getFile().getAbsolutePath();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

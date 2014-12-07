@@ -55,8 +55,7 @@ public class DeployUtil {
 	 * 获取发布补丁的脚本目录
 	 */
 	public static String getDeployPatchScriptPath() {
-		if(SystemUtils.IS_OS_WINDOWS) { // 返回假的发布脚本，供开发环境使用
-//			scriptPath = FilenameUtils.getPrefix(SystemUtils.USER_DIR) + scriptPath;
+		if(Profiles.isDevelopment()) { // 返回假的发布脚本，供开发环境使用
 			return CONFIG.getScriptPathForDevTest();
 		}
 		return FilenameUtils.concat(CONFIG.getScriptRootPath(), "patch-shell/start_patch_main.sh");
@@ -66,7 +65,7 @@ public class DeployUtil {
 	 * 获取发布版本的脚本目录
 	 */
 	public static String getDeployWarScriptPath(Project project) {
-		if(SystemUtils.IS_OS_WINDOWS) { // 返回假的发布脚本，供开发环境使用
+		if(Profiles.isDevelopment()) { // 返回假的发布脚本，供开发环境使用
 			return CONFIG.getScriptPathForDevTest();
 		}
 		Integer deployScriptType = project.getDeployScriptType();

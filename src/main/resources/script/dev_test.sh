@@ -1,4 +1,6 @@
 echo 'This is a deploy process simulation for develop environment'
+echo Test script path is:
+echo "    `pwd`/$0"
 echo "The input arguments are: "
 echo "    $@"
 echo ""

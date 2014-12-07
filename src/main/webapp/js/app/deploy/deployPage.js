@@ -218,7 +218,7 @@ define(function(require, exports, module){
 				}
 				showDeployInfo('发布启动成功!');
 				$('#J_logContent').empty();
-				setTimeout(readDeployLogOnRealtime, 1500);
+				setTimeout(readDeployLogOnRealtime, 1000);
 			});
 		});
 	}
@@ -241,7 +241,7 @@ define(function(require, exports, module){
 				}
 				showDeployInfo('回滚启动成功!');
 				$('#J_logContent').empty();
-				setTimeout(readDeployLogOnRealtime, 1500);
+				setTimeout(readDeployLogOnRealtime, 1000);
 			});
 		});
 	}
@@ -266,7 +266,7 @@ define(function(require, exports, module){
 				data.deployResult === true? showDeployResultSuccess(): showDeployResultFailed();
 				return;
 			}
-			setTimeout(readDeployLogOnRealtime, 1500);
+			setTimeout(readDeployLogOnRealtime, 1000);
 		});
 	}
 

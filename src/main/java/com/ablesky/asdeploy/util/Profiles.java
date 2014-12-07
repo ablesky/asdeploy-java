@@ -22,4 +22,24 @@ public class Profiles {
 	public static void setProfileAsSystemProperty(String profile) {
 		System.setProperty(ACTIVE_PROFILE, profile);
 	}
+	
+	public static String getProfile() {
+		String profile = System.getProperty(ACTIVE_PROFILE);
+		if(profile == null) {
+			profile = System.getProperty(DEFAULT_PROFILE);
+		}
+		return profile;
+	}
+	
+	public static boolean isProfile(String profile) {
+		return profile.equals(getProfile());
+	}
+	
+	public static boolean isDevelopment() {
+		return isProfile(DEVELOPMENT);
+	}
+	
+	public static boolean isProduction() {
+		return isProfile(PRODUCTION);
+	}
 }

@@ -24,12 +24,13 @@ public class ShellCmd extends AbstractCmd<ShellCmd.ShellOperation, ShellCmd.Shel
 
 		@Override
 		public String toString() {
-			StringBuilder cmdBuff  = new StringBuilder()
-				.append("sh").append(" ").append(operType.getOperName());
-			for(String param: params.keySet()) {
-				cmdBuff.append(" ").append(param);
+			StringBuilder cmdBuff  = new StringBuilder();
+			if(!SystemUtils.IS_OS_WINDOWS) {
+				cmdBuff.append("sh").append(" ").append(operType.getOperName()).append(" ");
 			}
-			cmdBuff.append(" ");
+			for(String param: params.keySet()) {
+				cmdBuff.append(param).append(" ");
+			}
 			return cmdBuff.toString();
 		}
 		
