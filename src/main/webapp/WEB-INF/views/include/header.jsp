@@ -18,7 +18,7 @@
 					<li><a id="J_envLogo" href="#"><%=DeployConfiguration.getInstance().getEnvironment()%></a></li>
 					<li class="divider-vertical"></li>
 					<shiro:user>
-						<li><a href="${ctx_path}/main"><strong>主页</strong></a></li>
+						<li><a href="${ctx_path}/"><strong>主页</strong></a></li>
 						<li class="divider-vertical"></li>
 						<li><a href="${ctx_path}/user/detail"><strong><shiro:principal/></strong></a></li>
 						<li class="divider-vertical"></li>

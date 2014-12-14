@@ -47,7 +47,7 @@ public class IndexController {
 	@Autowired
 	private IDeployService deployService;
 	
-	@RequestMapping({ "/", "/main"})
+	@RequestMapping({"", "/", "/main"})
 	public String main(Model model) {
 		model.addAttribute("deployLock", deployService.checkCurrentLock())
 			.addAttribute("currentUser", AuthUtil.getCurrentUser())
