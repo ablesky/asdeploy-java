@@ -75,7 +75,7 @@ public class IndexController {
 	 * 此后再进行发ajax请求的操作时，就需要重新验证一次身份
 	 */
 	@ResponseBody
-	@RequestMapping(value="/login", method=RequestMethod.GET, headers="isAjax=true")
+	@RequestMapping(value="/login", method=RequestMethod.GET, headers="X-Requested-With=XMLHttpRequest")
 	public Map<String, Object> login() {
 		return new ModelMap("success", false)
 			.addAttribute("needLogin", true)

@@ -17,12 +17,6 @@ define(function(require, exports, module){
 	    });
 	};
 	
-	$.ajaxSetup({
-		beforeSend: function(xhr) {
-			xhr.setRequestHeader('isAjax', 'true');
-		}
-	});
-	
 	/**
 	 * 调用bootstrap样式的弹出框
 	 */
