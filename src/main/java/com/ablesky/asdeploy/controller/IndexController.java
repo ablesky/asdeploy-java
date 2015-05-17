@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
 
 import javax.imageio.ImageIO;
@@ -15,7 +16,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.ablesky.asdeploy.security.jcaptcha.JCaptcha;
 import com.ablesky.asdeploy.service.IDeployService;
@@ -103,20 +104,22 @@ public class IndexController {
 	 * @throws IOException 
 	 */
 	@RequestMapping(value="/login", method=RequestMethod.POST)
-	public String afterLoginSubmission(String username, String password, Model model, 
-			HttpServletRequest request, HttpServletResponse response) throws IOException {
+	public String afterLoginSubmission(
+			String username,
+			HttpServletRequest request, 
+			HttpServletResponse response,
+			RedirectAttributes redirectAttributes) throws IOException {
 		
 		if(AuthUtil.isAuthenticated()) {
 			org.apache.shiro.web.util.WebUtils.redirectToSavedRequest(request, response, DEFAULT_SUCCESS_URL);
 			return null;
 		} 
 		
-		if(AuthUtil.isRemembered()) {
-			model.addAttribute("errorMessage", "密码错误，请重试!");
-		} else {
-			model.addAttribute("errorMessage", "用户名或密码错误，请重试!");
-		}
-		return "login";
+		redirectAttributes
+			.addFlashAttribute("username", username)
+			.addFlashAttribute("errorMessage", AuthUtil.isRemembered()? "密码错误，请重试!": "用户名或密码错误，请重试!");
+			
+		return "redirect:/login";
 	}
 	
 	@RequestMapping(value="/register", method=RequestMethod.GET)
@@ -125,8 +128,14 @@ public class IndexController {
 	}
 	
 	@RequestMapping(value="/register", method=RequestMethod.POST)
-	public String register(String username, String password, String confirmedPassword, String verifyCode, HttpSession session, 
-			Model model, HttpServletRequest request, HttpServletResponse response) throws IOException {
+	public String register(
+			String username, 
+			String password, 
+			String confirmedPassword, 
+			String verifyCode, 
+			HttpSession session, 
+			RedirectAttributes redirectAttributes
+			) throws IOException {
 		ModelMap validateResult = new ModelMap();
 		if(StringUtils.isBlank(username)) {
 			validateResult.addAttribute("usernameError", "用户名不能为空!");
@@ -147,8 +156,9 @@ public class IndexController {
 			validateResult.addAttribute("verifyCodeError", "验证码输入错误!");
 		}
 		if(validateResult.size() > 0) {
-			model.addAllAttributes(validateResult);
-			return "register";
+			addAllFlashAttributes(redirectAttributes, validateResult);
+			redirectAttributes.addFlashAttribute("username", username);
+			return "redirect:/register";
 		}
 		userService.createNewUser(username, password);
 		AuthUtil.login(username, password, true);
@@ -195,11 +205,11 @@ public class IndexController {
 		}
 	}
 	
-	private boolean isAjax(HttpServletRequest request) {
-		return BooleanUtils.toBoolean(request.getHeader("isAjax"));
+	private static boolean isAjax(HttpServletRequest request) {
+		return "XMLHttpRequest".equals(request.getHeader("X-Requested-With"));
 	}
 	
-	private void writeJsonResponse(Map<String, Object> result, HttpServletResponse response) {
+	private static void writeJsonResponse(Map<String, Object> result, HttpServletResponse response) {
 		response.setContentType("application/json;charset=UTF-8");
 		PrintWriter writer = null;
 		try {
@@ -210,6 +220,12 @@ public class IndexController {
 			e.printStackTrace();
 		} finally {
 			IOUtils.closeQuietly(writer);
+		}
+	}
+	
+	private static void addAllFlashAttributes(RedirectAttributes redirectAttributes, Map<String, ?> attributes) {
+		for(Entry<String, ?> entry: attributes.entrySet()) {
+			redirectAttributes.addFlashAttribute(entry.getKey(), entry.getValue());
 		}
 	}
 	

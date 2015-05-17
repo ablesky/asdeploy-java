@@ -64,7 +64,7 @@ input[type="text"], input[type="password"] {
 							</label>
 						</td>
 						<td>
-							<input type="text" id="J_username" name="username" value="${param.username}"/>
+							<input type="text" id="J_username" name="username" value="${username}"/>
 						</td>
 					</tr>
 					<c:if test="${passwordError != null}">

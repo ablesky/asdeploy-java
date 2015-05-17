@@ -71,7 +71,7 @@ input[type="text"], input[type="password"] {
 						</td>
 						<shiro:guest>
 						<td>
-							<input type="text" id="J_username" name="username"/>
+							<input type="text" id="J_username" name="username" value="${username}"/>
 						</td>
 						</shiro:guest>
 						<shiro:user>
