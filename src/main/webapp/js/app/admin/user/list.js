@@ -27,7 +27,7 @@ define(function(require, exports, module){
 		$('.edit-btn').on('click', function(){
 			var $this = $(this);
 			common.openWin({
-				url: CTX_PATH + '/admin/user/changePassword/' + $this.attr('data-id'),
+				url: CTX_PATH + '/admin/user/changePassword/' + $this.attr('data-id') + '?unauthz_type=simple',
 				height: 260
 			});
 		});

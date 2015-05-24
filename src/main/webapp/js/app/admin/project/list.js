@@ -21,7 +21,7 @@ define(function(require, exports, module){
 			common.openWin({
 				width: 420, 
 				height: 280,
-				url: CTX_PATH + '/admin/project/edit/' + id
+				url: CTX_PATH + '/admin/project/edit/' + id + '?unauthz_type=simple'
 			});
 		});
 	}

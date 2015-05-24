@@ -65,6 +65,13 @@
 		<property name="loginUrl" value="/login" />
 		<property name="successUrl" value="#{T(com.ablesky.asdeploy.controller.IndexController).DEFAULT_SUCCESS_URL}" />
 		<property name="unauthorizedUrl" value="/unauthorized"/>
+		<property name="filters">
+			<map>
+				<entry key="roles">
+					<bean class="com.ablesky.asdeploy.filter.RolesAuthorizationFilter" />
+				</entry>
+			</map>
+		</property>
 		<property name="filterChainDefinitions">
 			<value>
 				/js/** = anon

@@ -40,7 +40,7 @@ define(function(require, exports, module){
 				return - $(this).width() / 2;
 			},
 			'margin-top': function() {
-				return ( $(window).height() - $(this).height() ) / 3;	 // 乱诌的一句，完全没有道理，太神奇了
+				return ( $(window).height() - $(this).height() ) / 3;
 			}
 		});
 		$modal.on('hidden', function(){
@@ -72,7 +72,7 @@ define(function(require, exports, module){
 				return - $(this).width() / 2;
 			},
 			'margin-top': function() {
-				return ( $(window).height() - $(this).height() ) / 3;	 // 乱诌的一句，完全没有道理，太神奇了
+				return ( $(window).height() - $(this).height() ) / 3;
 			}
 		});
 		$modal.on('click', '.modal-footer .confirm', function(){

@@ -10,11 +10,13 @@
 <%@ include file="./include/includeCss.jsp" %>
 </head>
 <body>
-<%@ include file="./include/header.jsp" %>
-<div style="width: 1000px; margin: 200px auto;">
-	<h2 class="title">没有权限访问当前页面!</h2>
-	<div style="margin-top: 20px;"></div>
-	<h2 class="title"><a href="/main">请返回首页</a></h2>
-</div>
+<c:choose>
+	<c:when test="${param.type eq 'simple'}">
+		<jsp:include page="./unauthzBody/simple.jsp" />
+	</c:when>
+	<c:otherwise>
+		<jsp:include page="./unauthzBody/normal.jsp" />
+	</c:otherwise>
+</c:choose>
 </body>
 </html>

@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
@@ -25,6 +24,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.ablesky.asdeploy.security.jcaptcha.JCaptcha;
@@ -32,7 +32,6 @@ import com.ablesky.asdeploy.service.IDeployService;
 import com.ablesky.asdeploy.service.IUserService;
 import com.ablesky.asdeploy.util.AuthUtil;
 import com.ablesky.asdeploy.util.ImageUtil;
-import com.alibaba.fastjson.JSON;
 
 @Controller
 public class IndexController {
@@ -195,32 +194,18 @@ public class IndexController {
 		return UUID.randomUUID().toString().replaceAll("-", "").substring(0, num);
 	}
 	
+	@ResponseBody
 	@RequestMapping("/unauthorized")
-	public String unauthorized(HttpServletRequest request, HttpServletResponse response) throws IOException { 
+	public Object unauthorized(HttpServletRequest request, HttpServletResponse response) throws IOException { 
 		if(isAjax(request)) {
-			writeJsonResponse(new ModelMap().addAttribute("success", false).addAttribute("message", "没有权限!"), response);
-			return null;
+			return new ModelMap().addAttribute("success", false).addAttribute("message", "没有权限!");
 		} else {
-			return "unauthorized";
+			return new ModelAndView("unauthorized");
 		}
 	}
 	
 	private static boolean isAjax(HttpServletRequest request) {
 		return "XMLHttpRequest".equals(request.getHeader("X-Requested-With"));
-	}
-	
-	private static void writeJsonResponse(Map<String, Object> result, HttpServletResponse response) {
-		response.setContentType("application/json;charset=UTF-8");
-		PrintWriter writer = null;
-		try {
-			writer = response.getWriter();
-			writer.write(JSON.toJSONString(result));
-			writer.flush();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			IOUtils.closeQuietly(writer);
-		}
 	}
 	
 	private static void addAllFlashAttributes(RedirectAttributes redirectAttributes, Map<String, ?> attributes) {
